@@ -416,101 +416,149 @@
                 <!-- Timeline -->
                 <div class="relative">
                 <!-- Vertical Line -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-orange-400 to-orange-600 z-10"></div>
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-[750px] z-10" style="background: linear-gradient(91.36deg, rgba(228, 223, 206, 0.7) 47.62%, rgba(230, 187, 39, 0.7) 51.2%); top: 80px;"></div>
 
                 <!-- Timeline Items -->
-                <div class="space-y-16 relative z-10">
-                    <!-- January -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8 text-right flex justify-end">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
-                                <div class="text-orange-400 text-sm font-medium mb-2 text-center">January</div>
-                                <h4 class="text-white text-xl font-bold mb-3 text-left">Brief</h4>
-                                <p class="text-gray-300 text-sm leading-relaxed text-left">
-                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8"></div>
-                    </div>
+                <div class="space-y-8 relative z-10" style="margin-top: -80px;">
+          <!-- January -->
+<div class="flex items-center relative" style="margin-top: 80px;">
+    <div class="w-1/2 pr-12 text-right flex justify-end">
+        <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
+            <div class="text-orange-400 text-sm font-medium mb-2 text-center">January</div>
+            <h4 class="text-white text-xl font-bold mb-3 text-left">Brief</h4>
+            <p class="text-gray-300 text-sm leading-relaxed text-left">
+                Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
+            </p>
+            <!-- New Box with gradient border -->
+            <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
+                <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>            </div>
+        </div>
+    </div>
+    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="top: 80px; background-color: #E4E0CF; border-color: #E4E0CF;"></div>
+    <!-- Dotted line from dot to January card -->
+    <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 88px; margin-left: -32px;"></div>
+    <!-- Arrow at end of dotted line -->
+    <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 87px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
+    <div class="w-1/2 pl-12"></div>
+</div>
 
                     <!-- February -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8"></div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8 flex justify-start">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
+                    <div class="flex items-center relative" style="margin-top: -90px;">
+                        <div class="w-1/2 pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
+                        <!-- Dotted line from dot to February card -->
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 94px; margin-left: 8px;"></div>
+                        <!-- Arrow at end of dotted line -->
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12 flex justify-start">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">February</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Research</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
+                                <!-- Box for Research -->
+                                <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
+                                    <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- March -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8 text-right flex justify-end">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
+                    <div class="flex items-center relative">
+                        <div class="w-1/2 pr-12 text-right flex justify-end">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">March</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Discover</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
                                 </p>
+                                <!-- Box for Discover -->
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
+                                    <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="background-color: #E4DFCE; border-color: #E4DFCE;"></div>
+                        <!-- Dotted line from dot to March card -->
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 94px; margin-left: -32px;"></div>
+                        <!-- Arrow at end of dotted line -->
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12"></div>
                     </div>
 
                     <!-- April -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8"></div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8 flex justify-start">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
+                    <div class="flex items-center relative" style="margin-top: -80px;">
+                        <div class="w-1/2 pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
+                        <!-- Dotted line from dot to April card -->
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: 8px;"></div>
+                        <!-- Arrow at end of dotted line -->
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12 flex justify-start">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">April</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Design</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
                                 </p>
+                                <!-- Box for Design -->
+                                <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
+                                    <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- May -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8 text-right flex justify-end">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
+                    <div class="flex items-center relative">
+                        <div class="w-1/2 pr-12 text-right flex justify-end">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">May</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Testing</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
                                 </p>
+                                <!-- Box for Testing -->
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
+                                    <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="background-color: #E4DFCE; border-color: #E4DFCE;"></div>
+                        <!-- Dotted line from dot to May card -->
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: -32px;"></div>
+                        <!-- Arrow at end of dotted line -->
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12"></div>
                     </div>
 
                     <!-- June -->
-                    <div class="flex items-center">
-                        <div class="w-1/2 pr-8"></div>
-                        <div class="w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-10"></div>
-                        <div class="w-1/2 pl-8 flex justify-start">
-                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm">
+                    <div class="flex items-center relative" style="margin-top: -80px;">
+                        <div class="w-1/2 pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
+                        <!-- Dotted line from dot to June card -->
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: 8px;"></div>
+                        <!-- Arrow at end of dotted line -->
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 91px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12 flex justify-start">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">June</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Launch & Feedback</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
                                 </p>
+                                <!-- Box for Launch & Feedback -->
+                                <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
+                                    <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
