@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        fontFamily: {
+          poppins: ['Poppins', 'sans-serif'],
+          imperial: ['"Imperial Script"', 'cursive']
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    
+ <!-- Hero Section -->
+<section class="relative w-full h-screen flex items-center justify-center">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+        <img class="w-full h-full object-cover" src="./img/abous_us.jpg" alt="Desert night scene" />
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+    
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white dark:from-black to-transparent z-10"></div>
+    <!-- Header -->
+    <header class="absolute top-0 left-0 right-0 z-20 py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <!-- LEFT: LOGO -->
+            <div class="flex flex-col items-start">
+                <a href="/index.html"><img src="./img/logo.png" class="w-16 sm:w-20 md:w-24 h-auto" alt="Logo" /></a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="flex items-center gap-2 text-sm">
+                    <div class="w-12 h-6 bg-white/20 backdrop-blur-sm rounded-full relative transition-colors cursor-pointer border border-white/30">
+                        <div id="toggle-circle" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-lg"></div>
+                    </div>
+                </button>
+                <a href="/destination.html" class="font-poppins text-sm text-white hover:text-gray-300 transition">Destinations</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Members</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Gallery</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-sm mt-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4">
+                <!-- Theme Toggle Button Mobile -->
+                <button id="theme-toggle-mobile" class="flex items-center gap-2 text-sm w-fit">
+                    <div class="w-12 h-6 bg-white/20 backdrop-blur-sm rounded-full relative transition-colors cursor-pointer border border-white/30">
+                        <div id="toggle-circle-mobile" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-lg"></div>
+                    </div>
+                    <span class="text-white text-sm">Toggle Theme</span>
+                </button>
+                <a href="/destination.html" class="font-poppins text-sm text-white hover:text-gray-300 transition">Destinations</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Members</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Gallery</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 text-center px-4 sm:px-6">
+        <h1 class="text-5xl font-poppins sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-3 sm:mb-4 text-white">
+            About Us
+        </h1>
+        <p class="font-poppins text-sm sm:text-base max-w-xl mx-auto text-gray-200">
+            Discover the country's hidden gems and breathtaking landscapes
+        </p>
+    </div>
+</section>
+
+<!-- Traditions of Saudi Arabia Section -->
+<section class="w-full bg-white dark:bg-black py-12 sm:py-16 md:py-20 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <!-- Header -->
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 text-gray-900 dark:text-white">Saudi, a kingdom that inspires</h2>
+            <p class="font-poppins text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                A country whose magnificence stands intefsel.
+            </p>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white">Traditions of Saudi Arabia</h3>
+
+        <!-- Language Section -->
+        <div class="flex flex-col lg:flex-row gap-6 mb-8 sm:mb-12">
+            <div class="lg:w-2/5">
+                <div class="rounded-3xl overflow-hidden h-[250px] sm:h-[300px]">
+                    <img src="./img/language.jpg" alt="Language" class="w-full h-full object-cover" />
+                </div>
+            </div>
+            <div class="lg:w-3/5 flex flex-col">
+                <div class="rounded-3xl p-6 sm:p-8 flex flex-col h-full bg-transparent">
+                    <div class="flex-grow">
+                        <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">Language</h4>
+                        <p class="font-poppins text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Arabic is the official language of Saudi Arabia and the primary language used in all dealings and public transactions. English serves as an informal second language in the Kingdom and is spoken by a large section of its society. All road signs are bilingual, showing information in both Arabic and English.
+                        </p>
+                    </div>
+                    <div class="flex justify-end mt-6">
+                        <button class="w-10 h-10 sm:w-12 sm:h-12 bg-transparent border-2 border-gray-900 dark:border-white rounded-full flex items-center justify-center hover:bg-gray-900/5 dark:hover:bg-white/10 transition group">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Culture Section -->
+        <div class="flex flex-col lg:flex-row-reverse gap-6">
+            <div class="lg:w-2/5">
+                <div class="rounded-3xl overflow-hidden h-[250px] sm:h-[300px]">
+                    <img src="./img/culture.jpg" alt="Culture" class="w-full h-full object-cover" />
+                </div>
+            </div>
+            <div class="lg:w-3/5 flex flex-col">
+                <div class="rounded-3xl p-6 sm:p-8 flex flex-col h-full bg-transparent">
+                    <div class="flex-grow">
+                        <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">Culture</h4>
+                        <p class="font-poppins text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Saudi Arabia's rich heritage and traditions have been shaped by its position as a historic trade hub and the birthplace of Islam. In recent years, the kingdom has undergone a significant cultural transformation, evolving century-old customs to fit the contemporary world we live in today.
+                        </p>
+                    </div>
+                    <div class="flex justify-end mt-6">
+                        <button class="w-10 h-10 sm:w-12 sm:h-12 bg-transparent border-2 border-gray-900 dark:border-white rounded-full flex items-center justify-center hover:bg-gray-900/5 dark:hover:bg-white/10 transition group">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="w-full bg-white dark:bg-black py-8 sm:py-12 md:py-16 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="w-full h-[80px] sm:h-[100px] md:h-[120px] bg-[#25D366] rounded-full flex items-center justify-between p-4 sm:p-6 shadow-xl relative overflow-hidden">
+            <div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.4) 0%, transparent 40%);"></div>
+            
+            <div class="flex items-center relative z-10">
+                <p class="font-poppins text-lg sm:text-xl md:text-2xl font-semibold text-white">
+                    Contact us on Whatsapp
+                </p>
+            </div>
+            
+            <button class="flex-shrink-0 px-6 sm:px-8 py-2 sm:py-3 bg-white text-[#25D366] font-poppins text-sm sm:text-base font-semibold rounded-full hover:bg-gray-100 transition duration-300 relative z-10">
+                Start Chat
+            </button>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- Explore Saudi Arabia CTA Section -->
+    <section class="w-full bg-white dark:bg-black py-8 sm:py-12 md:py-16 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="relative w-full h-[300px] sm:h-[350px] md:h-[400px] overflow-hidden rounded-lg">
+                <img class="w-full h-full object-cover" src="./img/about_slider.jpg" alt="Explore Saudi Arabia" />
+                
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/60"></div>
+                
+                <!-- Content -->
+                <div class="absolute inset-0 flex items-center justify-between px-6 sm:px-8 md:px-12">
+                    <div>
+                        <h2 class="font-poppins font-semibold sm:text-4xl md:text-5xl  text-white">
+                            Rules of Behaviour<br/>KSA
+                        </h2>
+                    </div>
+                    
+                    <button class="w-12 h-12 sm:w-14 sm:h-14 bg-transparent border-2 border-white rounded-full flex items-center justify-center hover:bg-white/50 transition group flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full bg-[#2a2a2a] border-t border-gray-800 py-12 sm:py-16 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+               <!-- Logo Column -->
+                <div class="flex flex-col items-start sm:col-span-2 lg:col-span-1">
+                    <img src="./img/logo.png" class="w-24 sm:w-32 md:w-36 lg:w-40 h-auto mb-2" alt="Saudi Logo" />
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">About</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="/aboutus.html" class="hover:text-white transition">About us</a></li>
+                        <li><a href="#" class="hover:text-white transition">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition">News & Blogs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">Contact</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="#" class="hover:text-white transition">Instagram</a></li>
+                        <li><a href="#" class="hover:text-white transition">Twitter</a></li>
+                        <li><a href="#" class="hover:text-white transition">Facebook</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">Support</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="#" class="hover:text-white transition">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition">Support Centre</a></li>
+                        <li><a href="#" class="hover:text-white transition">Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+
+</body>
+</html>

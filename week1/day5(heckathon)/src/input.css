@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 50%, #1a1a1a 100%);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.glow {
+    box-shadow: 0 0 30px rgba(255, 138, 56, 0.3);
+}
+.card-glow {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+.sparkle {
+    animation: sparkle 3s ease-in-out infinite;
+}
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+}

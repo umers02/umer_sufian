@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        fontFamily: {
+          poppins: ['Poppins', 'sans-serif'],
+          imperial: ['"Imperial Script"', 'cursive']
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    
+ <!-- Hero Section -->
+ <section class="relative w-full h-screen flex items-center justify-center">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+        <img class="w-full h-full object-cover" src="./img/destination.jpg" alt="Desert night scene" />
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+    
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white dark:from-black to-transparent z-10"></div>
+    <!-- Header -->
+    <header class="absolute top-0 left-0 right-0 z-20 py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <!-- LEFT: LOGO -->
+            <div class="flex flex-col items-start">
+                <a href="/index.html"><img src="./img/logo.png" class="w-16 sm:w-20 md:w-24 h-auto" alt="Logo" /></a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="flex items-center gap-2 text-sm">
+                    <div class="w-12 h-6 bg-white/20 backdrop-blur-sm rounded-full relative transition-colors cursor-pointer border border-white/30">
+                        <div id="toggle-circle" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-lg"></div>
+                    </div>
+                </button>
+                <a href="/destination.html" class="font-poppins text-sm text-white hover:text-gray-300 transition">Destinations</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Members</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Gallery</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-sm mt-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4">
+                <!-- Theme Toggle Button Mobile -->
+                <button id="theme-toggle-mobile" class="flex items-center gap-2 text-sm w-fit">
+                    <div class="w-12 h-6 bg-white/20 backdrop-blur-sm rounded-full relative transition-colors cursor-pointer border border-white/30">
+                        <div id="toggle-circle-mobile" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-lg"></div>
+                    </div>
+                    <span class="text-white text-sm">Toggle Theme</span>
+                </button>
+                <a href="/destination.html" class="font-poppins text-sm text-white hover:text-gray-300 transition">Destinations</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Members</a>
+                <a href="#" class="font-poppins text-sm text-white hover:text-gray-300 transition">Gallery</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 text-center px-4 sm:px-6">
+        <h1 class="text-5xl font-poppins sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-3 sm:mb-4 text-white">
+            Destinations
+        </h1>
+        <p class="font-poppins text-sm sm:text-base max-w-xl mx-auto text-gray-200">
+            Saudi Arabia is rich in heritage and history. The country is home to hundreds of historically important sites.
+        </p>
+    </div>
+</section>
+
+   
+
+<!-- Best Destinations Section -->
+<section class="w-full bg-white dark:bg-black py-12 sm:py-16 md:py-20 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">Best Destinations</h2>
+            <p class="font-poppins text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Explore the breathtaking deserts, iconic destinations, and stunning natural wonders of Saudi Arabia
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-fr">
+            
+            <div class="group relative md:row-span-2 rounded-2xl overflow-hidden cursor-pointer min-h-[380px] lg:min-h-[780px]">
+                <img src="./img/card1.jpg" alt="Hisma Desert" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">Hisma Desert</h3>
+                        <p class="text-xs text-white/80">The Hisma desert is a true mosaic of colorful hills and diverse...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">Wazeem Al Mulk</p>
+                            <p class="text-white/70 text-xs">Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative h-[380px] rounded-2xl overflow-hidden cursor-pointer">
+                <img src="./img/card2.jpg" alt="Kafd World Trade Centre" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">Kafd World Trade Centre, Riyadh</h3>
+                        <p class="text-xs text-white/80">King Abdullah Financial District is a thriving financial hub...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/card2_person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">Benjamin Varas</p>
+                            <p class="text-white/70 text-xs">Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="group relative md:row-span-2 rounded-2xl overflow-hidden cursor-pointer min-h-[380px] lg:min-h-[780px]">
+                <img src="./img/card3.jpg" alt="Hisma Desert" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">Al Qarah Mountain</h3>
+                        <p class="text-xs text-white/80">The mountain's labyrinthine network of caves and passageways...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/card3_person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">John Yartso</p>
+                            <p class="text-white/70 text-xs">Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+                        <div class="group relative md:row-span-2 rounded-2xl overflow-hidden cursor-pointer min-h-[380px] lg:min-h-[780px]">
+                <img src="./img/card4.jpg" alt="AlUla" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">AlUla</h3>
+                        <p class="text-xs text-white/80">AlUla is one of the oldest cities in Arabia, offering a fascinating...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/card4_person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">Garrett Parker</p>
+                            <p class="text-white/70 text-xs">Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="group relative h-[380px] rounded-2xl overflow-hidden cursor-pointer">
+                <img src="./img/card6.jpg" alt="Tabuk" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">The best of Tabuk</h3>
+                        <p class="text-sm text-white/80">Tabuk is home to remarkable landscapes in the northern part of the...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/card6_person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">Jonathan Pie</p>
+                            <p class="text-white/70 text-xs">Influencer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group relative h-[380px] rounded-2xl overflow-hidden cursor-pointer">
+                <img src="./img/card5.jpg" alt="Taif" class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-4 sm:p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-2">The best things To do in Taif</h3>
+                        <p class="text-sm text-white/80">Taif is a city that guarantees to the Arabian Peninsula's most...</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="./img/card5_person.png" alt="Traveler" class="w-8 h-8 rounded-full border-2 border-white" />
+                        <div>
+                            <p class="text-white text-xs font-semibold">Cristina Gottardi</p>
+                            <p class="text-white/70 text-xs">Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+
+    <div class="flex justify-end mt-8 sm:mt-12">
+        <button class="px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent  text-white rounded-full hover:bg-white hover:text-black transition-all duration-300 font-poppins text-sm sm:text-base font-medium">
+            See More
+        </button>
+    </div>
+    </div>
+</section>
+
+<!-- contact us section -->
+<section class="w-full bg-white dark:bg-black py-8 sm:py-12 md:py-16 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="w-full h-[80px] sm:h-[100px] md:h-[120px] bg-[#25D366] rounded-full flex items-center justify-between p-4 sm:p-6 shadow-xl relative overflow-hidden">
+            <div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.4) 0%, transparent 40%);"></div>
+            
+            <div class="flex items-center relative z-10">
+                <p class="font-poppins text-lg sm:text-xl md:text-2xl font-semibold text-white">
+                    Contact us on Whatsapp
+                </p>
+            </div>
+            
+            <button class="flex-shrink-0 px-6 sm:px-8 py-2 sm:py-3 bg-white text-[#25D366] font-poppins text-sm sm:text-base font-semibold rounded-full hover:bg-gray-100 transition duration-300 relative z-10">
+                Start Chat
+            </button>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Explore Saudi Arabia CTA Section -->
+    <section class="w-full bg-white dark:bg-black py-8 sm:py-12 md:py-16 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="relative w-full h-[300px] sm:h-[350px] md:h-[400px] overflow-hidden rounded-lg">
+                <img class="w-full h-full object-cover" src="./img/destination_slider.jpg" alt="Explore Saudi Arabia" />
+                
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/60"></div>
+                
+                <!-- Content -->
+                <div class="absolute inset-0 flex items-center justify-between px-6 sm:px-8 md:px-12">
+                    <div>
+                        <h2 class="font-poppins font-semibold text-3xl sm:text-4xl md:text-5xl  text-white">
+                            Made To Change<br/>NEOM
+                        </h2>
+                    </div>
+                    
+                    <button class="w-12 h-12 sm:w-14 sm:h-14 bg-transparent border-2 border-white rounded-full flex items-center justify-center hover:bg-white/50 transition group flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full bg-[#2a2a2a] border-t border-gray-800 py-12 sm:py-16 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+               <!-- Logo Column -->
+                <div class="flex flex-col items-start sm:col-span-2 lg:col-span-1">
+                    <img src="./img/logo.png" class="w-24 sm:w-32 md:w-36 lg:w-40 h-auto mb-2" alt="Saudi Logo" />
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">About</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="/aboutus.html" class="hover:text-white transition">About us</a></li>
+                        <li><a href="#" class="hover:text-white transition">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition">News & Blogs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">Contact</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="#" class="hover:text-white transition">Instagram</a></li>
+                        <li><a href="#" class="hover:text-white transition">Twitter</a></li>
+                        <li><a href="#" class="hover:text-white transition">Facebook</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-white">Support</h4>
+                    <ul class="space-y-2 text-sm sm:text-base text-gray-300">
+                        <li><a href="#" class="hover:text-white transition">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition">Support Centre</a></li>
+                        <li><a href="#" class="hover:text-white transition">Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>John Doe Resume</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="resume">
+      <header class="resume__header">
+        <div class="title-block">
+          <h1>John Doe</h1>
+          <p>Creative and Innovative Web Developer</p>
+        </div>
+        <div class="contact-row">
+          <div>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="#27ae60">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                />
+              </svg>
+            </span>
+            Pleasantville, CA 94588
+          </div>
+          <div>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="#16a085">
+                <path
+                  d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+                />
+              </svg>
+            </span>
+            (555) 123-4567
+          </div>
+          <div>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="#3498db">
+                <path
+                  d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
+                />
+              </svg>
+            </span>
+            john.doe@gmail.com
+          </div>
+          <div>
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="#9b59b6">
+                <path
+                  d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"
+                />
+              </svg>
+            </span>
+            https://johndoe.me/
+          </div>
+        </div>
+      </header>
+
+      <section>
+        <div class="section-heading">Profiles</div>
+        <div class="section-content">
+          <div class="profiles">
+            <div>
+               <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAY1BMVEUueLb///8gcrMxe7gHbLDs8/gYcLL0+fyUttbA1OckdLQQbrGMrtHe5/F9p8+3y+GpxN5uncnH2OmGrNFKiL5VjcHa5O/M3OtdksM8gbujwNywyOB+ps3k7fVmmcdCg7wAaK/njD8SAAADhUlEQVR4nO3c7XKiMBSAYYIa9VAVxC+0tnv/V7ltqbNVclx3oJySfZ+/pR3eCWDA0CQBAAAAAAAAAAAAAAAAAAAAAADomaT+TSrW+/FdfFLMVvN5Xm6y1HpfvkNWnabu06IcRzeOkubuq8nBW+9St6RauBuzqBKlmtwGOnccW+9Wh6Qxgu/KeEYxO4UCndvEcrmRTTjQrWMZxGyuFLptJINYaYHuFMcgyrNaeI5jbuNztdBZ71s3sr1eGMeJmO30whcKB8Gv9cKN9c51Ij3qhVEMYSKFGriL4/MwkalWOIvj8/DOB+Kr9a51RZTAPJKD9O1aUwYDJ9b71SEfvLuIY0LzKQ18JhbRHKMfxre3+dE9bEuy4upZzWoU0yFaE1lebjLO+Sa2AayJl82yfH6pUh/fAF6IpBJvHQAMinyw3otvIt4n1WZ7OBw2r1Xi0x+yKEDSIHlkq6stsqo47SaXZwbT8+5Ubv0PmD9I+RR0uN615+BG2z9/Jiv2gQcik3xrvipgrNzjXz+mGYUf51w2EnkKfJFcWxTG4zhWHkXdFIYDnuqNfKH2vdttTefy7QtFVvf63h0zo7p3rQulOv8t0Lm1YWLbwnSrPnH9amd3LrYslMcCndubPWBuV+iVHwTkVgdqu8Jfd76du3UwOlBbFZazxwPdxOg4bVV4fPAk/PyTNh+LrQr/zWQUe+FlChRx4SL6Qpvve3otPFpca3otPFsszO210GQlWb+FhcGJ2FHhdJ2Xy2I5W93f0OJE7KRw/5JlPhWR1I8PdxYDur3B9LuDwkmRfTn4JAuvfag3HWThubo5uby+0GpqMHFrXThNGlePTL/lMLiFal1YBKZioj66MbiYti0MvrUg6qlY9j81bVsYPuzUBYEG6wFbFp7DF0f1NQ6D5XItC4/hMVFWyzm3GtwYatdG7WWj+eDGUNvhTNneYFLTrlC9HRorvzC4QvX7CO01h93QClfqUarMvwdXqFxK3wqVFzkWQytUP8DDK48HWKg+AfXKt6aDK1SnmdEULrVbBQp7RGGNwgYKe0RhjcIGCntEYY3CBgp7RGGNwgYKe0RhjcIGCntEYY3CBgp7RGGNwgYKe0RhjcIGCntEYe3/LXweQKFfzUPW18uVR6fwVur/qU2f1sHfyA1eX/Nht+vvH9rqizT8C5H8y1AAAAAAAAAAAAAAAAAAAAAAAPDz/QbkZkUj4AARIwAAAABJRU5ErkJggg==" alt=""  style="width: 15px; height: 15px" >
+              <div>
+                johndoe
+                <small>LinkedIn</small>
+              </div>
+            </div>
+            <div>
+              <span class="icon-label github">
+                <img
+                  src="https://img.icons8.com/p1em/1200/github.jpg"
+                  alt="github"
+                  style="width: 16px; height: 17px"
+                />
+              </span>
+              <div>
+                johndoe
+                <small>GitHub</small>
+              </div>
+            </div>
+            <div>
+              <span class="icon-label stackoverflow">
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOIn3J-1LDqnq8rmxgeTDZEz9SZpiO0A9i0A&s"
+                  alt="stackoverflow"
+                  style="width: 20px; height: 20px"
+                />
+              </span>
+              <div>
+                johndoe
+                <small>StackOverflow</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Summary</div>
+        <div class="section-content">
+          <p>
+            Innovative Web Developer with 5 years of experience in building
+            impactful and user-friendly websites and applications. Specializes
+            in front-end technologies and passionate about modern web standards
+            and cutting-edge development techniques. Proven track record of
+            leading successful projects from concept to deployment.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Experience</div>
+        <div class="section-content">
+          <article class="experience">
+            <div class="exp-top">
+              <div>
+                <h3>Creative Solutions Inc.</h3>
+                <p class="role">Senior Web Developer</p>
+                <p class="link">🔗 https://creativesolutions.inc/</p>
+              </div>
+              <div class="exp-details">
+                <p>January 2019 to Present</p>
+                <p>San Francisco, CA</p>
+              </div>
+            </div>
+            <ul>
+              <li>
+                Spearheaded the redesign of the main product website, resulting
+                in a 40% increase in user engagement.
+              </li>
+              <li>
+                Developed and implemented a new responsive framework, improving
+                cross-device compatibility.
+              </li>
+              <li>
+                Mentored a team of four junior developers, fostering a culture
+                of technical excellence.
+              </li>
+            </ul>
+          </article>
+          <article class="experience">
+            <div class="exp-top">
+              <div>
+                <h3>TechAdvancers</h3>
+                <p class="role">Web Developer</p>
+                <p class="link">🔗 https://techadvancers.com/</p>
+              </div>
+              <div class="exp-details">
+                <p>June 2016 to December 2018</p>
+                <p>San Jose, CA</p>
+              </div>
+            </div>
+            <ul>
+              <li>
+                Collaborated in a team of 10 to develop high-quality web
+                applications using React.js and Node.js.
+              </li>
+              <li>
+                Managed the integration of third-party services such as Stripe
+                for payments and Twilio for SMS services.
+              </li>
+              <li>
+                Optimized application performance, achieving a 30% reduction in
+                load times.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Education</div>
+        <div class="section-content">
+          <div class="two-col">
+            <div>
+              <p class="label">University of California</p>
+              <p>Berkeley, CA</p>
+            </div>
+            <div class="right">
+              <p>August 2012 to May 2016</p>
+              <p>Bachelor's in Computer Science</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Projects</div>
+        <div class="section-content">
+          <div class="two-col">
+            <div>
+              <p class="label">E-Commerce Platform</p>
+              <p class="sub">Project Lead</p>
+              <p>
+                Led the development of a full-stack e-commerce platform,
+                improving sales conversion by 25%.
+              </p>
+            </div>
+            <div>
+              <p class="label">Interactive Dashboard</p>
+              <p class="sub">Frontend Developer</p>
+              <p>
+                Created an interactive analytics dashboard for a SaaS
+                application, enhancing data visualization for clients.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Skills</div>
+        <div class="section-content">
+          <div class="three-col">
+            <div>
+              <p class="label">Web Technologies</p>
+              <p style="color: #7f8c8d; font-size: 13px">Advanced</p>
+              <p>HTML5, JavaScript, PHP, Python</p>
+            </div>
+            <div>
+              <p class="label">Web Frameworks</p>
+              <p style="color: #7f8c8d; font-size: 13px">Intermediate</p>
+              <p>React.js, Angular, Vue.js, Laravel, Django</p>
+            </div>
+            <div>
+              <p class="label">Tools</p>
+              <p style="color: #7f8c8d; font-size: 13px">Intermediate</p>
+              <p>Webpack, Git, Jenkins, Docker, JIRA</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Certifications</div>
+        <div class="section-content">
+          <div class="two-col">
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                  margin-bottom: 4px;
+                "
+              >
+                <p class="label">Full-Stack Web Development</p>
+                <p style="color: #7f8c8d; font-size: 13px">2020</p>
+              </div>
+              <p>CodeAcademy</p>
+            </div>
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                  margin-bottom: 4px;
+                "
+              >
+                <p class="label">AWS Certified Developer</p>
+                <p style="color: #7f8c8d; font-size: 13px">2019</p>
+              </div>
+              <p>Amazon Web Services</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">Languages</div>
+        <div class="section-content">
+          <div class="two-col">
+            <p><span class="label">English</span> Native Speaker</p>
+            <p><span class="label">Spanish</span> Intermediate</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">References</div>
+        <div class="section-content">
+          <p>Available upon request</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

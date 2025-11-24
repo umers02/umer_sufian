@@ -1,0 +1,141 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: "Barlow Semi Condensed", sans-serif;
+    background: radial-gradient(circle at top, #eef1ff, #dbe4ff 60%, #cbd5f5);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: white;
+}
+
+.page {
+    width: min(1100px, 100%);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.card{
+    background: darkblue;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card-purple{
+    background: violet;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-purple::after{
+    content: "“";
+    position: absolute;
+    font-size: 18rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.15);
+    top: -5rem;
+    right: 2.5rem;
+    font-family: serif;
+}
+
+.card-dark-blue {
+    background: hsl(217, 19%, 24%);
+}
+
+.card-dark{
+    background: hsl(216, 12%, 8%);
+}
+
+.card-light{
+    grid-row: span 2;
+}
+
+.card-light,
+.card-white{
+    background: white;
+    color: darkblue;
+}
+
+.card__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card__header img{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.card-light .card__header img,
+.card-white .card__header img{
+    border-color: rgba(138, 150, 191, 0.4);
+}
+
+.name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--white);
+}
+
+.role {
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+.card__title {
+    font-size: 1.35rem;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.card__quote{
+    font-size: 0.95rem;
+    line-height: 1.6;
+    opacity: 0.85;
+}
+
+.card__quote.dark{
+    color: hsl(217, 19%, 35%);
+    opacity: 0.7;
+}
+
+.span-2{
+    grid-column: span 2;
+}
+
+@media (max-width: 1024px) {
+    .span-2 {
+        grid-column: span 1;
+    }
+
+    .card-light {
+        grid-row: span 1;
+    }
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 1.5rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
