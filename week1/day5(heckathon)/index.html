@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 50%, #1a1a1a 100%);
+            background: black;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
         .glow {
@@ -34,18 +34,40 @@
 </head>
 <body class="min-h-screen overflow-x-hidden">
     <!-- Navigation -->
-    <nav class="bg-black border-b border-gray-800">
-        <div class="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
-            <div class="text-white text-xl font-bold">LogoHere</div>
-            <div class="hidden md:flex items-center space-x-10 text-white text-sm">
+    <nav class="bg-black border-b border-gray-800 relative">
+        <div class="flex items-center justify-between px-4 md:px-6 lg:px-8 py-3 md:py-4 max-w-7xl mx-auto">
+            <div class="text-white text-lg md:text-xl font-bold">LogoHere</div>
+            <div class="hidden md:flex items-center space-x-6 lg:space-x-10 text-white text-xs md:text-sm">
                 <a href="#" class="hover:text-orange-400 transition">About</a>
                 <a href="#" class="hover:text-orange-400 transition">Collection</a>
                 <a href="#" class="hover:text-orange-400 transition">Creator</a>
                 <a href="#" class="hover:text-orange-400 transition">Road Map</a>
             </div>
-            <button class="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-sm px-6 py-2.5 rounded-full hover:from-orange-500 hover:to-orange-600 transition glow font-medium">
+            <button class="hidden md:block bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs md:text-sm px-4 md:px-6 py-2 md:py-2.5 rounded-full hover:from-orange-500 hover:to-orange-600 transition glow font-medium">
                 Sign In
             </button>
+            <!-- Hamburger Button -->
+            <button id="hamburger-btn" class="md:hidden text-white focus:outline-none z-50 relative">
+                <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                <svg id="close-icon" class="w-6 h-6 hidden absolute top-0 left-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden fixed inset-0 bg-black/95 backdrop-blur-sm z-40 transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex flex-col items-center justify-center h-full space-y-8 px-4">
+                <a href="#" class="text-white text-lg hover:text-orange-400 transition">About</a>
+                <a href="#" class="text-white text-lg hover:text-orange-400 transition">Collection</a>
+                <a href="#" class="text-white text-lg hover:text-orange-400 transition">Creator</a>
+                <a href="#" class="text-white text-lg hover:text-orange-400 transition">Road Map</a>
+                <button class="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-sm px-8 py-3 rounded-full hover:from-orange-500 hover:to-orange-600 transition glow font-medium mt-4">
+                    Sign In
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -58,68 +80,68 @@
         </div>
 
         <!-- Content -->
-        <div class="relative z-10 max-w-7xl mx-auto px-8 py-20">
-            <div class="grid md:grid-cols-2 gap-12 items-center min-h-[80vh]">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-center min-h-[70vh] md:min-h-[80vh]">
                 <!-- Left Content -->
-                <div class="text-white space-y-6">
-                    <h1 class="text-5xl md:text-6xl font-bold leading-tight">
+                <div class="text-white space-y-4 md:space-y-6 text-center md:text-left">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                         We Have High<br>Quality 
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">NFT</span> <span class="text-white text-4xl">✦</span><br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">NFT</span> <span class="text-white text-2xl sm:text-3xl md:text-4xl">✦</span><br>
                         Collections
                     </h1>
                     
-                    <p class="text-gray-300 text-sm leading-relaxed max-w-md">
+                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-md mx-auto md:mx-0">
                         Lorem ipsum dolor sit amet consectetur. Aliquam in nunc consequat auctor odio lorem proin. Feugiat mattis sapien elementum volutpat quam lacus massa lacus. Arcu turpis neque mauris tristique adipiscing tempor nunc varius enim.
                     </p>
 
-                    <div class="flex flex-wrap gap-4 pt-2">
-                        <button class="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-sm px-7 py-3 rounded-full hover:from-orange-500 hover:to-orange-600 transition glow font-medium">
+                    <div class="flex flex-wrap gap-3 md:gap-4 pt-2 justify-center md:justify-start">
+                        <button class="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs sm:text-sm px-5 sm:px-6 md:px-7 py-2.5 sm:py-3 rounded-full hover:from-orange-500 hover:to-orange-600 transition glow font-medium">
                             See Website
                         </button>
-                        <button class="border border-white text-white text-sm px-7 py-3 rounded-full hover:bg-white hover:text-black transition font-medium">
+                        <button class="border border-white text-white text-xs sm:text-sm px-5 sm:px-6 md:px-7 py-2.5 sm:py-3 rounded-full hover:bg-white hover:text-black transition font-medium">
                             Contact Us
                         </button>
                     </div>
 
                     <!-- Stats -->
-                    <div class="flex items-center gap-4 pt-6">
-                        <div class="flex gap-8 px-6 py-6 rounded-xl" style="background: #6B6B6B21;">
+                    <div class="flex items-center gap-3 md:gap-4 pt-4 md:pt-6 justify-center md:justify-start">
+                        <div class="flex gap-4 sm:gap-6 md:gap-8 px-4 sm:px-5 md:px-6 py-4 sm:py-5 md:py-6 rounded-xl" style="background: #6B6B6B21;">
                             <div>
-                                <div class="text-2xl font-bold text-white">240k+</div>
-                                <div class="text-gray-300 text-sm">Total Sale</div>
+                                <div class="text-xl sm:text-2xl font-bold text-white">240k+</div>
+                                <div class="text-gray-300 text-xs sm:text-sm">Total Sale</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-white">100k+</div>
-                                <div class="text-gray-300 text-sm">Auctions</div>
+                                <div class="text-xl sm:text-2xl font-bold text-white">100k+</div>
+                                <div class="text-gray-300 text-xs sm:text-sm">Auctions</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-white">240k+</div>
-                                <div class="text-gray-300 text-sm">Artists</div>
+                                <div class="text-xl sm:text-2xl font-bold text-white">240k+</div>
+                                <div class="text-gray-300 text-xs sm:text-sm">Artists</div>
                             </div>
                         </div>
-                        <span class="text-white text-3xl">✦</span>
+                        <span class="text-white text-2xl sm:text-3xl hidden sm:block">✦</span>
                     </div>
                 </div>
 
                 <!-- Right Content - NFT Image -->
-                <div class="w-80 lg:w-96 relative ml-8">
+                <div class="w-full max-w-xs sm:max-w-sm md:w-80 lg:w-96 relative mx-auto md:mx-0 md:ml-8 mt-8 md:mt-0">
                     <div class="relative">
                         <!-- Decorative Stars -->
                         <!-- <div class="absolute -top-8 -right-8 text-white text-4xl opacity-60">✦</div>
                         <div class="absolute -bottom-12 -left-12 text-white text-6xl opacity-40">✦</div>
                          -->
                         <!-- Border Overlay -->
-                        <div class="absolute -left-4 -top-2 bottom-2 right-4 border-2 border-white/30 rounded-tl-[8rem] rounded-tr-[8rem] rounded-bl-[8rem] rounded-br-none z-10 pointer-events-none"></div>
+                        <div class="absolute -left-2 sm:-left-3 md:-left-4 -top-2 bottom-2 right-2 sm:right-3 md:right-4 border-2 border-white/30 rounded-tl-[6rem] sm:rounded-tl-[7rem] md:rounded-tl-[8rem] rounded-tr-[6rem] sm:rounded-tr-[7rem] md:rounded-tr-[8rem] rounded-bl-[6rem] sm:rounded-bl-[7rem] md:rounded-bl-[8rem] rounded-br-none z-10 pointer-events-none"></div>
                         
                         <!-- NFT Card -->
-                        <div class="relative bg-white/10 backdrop-blur-md pt-6 pl-6 pb-6 pr-0 rounded-tl-[8rem] rounded-tr-[8rem] rounded-bl-[8rem] rounded-br-none shadow-2xl overflow-hidden">
+                        <div class="relative bg-white/10 backdrop-blur-md pt-4 sm:pt-5 md:pt-6 pl-4 sm:pl-5 md:pl-6 pb-4 sm:pb-5 md:pb-6 pr-0 rounded-tl-[6rem] sm:rounded-tl-[7rem] md:rounded-tl-[8rem] rounded-tr-[6rem] sm:rounded-tr-[7rem] md:rounded-tr-[8rem] rounded-bl-[6rem] sm:rounded-bl-[7rem] md:rounded-bl-[8rem] rounded-br-none shadow-2xl overflow-hidden">
                             <img src="./img/main.png" 
                                  alt="NFT Tiger Character" 
-                                 class="w-full h-auto rounded-[2rem] object-cover object-right">
+                                 class="w-full h-auto rounded-[1.5rem] sm:rounded-[1.75rem] md:rounded-[2rem] object-cover object-right">
                         </div>
 
                         <!-- Navigation Arrow -->
-                        <button class="absolute left-full bottom-0 h-[35%] bg-black/30 backdrop-blur-sm text-white px-3 rounded-md hover:bg-black/50 transition duration-300 flex items-center justify-center border-t border-r border-b border-white text-2xl">
+                        <button class="absolute left-full bottom-0 h-[35%] bg-black/30 backdrop-blur-sm text-white px-2 sm:px-3 rounded-md hover:bg-black/50 transition duration-300 flex items-center justify-center border-t border-r border-b border-white text-xl sm:text-2xl hidden md:flex">
                             ›
                         </button>
                     </div>
@@ -400,64 +422,55 @@
     </section>
 
     <!-- Road Map Section -->
-    <section class="bg-black py-20">
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="text-center space-y-4 mb-16">
-                <h2 class="text-white text-5xl md:text-6xl font-bold">Road Map</h2>
-            </div>
+<!-- DESKTOP VIEW -->
+<div class="desktop-roadmap hidden lg:block">
+    <section class="bg-black">
+        <div class="max-w-7xl mx-auto px-6 mb-8 lg:mb-20">
+            <h2 class="text-white text-4xl md:text-5xl font-bold text-center">Road Map</h2>
         </div>
+    </section>
 
-        <!-- Timeline with Full Width Background -->
-        <div class="relative w-full py-16 pb-32">
-            <!-- Background Image for Timeline -->
-            <img src="./img/hero_bg.png" alt="Timeline Background" class="absolute inset-0 w-full h-full object-cover opacity-20 z-0">
-            
-            <div class="max-w-7xl mx-auto px-8 relative">
-                <!-- Timeline -->
-                <div class="relative">
-                <!-- Vertical Line -->
+    <div class="relative w-full py-16 pb-32">
+        <img src="./img/hero_bg.png" alt="Timeline Background" class="absolute inset-0 w-full h-full object-cover opacity-20 z-0">
+        
+        <div class="max-w-7xl mx-auto px-8 relative">
+            <div class="relative">
                 <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-[750px] z-10" style="background: linear-gradient(91.36deg, rgba(228, 223, 206, 0.7) 47.62%, rgba(230, 187, 39, 0.7) 51.2%); top: 80px;"></div>
 
-                <!-- Timeline Items -->
-                <div class="space-y-8 relative z-10" style="margin-top: -80px;">
-          <!-- January -->
-<div class="flex items-center relative" style="margin-top: 80px;">
-    <div class="w-1/2 pr-12 text-right flex justify-end">
-        <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
-            <div class="text-orange-400 text-sm font-medium mb-2 text-center">January</div>
-            <h4 class="text-white text-xl font-bold mb-3 text-left">Brief</h4>
-            <p class="text-gray-300 text-sm leading-relaxed text-left">
-                Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
-            </p>
-            <!-- New Box with gradient border -->
-            <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
-                <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>            </div>
-        </div>
-    </div>
-    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="top: 80px; background-color: #E4E0CF; border-color: #E4E0CF;"></div>
-    <!-- Dotted line from dot to January card -->
-    <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 88px; margin-left: -32px;"></div>
-    <!-- Arrow at end of dotted line -->
-    <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 87px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
-    <div class="w-1/2 pl-12"></div>
-</div>
+                <div class="space-y-8 lg:space-y-8 relative z-10" style="margin-top: -80px;">
+                    <!-- January -->
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-8 lg:mb-0" style="margin-top: 80px;">
+                        <div class="w-full lg:w-1/2 lg:pr-12 lg:text-right flex justify-center lg:justify-end mb-4 lg:mb-0">
+                            <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
+                                <div class="text-orange-400 text-sm font-medium mb-2 text-center">January</div>
+                                <h4 class="text-white text-xl font-bold mb-3 text-left">Brief</h4>
+                                <p class="text-gray-300 text-sm leading-relaxed text-left">
+                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
+                                </p>
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
+                                    <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="top: 80px; background-color: #E4E0CF; border-color: #E4E0CF;"></div>
+                        <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 88px; margin-left: -32px;"></div>
+                        <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 87px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
+                        <div class="w-1/2 pl-12"></div>
+                    </div>
 
                     <!-- February -->
-                    <div class="flex items-center relative" style="margin-top: -90px;">
-                        <div class="w-1/2 pr-12"></div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
-                        <!-- Dotted line from dot to February card -->
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-8 lg:mb-0" style="margin-top: -90px;">
+                        <div class="hidden lg:block lg:w-1/2 lg:pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20 hidden lg:block"></div>
                         <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 94px; margin-left: 8px;"></div>
-                        <!-- Arrow at end of dotted line -->
                         <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
-                        <div class="w-1/2 pl-12 flex justify-start">
+                        <div class="w-full lg:w-1/2 lg:pl-12 flex justify-center lg:justify-start">
                             <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">February</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Research</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
                                     Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
-                                <!-- Box for Research -->
                                 <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
                                     <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
                                 </div>
@@ -466,44 +479,38 @@
                     </div>
 
                     <!-- March -->
-                    <div class="flex items-center relative">
-                        <div class="w-1/2 pr-12 text-right flex justify-end">
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-8 lg:mb-0">
+                        <div class="w-full lg:w-1/2 lg:pr-12 lg:text-right flex justify-center lg:justify-end mb-4 lg:mb-0">
                             <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">March</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Discover</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
-                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
+                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
-                                <!-- Box for Discover -->
                                 <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
                                     <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="background-color: #E4DFCE; border-color: #E4DFCE;"></div>
-                        <!-- Dotted line from dot to March card -->
                         <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 94px; margin-left: -32px;"></div>
-                        <!-- Arrow at end of dotted line -->
                         <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
                         <div class="w-1/2 pl-12"></div>
                     </div>
 
                     <!-- April -->
-                    <div class="flex items-center relative" style="margin-top: -80px;">
-                        <div class="w-1/2 pr-12"></div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
-                        <!-- Dotted line from dot to April card -->
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-8 lg:mb-0" style="margin-top: -80px;">
+                        <div class="hidden lg:block lg:w-1/2 lg:pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20 hidden lg:block"></div>
                         <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: 8px;"></div>
-                        <!-- Arrow at end of dotted line -->
                         <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
-                        <div class="w-1/2 pl-12 flex justify-start">
+                        <div class="w-full lg:w-1/2 lg:pl-12 flex justify-center lg:justify-start">
                             <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">April</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Design</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
-                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
+                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
-                                <!-- Box for Design -->
                                 <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
                                     <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
                                 </div>
@@ -512,44 +519,38 @@
                     </div>
 
                     <!-- May -->
-                    <div class="flex items-center relative">
-                        <div class="w-1/2 pr-12 text-right flex justify-end">
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-8 lg:mb-0">
+                        <div class="w-full lg:w-1/2 lg:pr-12 lg:text-right flex justify-center lg:justify-end mb-4 lg:mb-0">
                             <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">May</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Testing</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
-                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
+                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
-                                <!-- Box for Testing -->
                                 <div class="absolute left-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-left: -110px;">
                                     <div class="absolute inset-0 rounded-tl-xl rounded-bl-xl" style="background: linear-gradient(270deg, rgba(238, 227, 188, 0) 0.12%, #CF9833 39.12%, #E5E0CF 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-right: 0;"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-2 z-20" style="background-color: #E4DFCE; border-color: #E4DFCE;"></div>
-                        <!-- Dotted line from dot to May card -->
                         <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: -32px;"></div>
-                        <!-- Arrow at end of dotted line -->
                         <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 92px; margin-left: -38px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-right: 6px solid white;"></div>
                         <div class="w-1/2 pl-12"></div>
                     </div>
 
                     <!-- June -->
-                    <div class="flex items-center relative" style="margin-top: -80px;">
-                        <div class="w-1/2 pr-12"></div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20"></div>
-                        <!-- Dotted line from dot to June card -->
+                    <div class="flex flex-col lg:flex-row lg:items-center relative mb-24 lg:mb-0" style="margin-top: -80px;">
+                        <div class="hidden lg:block lg:w-1/2 lg:pr-12"></div>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-2 border-orange-400 z-20 hidden lg:block"></div>
                         <div class="absolute left-1/2 w-6 h-0.5 border-t-2 border-dotted border-white z-15 hidden lg:block" style="top: 93px; margin-left: 8px;"></div>
-                        <!-- Arrow at end of dotted line -->
                         <div class="absolute left-1/2 w-0 h-0 z-15 hidden lg:block" style="top: 91px; margin-left: 31px; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 6px solid white;"></div>
-                        <div class="w-1/2 pl-12 flex justify-start">
+                        <div class="w-full lg:w-1/2 lg:pl-12 flex justify-center lg:justify-start">
                             <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6 max-w-sm relative">
                                 <div class="text-orange-400 text-sm font-medium mb-2 text-center">June</div>
                                 <h4 class="text-white text-xl font-bold mb-3 text-left">Launch & Feedback</h4>
                                 <p class="text-gray-300 text-sm leading-relaxed text-left">
-                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilitis. Senectus eget.
+                                    Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                                 </p>
-                                <!-- Box for Launch & Feedback -->
                                 <div class="absolute right-full top-1/2 transform -translate-y-1/2 scale-x-[-1] overflow-hidden" style="width: 120px; height: 110%; margin-right: -110px;">
                                     <div class="absolute inset-0 rounded-tr-xl rounded-br-xl" style="background: linear-gradient(270deg, #E5E0CF 0.12%, #CF9833 39.12%, rgba(238, 227, 188, 0) 109.37%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 4px; padding-left: 0;"></div>
                                 </div>
@@ -559,61 +560,138 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
+</div>
+
+<!-- MOBILE VIEW -->
+<div class="mobile-roadmap block lg:hidden">
+    <section class="bg-black px-4 py-8">
+        <h2 class="text-white text-3xl font-bold text-center mb-12">Road Map</h2>
     </section>
 
+    <div class="bg-black px-4 py-8">
+        <div class="flex flex-col gap-8 items-center">
+            <!-- January Card -->
+            <div class="mobile-card w-full max-w-sm">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">January</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Brief</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- February Card -->
+            <div class="mobile-card w-full max-w-sm">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">February</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Research</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- March Card -->
+            <div class="mobile-card w-full max-w-sm">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">March</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Discover</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- April Card -->
+            <div class="mobile-card w-full max-w-sm">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">April</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Design</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- May Card -->
+            <div class="mobile-card w-full max-w-sm">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">May</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Testing</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- June Card -->
+            <div class="mobile-card w-full max-w-sm mb-12">
+                <div class="backdrop-blur-sm bg-white/5 border border-white rounded-xl p-6">
+                    <div class="text-orange-400 text-sm font-medium mb-2 text-center">June</div>
+                    <h4 class="text-white text-lg font-bold mb-2">Launch & Feedback</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- How It Works Section -->
-    <section class="bg-black py-20 relative">
+    <section class="bg-black py-12 md:py-16 lg:py-20 relative">
         <!-- White Shadows -->
         <div class="absolute top-4 right-8 w-32 h-32 bg-white/40 rounded-full blur-3xl"></div>
         <div class="absolute bottom-8 left-8 w-28 h-28 bg-white/35 rounded-full blur-3xl"></div>
         <div class="absolute left-4 w-24 h-24 bg-white/30 rounded-full blur-2xl" style="top: 35%;"></div>
         <div class="absolute right-6 w-26 h-26 bg-white/35 rounded-full blur-3xl" style="top: 65%;"></div>
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="text-center space-y-4 mb-16">
-                <h2 class="text-white text-5xl md:text-6xl font-bold">How It Works</h2>
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div class="text-center space-y-4 mb-10 md:mb-12 lg:mb-16">
+                <h2 class="text-white text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold">How It Works</h2>
             </div>
 
             <!-- Steps -->
-            <div class="space-y-20">
+            <div class="space-y-12 md:space-y-16 lg:space-y-20">
                 <!-- Step 1 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex-1 flex justify-center">
-                        <img src="./img/how_it_works.png" alt="Wallet" class="w-80 h-60 object-contain">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0">
+                    <div class="flex-1 flex justify-center w-full lg:w-auto">
+                        <img src="./img/how_it_works.png" alt="Wallet" class="w-full max-w-xs md:max-w-sm lg:w-80 h-auto lg:h-60 object-contain">
                     </div>
-                    <div class="flex-1 text-white pl-12">
+                    <div class="flex-1 text-white px-4 lg:pl-12 text-center lg:text-left w-full">
                         <!-- Sparkle -->
-                        <div class="text-white text-2xl mb-4">✦</div>
-                        <h3 class="text-3xl font-bold mb-4">Setup And Connect Your Wallet.</h3>
-                        <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        <div class="text-white text-xl lg:text-2xl mb-3 lg:mb-4">✦</div>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3 lg:mb-4">Setup And Connect Your Wallet.</h3>
+                        <p class="text-gray-400 text-sm md:text-base leading-relaxed max-w-md mx-auto lg:mx-0">
                             Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                         </p>
                     </div>
                 </div>
 
                 <!-- Step 2 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex-1 text-white pr-12 text-right">
-                        <h3 class="text-3xl font-bold mb-4">Create Your Own Digital NFT</h3>
-                        <p class="text-gray-400 text-base leading-relaxed max-w-md ml-auto">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0">
+                    <div class="flex-1 text-white px-4 lg:pr-12 text-center lg:text-right w-full order-2 lg:order-1">
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3 lg:mb-4">Create Your Own Digital NFT</h3>
+                        <p class="text-gray-400 text-sm md:text-base leading-relaxed max-w-md mx-auto lg:ml-auto">
                             Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                         </p>
                     </div>
-                    <div class="flex-1 flex justify-center">
-                        <img src="./img/digital_nft.png" alt="NFT Character" class="w-80 h-60 object-contain">
+                    <div class="flex-1 flex justify-center w-full lg:w-auto order-1 lg:order-2">
+                        <img src="./img/digital_nft.png" alt="NFT Character" class="w-full max-w-xs md:max-w-sm lg:w-80 h-auto lg:h-60 object-contain">
                     </div>
                 </div>
 
                 <!-- Step 3 -->
-                <div class="flex items-center justify-between">
-                    <div class="flex-1 flex justify-center">
-                        <img src="./img/setup.png" alt="Trading" class="w-80 h-60 object-contain">
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0">
+                    <div class="flex-1 flex justify-center w-full lg:w-auto">
+                        <img src="./img/setup.png" alt="Trading" class="w-full max-w-xs md:max-w-sm lg:w-80 h-auto lg:h-60 object-contain">
                     </div>
-                    <div class="flex-1 text-white pl-12">
+                    <div class="flex-1 text-white px-4 lg:pl-12 text-center lg:text-left w-full">
                         <!-- Sparkle -->
-                        <div class="text-white text-2xl mb-4">✦</div>
-                        <h3 class="text-3xl font-bold mb-4">Setup And Connect Your Wallet.</h3>
-                        <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        <div class="text-white text-xl lg:text-2xl mb-3 lg:mb-4">✦</div>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3 lg:mb-4">Setup And Connect Your Wallet.</h3>
+                        <p class="text-gray-400 text-sm md:text-base leading-relaxed max-w-md mx-auto lg:mx-0">
                             Lorem ipsum dolor sit amet consectetur. Elit massa erat vitae non semper quis. Morbi sed aliquet donec facilisis. Senectus eget.
                         </p>
                     </div>
@@ -656,5 +734,52 @@
             </p>
         </div>
     </footer>
+
+    <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const closeIcon = document.getElementById('close-icon');
+
+        hamburgerBtn.addEventListener('click', () => {
+            const isOpen = !mobileMenu.classList.contains('translate-x-full');
+            
+            if (isOpen) {
+                // Close menu
+                mobileMenu.classList.add('translate-x-full');
+                hamburgerIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                document.body.style.overflow = '';
+            } else {
+                // Open menu
+                mobileMenu.classList.remove('translate-x-full');
+                hamburgerIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        // Close menu when clicking on a link
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a, button');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+                hamburgerIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close menu when clicking outside
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                mobileMenu.classList.add('translate-x-full');
+                hamburgerIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 </body>
 </html>
