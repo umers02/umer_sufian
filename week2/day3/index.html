@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McDonald's East London - Order Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-[60]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="img/logo.png" alt="Order Logo" class="h-8">
+                </div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-orange-500 font-medium transition">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-orange-500 font-medium transition">Special Offers</a>
+                    <a href="#" class="bg-orange-500 text-white px-6 py-2 rounded-full font-medium hover:bg-orange-600 transition">Restaurants</a>
+                    <a href="#" class="text-gray-700 hover:text-orange-500 font-medium transition">Track Order</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-700 transition">
+                        <span class="text-sm font-medium">U</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gray-900 text-white rounded-2xl relative overflow-hidden" style="background-image: url('img/first_section_img.png'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-20 left-20 w-96 h-96 bg-gray-700 rounded-full"></div>
+                </div>
+                
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start p-8 pb-20">
+                    <div class="space-y-6 mt-20">
+                        <p class="text-gray-400 text-sm">I'm lovin' it!</p>
+                        <h1 class="text-5xl font-bold leading-tight">McDonald's East London</h1>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="bg-gray-800 bg-opacity-50 border border-white text-white px-5 py-3 rounded-full flex items-center text-sm">
+                                <i class="fas fa-receipt mr-3"></i>
+                                <span>Minimum Order: 12 GBP</span>
+                            </div>
+                            <div class="bg-gray-800 bg-opacity-50 border border-white text-white px-5 py-3 rounded-full flex items-center text-sm">
+                                <i class="fas fa-bicycle mr-3"></i>
+                                <span>Delivery in 20-25 Minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative flex mt-8 ml-16">
+                        <div class="relative w-100">
+                            <div class="bg-white rounded-lg shadow-xl overflow-hidden">
+                                <img src="img/first_section_img.png" alt="McDonald's Burger Meal" class="w-full h-64 object-cover">
+                            </div>
+                            <div class="absolute -bottom-8 -left-16 z-10">
+                                <img src="img/reviews.png" alt="Reviews" class="w-32 h-auto shadow-lg rounded-xl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="absolute bottom-0 left-0">
+                    <div class="bg-orange-500 text-white px-6 py-3 rounded-tr-xl flex items-center">
+                        <i class="fas fa-clock mr-3"></i>
+                        <span class="font-medium">Open until 3:00 AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="bg-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-gray-900">All Offers from McDonald's East London</h2>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search from menu..." class="border border-gray-300 rounded-full pl-12 pr-6 py-3 w-80 text-sm focus:outline-none focus:border-orange-500 transition">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Categories Navigation -->
+    <section class="bg-orange-500 py-4 sticky top-16 z-[60]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-4 overflow-x-auto" id="categoryNav" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <a href="#offers" class="category-link text-white font-semibold whitespace-nowrap bg-gray-900 px-6 py-2 rounded-full transition">Offers</a>
+                <a href="#burgers" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Burgers</a>
+                <a href="#fries" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Fries</a>
+                <a href="#snacks" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Snacks</a>
+                <a href="#salads" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Salads</a>
+                <a href="#cold-drinks" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Cold drinks</a>
+                <a href="#happy-meal" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Happy Meal®</a>
+                <a href="#desserts" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Desserts</a>
+                <a href="#hot-drinks" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Hot drinks</a>
+                <a href="#sauces" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Sauces</a>
+                <a href="#orbit" class="category-link text-white font-semibold whitespace-nowrap hover:bg-orange-600 px-6 py-2 rounded-full transition">Orbit®</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Product Sections Container -->
+    <div id="productSections" class="min-h-screen"></div>
+
+    <!-- Information Section -->
+ <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 shadow-xl rounded-xl overflow-hidden">
+                <!-- Delivery Information -->
+                <div class="bg-white p-12">
+                    <div class="flex items-center mb-8">
+                        <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                        <h3 class="text-xl font-bold text-gray-900">Delivery information</h3>
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-800">
+                        <p><strong>Monday:</strong> 12:00 AM–3:00 AM, 8:00 AM–3:00 AM</p>
+                        <p><strong>Tuesday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Wednesday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Thursday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Friday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Saturday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Sunday:</strong> 8:00 AM–12:00 AM</p>
+                        <p class="mt-6"><strong class="text-gray-900">Estimated time until delivery:</strong> 20 min</p>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="bg-white p-12">
+                    <div class="flex items-center mb-8">
+                        <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+                        </svg>
+                        <h3 class="text-xl font-bold text-gray-900">Contact information</h3>
+                    </div>
+                    <div class="space-y-4 text-sm text-gray-800">
+                        <p>If you have allergies or other dietary restrictions, please contact the restaurant. The restaurant will provide food-specific information upon request.</p>
+                        <div class="pt-4">
+                            <p class="font-bold text-gray-900 mb-2">Phone number</p>
+                            <p>+934443-43</p>
+                        </div>
+                        <div class="pt-3">
+                            <p class="font-bold text-gray-900 mb-2">Website</p>
+                            <a href="http://mcdonalds.uk/" class="text-blue-600 hover:underline">http://mcdonalds.uk/</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operational Times -->
+                <div class="bg-gray-900 text-white p-12">
+                    <div class="flex items-center mb-8">
+                        <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                        <h3 class="text-xl font-bold">Operational Times</h3>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p><strong>Monday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Tuesday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Wednesday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Thursday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Friday:</strong> 8:00 AM–3:00 AM</p>
+                        <p><strong>Saturday:</strong> 8:00 AB–3:00 AM</p>
+                        <p><strong>Sunday:</strong> 8:00 AM–3:00 AM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Know More Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gray-100 p-16 rounded-lg">
+                <!-- Header with Tabs -->
+                <div class="flex flex-col md:flex-row justify-center md:justify-between items-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4 md:mb-0">Know more about us!</h2>
+                    <div class="flex space-x-2">
+                        <button class="px-6 py-3 rounded-full text-gray-700 font-medium text-sm border-2 border-orange-500 bg-transparent hover:bg-orange-50 transition">Frequent Questions</button>
+                        <button class="px-6 py-3 rounded-full text-gray-600 hover:text-gray-900 font-medium text-sm border border-gray-300 hover:border-gray-400 transition">Who we are?</button>
+                        <button class="px-6 py-3 rounded-full text-gray-600 hover:text-gray-900 font-medium text-sm border border-gray-300 hover:border-gray-400 transition">Partner Program</button>
+                        <button class="px-6 py-3 rounded-full text-gray-600 hover:text-gray-900 font-medium text-sm border border-gray-300 hover:border-gray-400 transition">Help & Support</button>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="bg-[#03081F] rounded-3xl shadow-2xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                    <!-- Left Sidebar - Questions -->
+                    <div class="lg:col-span-2 p-8 space-y-4">
+                        <button class="w-full text-left px-6 py-4 rounded-full bg-orange-500 text-white font-medium text-sm hover:bg-orange-600 transition">
+                            How does Order.UK work?
+                        </button>
+                        <button class="w-full text-left px-6 py-4 rounded-full text-white font-medium text-sm hover:bg-gray-800 transition">
+                            What payment methods are accepted?
+                        </button>
+                        <button class="w-full text-left px-6 py-4 rounded-full text-white font-medium text-sm hover:bg-gray-800 transition">
+                            Can I track my order in real-time?
+                        </button>
+                        <button class="w-full text-left px-6 py-4 rounded-full text-white font-medium text-sm hover:bg-gray-800 transition">
+                            Are there any special discounts or promotions available?
+                        </button>
+                        <button class="w-full text-left px-6 py-4 rounded-full text-white font-medium text-sm hover:bg-gray-800 transition">
+                            Is Order.UK available in my area?
+                        </button>
+                    </div>
+
+                    <!-- Right Content - Cards and Description -->
+                    <div class="lg:col-span-3 p-8">
+                        <!-- Three Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <!-- Card 1 - Place an Order -->
+                            <div class="bg-gray-200 rounded-2xl px-8 py-6 text-center h-48 w-full flex flex-col justify-between">
+                                <h3 class="font-bold text-gray-900">Place an Order!</h3>
+                                <div class="flex justify-center">
+                                    <img src="./img/order-food.png" alt="Place Order" class="w-20 h-20">
+                                </div>
+                                <p class="text-sm font-medium text-left">Place order through our website or Mobile app</p>
+                            </div>
+
+                            <!-- Card 2 - Track Progress -->
+                            <div class="bg-gray-200 rounded-2xl px-8 py-6 text-center h-48 w-full flex flex-col justify-between">
+                                <h3 class="font-bold text-gray-900">Track Progress</h3>
+                                <div class="flex justify-center">
+                                    <img src="./img/track-progress.png" alt="Track Progress" class="w-20 h-20">
+                                </div>
+                                <p class="text-sm font-medium text-left">Your can track your order status with delivery time</p>
+                            </div>
+
+                            <!-- Card 3 - Get your Order -->
+                            <div class="bg-gray-200 rounded-2xl px-8 py-6 text-center h-48 w-full flex flex-col justify-between">
+                                <h3 class="font-bold text-gray-900 whitespace-nowrap">Get your Order!</h3>
+                                <div class="flex justify-center">
+                                    <img src="./img/get-your-order.png" alt="Get Order" class="w-20 h-20">
+                                </div>
+                                <p class="text-sm font-medium text-left">Receive your order fast!</p>
+                            </div>
+                        </div>
+
+                        <!-- Description Text -->
+                        <div class="text-center">
+                            <p class="text-white text-sm leading-relaxed">
+                                Order.UK simplifies the food ordering process. Browse through our diverse menu, 
+                                select your favorite dishes, and proceed to checkout. Your delicious meal will be 
+                                on its way to your doorstep in no time!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews -->
+    <section class="py-16" style="background-color: #D9D9D9;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900">Customer Reviews</h2>
+                <div class="flex space-x-3">
+                    <button id="prevReview" class="bg-orange-500 text-black w-12 h-12 rounded-full flex items-center justify-center hover:bg-orange-600 transition shadow-lg">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextReview" class="bg-orange-500 text-black w-12 h-12 rounded-full flex items-center justify-center hover:bg-orange-600 transition shadow-lg">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <!-- Review Card 1 -->
+                <div class="bg-white rounded-sm p-6 shadow-lg">
+                    <div class="flex items-start mb-4">
+                        <img src="img/customer.png" alt="St Glx" class="w-12 h-12 rounded-full mr-3">
+                        <div class="w-0.5 h-12 bg-orange-500 mr-3"></div>
+                        <div class="flex-1 h-12 flex flex-col justify-center">
+                            <div class="flex items-center justify-between ">
+                                <h3 class="font-bold text-gray-900">St Glx</h3>
+                                <div class="text-right">
+                                    <div class="flex mb-1 justify-end">
+                                        <img src="./img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="./img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="./img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="./img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="./img/star.png" alt="star" class="w-4 h-4">
+                                    </div>
+                                    <div class="flex items-center justify-end">
+                                        <img src="./img/review-clock.png" alt="clock" class="w-4 h-4 mr-1">
+                                        <span class="text-xs text-gray-500">24th September, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-orange-500">South London</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm leading-relaxed">The positive aspect was undoubtedly the efficiency of the service. The queue moved quickly, the staff was friendly, and the food was up to the usual McDonald's standard – hot and satisfying.</p>
+                </div>
+
+                <!-- Review Card 2 -->
+                <div class="bg-white rounded-sm p-6 shadow-lg">
+                    <div class="flex items-start mb-4">
+                        <img src="img/customer.png" alt="St Glx" class="w-12 h-12 rounded-full mr-3">
+                        <div class="w-0.5 h-12 bg-orange-500 mr-3"></div>
+                        <div class="flex-1 h-12 flex flex-col justify-center">
+                            <div class="flex items-center justify-between mb-0">
+                                <h3 class="font-bold text-gray-900">St Glx</h3>
+                                <div class="text-right">
+                                    <div class="flex mb-1 justify-end">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                    </div>
+                                    <div class="flex items-center justify-end">
+                                        <img src="./img/review-clock.png" alt="clock" class="w-4 h-4 mr-1">
+                                        <span class="text-xs text-gray-500">24th September, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-orange-500">South London</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm leading-relaxed">The positive aspect was undoubtedly the efficiency of the service. The queue moved quickly, the staff was friendly, and the food was up to the usual McDonald's standard – hot and satisfying.</p>
+                </div>
+
+                <!-- Review Card 3 -->
+                <div class="bg-white rounded-sm p-6 shadow-lg">
+                    <div class="flex items-start mb-4">
+                        <img src="img/customer.png" alt="St Glx" class="w-12 h-12 rounded-full mr-3">
+                        <div class="w-0.5 h-12 bg-orange-500 mr-3"></div>
+                        <div class="flex-1 h-12 flex flex-col justify-center">
+                            <div class="flex items-center justify-between mb-0">
+                                <h3 class="font-bold text-gray-900">St Glx</h3>
+                                <div class="text-right">
+                                    <div class="flex mb-1 justify-end">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                        <img src="img/star.png" alt="star" class="w-4 h-4">
+                                    </div>
+                                    <div class="flex items-center justify-end">
+                                        <img src="./img/review-clock.png" alt="clock" class="w-4 h-4 mr-1">
+                                        <span class="text-xs text-gray-500">24th September, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-orange-500">South London</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm leading-relaxed">The positive aspect was undoubtedly the efficiency of the service. The queue moved quickly, the staff was friendly, and the food was up to the usual McDonald's standard – hot and satisfying.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Rating Summary Positioned Between Sections -->
+    <div class="relative z-50">
+        <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <img src="img/reviews.png" alt="Reviews" class="w-32 h-auto shadow-lg rounded-xl">
+        </div>
+    </div>
+
+    <!-- Similar Restaurants -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold mb-8">Similar Restaurants</h2>
+        <div id="similarRestaurantsContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-stretch">
+            <!-- Similar restaurants will be rendered here dynamically -->
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Top Section - White Background -->
+        <div class="bg-[#D9D9D9] py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                    
+                    <!-- Column 1: Branding and App Downloads -->
+                    <div>
+                        <img src="img/logo.png" alt="Order.uk" class="h-8 mb-6">
+                        <div class="flex space-x-0.5 mb-6">
+                            <img src="img/app-store.jpeg" alt="App Store" class="h-10 cursor-pointer hover:opacity-80 transition">
+                            <img src="img/google-play.jpeg" alt="Google Play" class="h-10 cursor-pointer hover:opacity-80 transition">
+                        </div>
+                        <p class="text-sm  leading-relaxed">Company # 490039-445, Registered with<br>House of companies.</p>
+                    </div>
+                    
+                    <!-- Column 2: Newsletter and Social Media -->
+                    <div class="ml-16">
+                        <h4 class="font-bold text-black mb-4 whitespace-nowrap">Get Exclusive Deals in your Inbox</h4>
+                        <div class="relative mb-4 w-80">
+                            <input type="email" id="newsletterEmail" placeholder="youremail@gmail.com" class="w-full px-4 py-2.5 pr-28 bg-gray-100 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 text-sm">
+                            <button id="subscribeBtn" class="absolute right-0 top-0 bottom-0 bg-orange-500 text-white px-6 rounded-full hover:bg-orange-600 transition font-semibold z-10">Subscribe</button>
+                        </div>
+                        <p class="text-xs mb-4">we won't spam, read our <a href="#" class="underline hover:text-black">email policy</a></p>
+                        <div class="flex space-x-4">
+                            <img src="./img/fb.png" alt="Facebook" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
+                            <img src="./img/insta.png" alt="Instagram" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
+                            <img src="./img/tiktok.png" alt="TikTok" class="w-8 h-8
+                            cursor-pointer hover:opacity-80 transition">
+                            <img src="./img/snapchat.png" alt="Snapchat" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
+                        </div>
+                    </div>
+                    
+                    <!-- Column 3: Legal Pages -->
+                    <div class="ml-24">
+                        <h4 class="font-bold text-black mb-4">Legal Pages</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li><a href="#" class="underline hover:text-black transition">Terms and conditions</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Privacy</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Cookies</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Modern Slavery Statement</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Column 4: Important Links -->
+                    <div class="ml-24">
+                        <h4 class="font-bold text-black mb-4">Important Links</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li><a href="#" class="underline hover:text-black transition">Get help</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Add your restaurant</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Sign up to deliver</a></li>
+                            <li><a href="#" class="underline hover:text-black transition">Create a business account</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Section - Dark Navy -->
+        <div class="bg-[#03081F] text-white py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-center text-sm">
+                    <p class="mb-2 md:mb-0">Order.uk Copyright 2025, All Rights Reserved.</p>
+                    <div class="flex flex-wrap gap-6 justify-center md:justify-end">
+                        <a href="#" class="hover:underline">Privacy Policy</a>
+                        <a href="#" class="hover:underline">Terms</a>
+                        <a href="#" class="hover:underline">Pricing</a>
+                        <a href="#" class="hover:underline">Do not sell or share my personal information</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
