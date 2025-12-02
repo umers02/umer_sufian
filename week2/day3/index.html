@@ -14,6 +14,28 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* NEW: Cart styles */
+        .cart-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .cart-popup {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -31,6 +53,12 @@
                     <a href="#" class="text-gray-700 hover:text-orange-500 font-medium transition">Track Order</a>
                 </nav>
                 <div class="flex items-center space-x-4">
+                    <!-- NEW: Cart Button -->
+                    <button id="openCartBtn" class="bg-green-600 text-white px-4 py-2 rounded-full font-medium hover:bg-green-700 transition flex items-center space-x-2">
+                        <i class="fas fa-shopping-basket"></i>
+                        <span>My Basket</span>
+                        <span id="cartCountBadge" class="bg-white text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">0</span>
+                    </button>
                     <button class="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-700 transition">
                         <span class="text-sm font-medium">U</span>
                     </button>
@@ -425,8 +453,7 @@
                         <div class="flex space-x-4">
                             <img src="./img/fb.png" alt="Facebook" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
                             <img src="./img/insta.png" alt="Instagram" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
-                            <img src="./img/tiktok.png" alt="TikTok" class="w-8 h-8
-                            cursor-pointer hover:opacity-80 transition">
+                            <img src="./img/tiktok.png" alt="TikTok" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
                             <img src="./img/snapchat.png" alt="Snapchat" class="w-8 h-8 cursor-pointer hover:opacity-80 transition">
                         </div>
                     </div>
@@ -473,7 +500,60 @@
     </footer>
 
     <!-- Notification Container -->
-    <div id="notificationContainer" class="fixed top-4 right-4 z-50"></div>
+    <div id="notificationContainer" class="fixed top-4 right-4 z-[90]"></div>
+
+    <!-- NEW: Cart Pop-up Overlay -->
+    <div id="cartOverlay" class="cart-overlay fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="cart-popup bg-white rounded-2xl w-full max-w-md mx-4 slide-in relative shadow-2xl">
+            
+            <!-- Header Image -->
+            <div class="relative h-24 rounded-t-2xl overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80" 
+                     alt="Pizza" class="w-full h-full object-cover">
+                
+                <!-- Close Button -->
+                <button id="closeCartBtn" class="absolute top-3 right-3 bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors shadow-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items Container -->
+            <div class="p-4 max-h-96 overflow-y-auto" id="cartItemsContainer">
+                <!-- Items will be inserted here dynamically -->
+            </div>
+
+            <!-- Empty Cart Message -->
+            <div id="emptyCartMessage" class="p-8 text-center text-gray-500">
+                <i class="fas fa-shopping-basket text-4xl mb-2"></i>
+                <p>Your cart is empty</p>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t">
+                <!-- Total Price -->
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-orange-500 font-semibold text-lg">Total price:</span>
+                    <span class="text-orange-500 font-bold text-xl" id="totalPrice">£0.00</span>
+                </div>
+
+                <!-- Delivery Note -->
+                <p class="text-xs text-gray-500 text-center mb-3">
+                    Delivery fee will be calculated at the next stage
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button id="backToShopBtn" class="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Back to Shop
+                    </button>
+                    <button id="nextStepBtn" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        Next Step
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

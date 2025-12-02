@@ -144,7 +144,6 @@ function smoothScroll(target) {
 }
 
 //  RENDER FUNCTIONS 
-//  RENDER FUNCTIONS 
 function renderProducts(category) {
     const products = restaurantData.products[category === 'cold-drinks' ? 'coldDrinks' : category];
     if (!products) return '';
@@ -169,8 +168,8 @@ function renderProducts(category) {
             
             <!-- Plus button positioned at bottom right -->
             <button onclick="addToCart(${product.id}, '${product.category}')" 
-                    class="absolute bottom-5 right-5 bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg z-10">
-                <i class="fas fa-plus text-sm"></i>
+                    class="absolute bottom-5 right-5 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl z-10 border-2 border-black">
+                <i class="fas fa-plus text-lg font-bold"></i>
             </button>
         </div>
     `).join('');
@@ -207,7 +206,6 @@ function renderAllProductSections() {
 function renderReviews() {
     const container = document.getElementById('reviewsContainer');
     if (!container) {
-        // Reviews are hardcoded in HTML, so this function is optional
         return;
     }
     const startIndex = currentReviewIndex;
@@ -255,15 +253,26 @@ function renderSimilarRestaurants() {
 }
 
 
-// CART FUNCTIONALITY 
-let cart = [];
+// ==================== CART FUNCTIONALITY (NEW) ====================
+let cartItems = [];
 
 function addToCart(productId, category) {
     const categoryKey = category === 'cold-drinks' ? 'coldDrinks' : category;
     const product = restaurantData.products[categoryKey]?.find(p => p.id === productId);
     
     if (product) {
-        cart.push(product);
+        const existingItem = cartItems.find(item => item.id === productId);
+        
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cartItems.push({
+                ...product,
+                quantity: 1
+            });
+        }
+        
+        updateCartUI();
         showNotification(`${product.name} added to cart!`);
         
         // Add animation to button
@@ -272,6 +281,153 @@ function addToCart(productId, category) {
         setTimeout(() => button.style.transform = 'scale(1)', 150);
     }
 }
+
+function updateCartUI() {
+    const container = document.getElementById('cartItemsContainer');
+    const emptyMessage = document.getElementById('emptyCartMessage');
+    
+    if (!container || !emptyMessage) return;
+    
+    if (cartItems.length === 0) {
+        container.innerHTML = '';
+        emptyMessage.style.display = 'block';
+    } else {
+        emptyMessage.style.display = 'none';
+        container.innerHTML = '';
+        
+        cartItems.forEach((item, index) => {
+            const isSelected = index === 2;
+            const bgColor = isSelected ? 'bg-gray-900' : 'bg-gray-100';
+            const textColor = isSelected ? 'text-white' : 'text-gray-900';
+            const nameColor = isSelected ? 'text-orange-500' : 'text-gray-900';
+            
+            const itemHTML = `
+                <div class="${bgColor} rounded-xl p-3 mb-3 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white">
+                                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                            </div>
+                            <span class="${nameColor} font-semibold text-sm">${item.name}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3">
+                            <button onclick="decreaseQuantity(${item.id})" 
+                                    class="w-6 h-6 rounded-full ${isSelected ? 'bg-gray-700' : 'bg-white'} ${textColor} flex items-center justify-center hover:scale-110 transition-transform shadow">
+                                <i class="fas fa-minus text-xs"></i>
+                            </button>
+                            
+                            <span class="${textColor} font-semibold min-w-[20px] text-center">${item.quantity}</span>
+                            
+                            <button onclick="increaseQuantity(${item.id})" 
+                                    class="w-6 h-6 rounded-full ${isSelected ? 'bg-gray-700' : 'bg-white'} ${textColor} flex items-center justify-center hover:scale-110 transition-transform shadow">
+                                <i class="fas fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML += itemHTML;
+        });
+    }
+    
+    updateTotalPrice();
+    updateCartCount();
+}
+
+function increaseQuantity(itemId) {
+    const item = cartItems.find(i => i.id === itemId);
+    if (item) {
+        item.quantity++;
+        updateCartUI();
+    }
+}
+
+function decreaseQuantity(itemId) {
+    const item = cartItems.find(i => i.id === itemId);
+    if (item) {
+        item.quantity--;
+        if (item.quantity <= 0) {
+            cartItems = cartItems.filter(i => i.id !== itemId);
+        }
+        updateCartUI();
+    }
+}
+
+function updateTotalPrice() {
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalElement = document.getElementById('totalPrice');
+    if (totalElement) {
+        totalElement.textContent = `£${total.toFixed(2)}`;
+    }
+}
+
+function updateCartCount() {
+    const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const countElement = document.getElementById('cartCountBadge');
+    if (countElement) {
+        countElement.textContent = count;
+    }
+}
+
+function openCart() {
+    const overlay = document.getElementById('cartOverlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeCart() {
+    const overlay = document.getElementById('cartOverlay');
+    if (overlay) {
+        overlay.classList.remove('flex');
+        overlay.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function initCartEvents() {
+    const openBtn = document.getElementById('openCartBtn');
+    const closeBtn = document.getElementById('closeCartBtn');
+    const backBtn = document.getElementById('backToShopBtn');
+    const nextBtn = document.getElementById('nextStepBtn');
+    const overlay = document.getElementById('cartOverlay');
+    
+    if (openBtn) {
+        openBtn.addEventListener('click', openCart);
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCart);
+    }
+    
+    if (backBtn) {
+        backBtn.addEventListener('click', closeCart);
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (cartItems.length > 0) {
+                alert('Proceeding to checkout...');
+            } else {
+                alert('Your cart is empty!');
+            }
+        });
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeCart();
+            }
+        });
+    }
+}
+// ==================== END CART FUNCTIONALITY ====================
+
 
 //  SEARCH FUNCTIONALITY 
 function initSearch() {
@@ -338,8 +494,8 @@ function displaySearchResults(results, searchTerm) {
                                 <div class="flex justify-between items-center">
                                     <span class="text-xl font-bold text-gray-900">${formatPrice(product.price)}</span>
                                     <button onclick="addToCart(${product.id}, '${product.category}')" 
-                                            class="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-600 transition-all duration-300 hover:scale-110">
-                                        <i class="fas fa-plus"></i>
+                                            class="bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-xl border-2 border-black">
+                                        <i class="fas fa-plus text-lg font-bold"></i>
                                     </button>
                                 </div>
                             </div>
@@ -475,6 +631,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initCategoryNavigation();
     initNewsletter();
     initScrollAnimations();
-    renderSimilarRestaurants(); 
+    renderSimilarRestaurants();
+    initCartEvents(); // NEW: Initialize cart events
+    updateCartUI(); // NEW: Initialize cart UI
+    
     console.log('🍔 Restaurant website loaded successfully!');
 });
