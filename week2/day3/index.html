@@ -53,15 +53,11 @@
                     <a href="#" class="text-gray-700 hover:text-orange-500 font-medium transition">Track Order</a>
                 </nav>
                 <div class="flex items-center space-x-4">
-                    <!-- NEW: Cart Button -->
-                    <button id="openCartBtn" class="bg-green-600 text-white px-4 py-2 rounded-full font-medium hover:bg-green-700 transition flex items-center space-x-2">
-                        <i class="fas fa-shopping-basket"></i>
-                        <span>My Basket</span>
-                        <span id="cartCountBadge" class="bg-white text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">0</span>
+                    <!-- Cart Button -->
+                    <button id="openCartBtn" class="bg-gray-900 text-white w-10 h-10 rounded-full font-medium hover:bg-gray-800 transition flex items-center justify-center">
+                        <i class="fas fa-shopping-cart"></i>
                     </button>
-                    <button class="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-700 transition">
-                        <span class="text-sm font-medium">U</span>
-                    </button>
+                    <span class="text-gray-700 font-medium">Cart</span>
                 </div>
             </div>
         </div>
@@ -504,10 +500,10 @@
 
     <!-- NEW: Cart Pop-up Overlay -->
     <div id="cartOverlay" class="cart-overlay fixed inset-0 z-[100] hidden items-center justify-center">
-        <div class="cart-popup bg-white rounded-2xl w-full max-w-md mx-4 slide-in relative shadow-2xl">
+        <div class="cart-popup bg-white rounded-lg w-full max-w-lg mx-4 slide-in relative shadow-2xl">
             
             <!-- Header Image -->
-            <div class="relative h-24 rounded-t-2xl overflow-hidden">
+            <div class="relative h-24 rounded-t-lg overflow-hidden">
                 <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80" 
                      alt="Pizza" class="w-full h-full object-cover">
                 
@@ -518,7 +514,7 @@
             </div>
 
             <!-- Cart Items Container -->
-            <div class="p-4 max-h-96 overflow-y-auto" id="cartItemsContainer">
+            <div class="p-4" id="cartItemsContainer">
                 <!-- Items will be inserted here dynamically -->
             </div>
 
@@ -529,24 +525,28 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-4 border-t">
-                <!-- Total Price -->
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-orange-500 font-semibold text-lg">Total price:</span>
-                    <span class="text-orange-500 font-bold text-xl" id="totalPrice">£0.00</span>
-                </div>
-
+            <div class="p-4">
                 <!-- Delivery Note -->
                 <p class="text-xs text-gray-500 text-center mb-3">
-                    Delivery fee will be calculated at the next stage
+                    Delivery & Tax will be calculated in the next step
                 </p>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-3">
-                    <button id="backToShopBtn" class="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                        Back to Shop
+                <!-- Bottom Section -->
+                <div class="flex items-center gap-3">
+                    <!-- Orange Total Section -->
+                    <div class="bg-orange-500 text-white px-4 py-3 rounded-lg">
+                        <div class="text-xs">Total to pay</div>
+                        <div class="font-bold text-lg" id="totalPrice">£127.90</div>
+                    </div>
+                    
+                    <!-- Take me back button -->
+                    <button id="backToShopBtn" class="text-gray-700 font-medium text-sm underline hover:text-gray-900 transition-colors">
+                        Take me back
                     </button>
-                    <button id="nextStepBtn" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    
+                    <!-- Green Next Step Button -->
+                    <button id="nextStepBtn" class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle"></i>
                         Next Step
                     </button>
                 </div>

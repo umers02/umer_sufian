@@ -160,17 +160,19 @@ function renderProducts(category) {
                 
                 <!-- Right side: Product Image with rounded yellow background -->
                 <div class="relative flex-shrink-0">
-                    <div class="w-32 h-32 bg-yellow-400 rounded-xl overflow-hidden">
+                    <div class="w-32 h-32 bg-yellow-400 rounded-xl overflow-hidden relative">
                         <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                        <!-- White background box at bottom right -->
+                        <div class="absolute bottom-0 right-0 bg-white bg-opacity-80 rounded-tl-3xl p-4">
+                            <!-- Plus button -->
+                            <button onclick="addToCart(${product.id}, '${product.category}')" 
+                                    class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg">
+                                <i class="fas fa-plus text-sm font-bold"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Plus button positioned at bottom right -->
-            <button onclick="addToCart(${product.id}, '${product.category}')" 
-                    class="absolute bottom-5 right-5 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl z-10 border-2 border-black">
-                <i class="fas fa-plus text-lg font-bold"></i>
-            </button>
         </div>
     `).join('');
 }
@@ -302,7 +304,7 @@ function updateCartUI() {
             const nameColor = isSelected ? 'text-orange-500' : 'text-gray-900';
             
             const itemHTML = `
-                <div class="${bgColor} rounded-xl p-3 mb-3 transition-all duration-200">
+                <div class="${bgColor} rounded-lg p-3 mb-3 transition-all duration-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3 flex-1">
                             <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-white">
@@ -312,17 +314,17 @@ function updateCartUI() {
                         </div>
                         
                         <div class="flex items-center gap-3">
-                            <button onclick="decreaseQuantity(${item.id})" 
-                                    class="w-6 h-6 rounded-full ${isSelected ? 'bg-gray-700' : 'bg-white'} ${textColor} flex items-center justify-center hover:scale-110 transition-transform shadow">
-                                <i class="fas fa-minus text-xs"></i>
-                            </button>
+                            <img onclick="decreaseQuantity(${item.id})" 
+                                 src="./img/decremnt.png" 
+                                 alt="Decrease" 
+                                 class="w-6 h-6 cursor-pointer hover:scale-110 transition-transform">
                             
                             <span class="${textColor} font-semibold min-w-[20px] text-center">${item.quantity}</span>
                             
-                            <button onclick="increaseQuantity(${item.id})" 
-                                    class="w-6 h-6 rounded-full ${isSelected ? 'bg-gray-700' : 'bg-white'} ${textColor} flex items-center justify-center hover:scale-110 transition-transform shadow">
-                                <i class="fas fa-plus text-xs"></i>
-                            </button>
+                            <img onclick="increaseQuantity(${item.id})" 
+                                 src="./img/increment.png" 
+                                 alt="Increase" 
+                                 class="w-6 h-6 cursor-pointer hover:scale-110 transition-transform">
                         </div>
                     </div>
                 </div>
