@@ -22,6 +22,11 @@
         .cart-popup {
             max-height: 90vh;
             overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .cart-popup::-webkit-scrollbar {
+            display: none;
         }
         .slide-in {
             animation: slideIn 0.3s ease-out;
@@ -261,7 +266,7 @@
                                 <div class="flex justify-center">
                                     <img src="./img/order-food.png" alt="Place Order" class="w-20 h-20">
                                 </div>
-                                <p class="text-sm font-medium text-left">Place order through our website or Mobile app</p>
+                                <p class="font-medium text-left" style="font-size: 10px;">Place order through our website or Mobile app</p>
                             </div>
 
                             <!-- Card 2 - Track Progress -->
@@ -270,7 +275,7 @@
                                 <div class="flex justify-center">
                                     <img src="./img/track-progress.png" alt="Track Progress" class="w-20 h-20">
                                 </div>
-                                <p class="text-sm font-medium text-left">Your can track your order status with delivery time</p>
+                                <p class="font-medium text-left" style="font-size: 10px;">Your can track your order status with delivery time</p>
                             </div>
 
                             <!-- Card 3 - Get your Order -->
@@ -279,7 +284,7 @@
                                 <div class="flex justify-center">
                                     <img src="./img/get-your-order.png" alt="Get Order" class="w-20 h-20">
                                 </div>
-                                <p class="text-sm font-medium text-left">Receive your order fast!</p>
+                                <p class="font-medium text-left" style="font-size: 10px;">Receive your order fast!</p>
                             </div>
                         </div>
 
@@ -500,7 +505,7 @@
 
     <!-- NEW: Cart Pop-up Overlay -->
     <div id="cartOverlay" class="cart-overlay fixed inset-0 z-[100] hidden items-center justify-center">
-        <div class="cart-popup bg-white rounded-lg w-full max-w-lg mx-4 slide-in relative shadow-2xl">
+        <div class="cart-popup bg-white rounded-lg w-full max-w-2xl mx-4 slide-in relative shadow-2xl min-h-[600px]">
             
             <!-- Header Image -->
             <div class="relative h-24 rounded-t-lg overflow-hidden">
@@ -526,27 +531,29 @@
 
             <!-- Footer -->
             <div class="p-4">
-                <!-- Delivery Note -->
-                <p class="text-xs text-gray-500 text-center mb-3">
-                    Delivery & Tax will be calculated in the next step
-                </p>
-
-                <!-- Bottom Section -->
-                <div class="flex items-center gap-3">
+                <!-- Delivery Note and Total Section -->
+                <div class="flex items-center justify-between mb-3">
                     <!-- Orange Total Section -->
-                    <div class="bg-orange-500 text-white px-4 py-3 rounded-lg">
-                        <div class="text-xs">Total to pay</div>
-                        <div class="font-bold text-lg" id="totalPrice">£127.90</div>
+                    <div class="bg-orange-500 text-white px-6 py-1 rounded-sm min-w-[160px] flex items-center gap-2">
+                        <span class="text-xs whitespace-nowrap">Total to pay</span>
+                        <span class="font-bold text-lg whitespace-nowrap" id="totalPrice">£127.90</span>
                     </div>
                     
+                    <!-- Delivery Note -->
+                    <p class="text-xs text-gray-500">
+                        Delivery & Tax will be calculated in the next step
+                    </p>
+                </div>
+
+                <!-- Bottom Section -->
+                <div class="flex items-center justify-end gap-4">
                     <!-- Take me back button -->
                     <button id="backToShopBtn" class="text-gray-700 font-medium text-sm underline hover:text-gray-900 transition-colors">
                         Take me back
                     </button>
                     
                     <!-- Green Next Step Button -->
-                    <button id="nextStepBtn" class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
-                        <i class="fas fa-check-circle"></i>
+                    <button id="nextStepBtn" class="bg-green-600 text-white py-2 px-8 rounded-md font-semibold hover:bg-green-700 transition-colors">
                         Next Step
                     </button>
                 </div>
