@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Games Navbar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-['Poppins']">
+    <nav class="w-full h-[42px] bg-[#313131] flex items-center justify-between font-['Poppins']">
+        <!-- Left Section -->
+        <div class="flex items-center space-x-2 sm:space-x-6 px-2 sm:px-4">
+            <!-- Burger Menu (Mobile Only) -->
+            <button class="md:hidden text-[#AAAAAA] hover:text-white p-1" onclick="toggleMenu()">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+            
+            <!-- Epic Games Logo -->
+            <div class="flex items-center">
+                <img src="./img/logo.png" alt="Epic Games" class="w-4 h-5 sm:w-5 sm:h-6">
+            </div>
+            
+            <!-- Navigation Links (Desktop) -->
+            <div class="hidden md:flex items-center space-x-4 lg:space-x-6 text-[#AAAAAA] text-xs h-full">
+                <a href="#" class="hover:text-white h-full flex items-center relative">
+                    STORE
+                    <div class="absolute -bottom-[13px] -left-2 w-[calc(100%+16px)] h-[6px] bg-blue-500"></div>
+                </a>
+                <a href="#" class="hover:text-white h-full flex items-center">FAQ</a>
+                <a href="#" class="hover:text-white h-full flex items-center">HELP</a>
+                <a href="#" class="hover:text-white h-full flex items-center hidden lg:flex">UNREAL ENGINE</a>
+            </div>
+        </div>
+        
+        <!-- Right Section -->
+        <div class="flex items-center h-full">
+            <!-- Global Internet Icon -->
+            <button class="text-[#AAAAAA] hover:text-white px-2 sm:px-3 h-full flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 12C2 9.34784 3.05357 6.8043 4.92893 4.92893C6.8043 3.05357 9.34784 2 12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12C22 14.6522 20.9464 17.1957 19.0711 19.0711C17.1957 20.9464 14.6522 22 12 22C9.34784 22 6.8043 20.9464 4.92893 19.0711C3.05357 17.1957 2 14.6522 2 12ZM11.375 3.346C10.537 3.601 9.706 4.371 9.016 5.665C8.789 6.095 8.593 6.541 8.431 7H11.375V3.346ZM7.112 7C7.321 6.336 7.589 5.692 7.912 5.076C8.129 4.668 8.378 4.277 8.659 3.91C7.11025 4.55227 5.77775 5.62452 4.819 7H7.112ZM6.385 11.375C6.423 10.279 6.558 9.227 6.775 8.25H4.092C3.62591 9.23132 3.34778 10.2913 3.272 11.375H6.385ZM8.059 8.25C7.81298 9.27474 7.67125 10.3217 7.636 11.375H11.375V8.25H8.059ZM12.625 8.25V11.375H16.363C16.3281 10.3218 16.1868 9.27476 15.941 8.25H12.625ZM7.638 12.625C7.672 13.678 7.813 14.725 8.058 15.75H11.375V12.625H7.638ZM12.625 12.625V15.75H15.941C16.175 14.794 16.324 13.74 16.364 12.625H12.625ZM8.431 17C8.604 17.483 8.8 17.93 9.016 18.335C9.706 19.629 10.539 20.398 11.375 20.654V17H8.431ZM8.659 20.09C8.37823 19.7226 8.12837 19.3326 7.912 18.924C7.58808 18.308 7.32033 17.6641 7.112 17H4.82C5.77871 18.3755 7.11122 19.4478 8.66 20.09H8.659ZM6.775 15.75C6.54896 14.7226 6.4184 13.6765 6.385 12.625H3.273C3.34784 13.7089 3.62601 14.769 4.093 15.75H6.775ZM15.341 20.09C16.8898 19.4478 18.2223 18.3755 19.181 17H16.887C16.6787 17.6641 16.4109 18.308 16.087 18.924C15.871 19.3326 15.6215 19.7226 15.341 20.09ZM12.625 17V20.654C13.463 20.399 14.294 19.629 14.984 18.335C15.2 17.93 15.396 17.483 15.569 17H12.625ZM17.225 15.75H19.907C20.374 14.769 20.6522 13.7089 20.727 12.625H17.615C17.5816 13.6765 17.4511 14.7226 17.225 15.75ZM20.727 11.375C20.6512 10.2913 20.3731 9.23132 19.907 8.25H17.225C17.442 9.227 17.577 10.279 17.615 11.375H20.728H20.727ZM16.087 5.076C16.397 5.656 16.665 6.301 16.887 7H19.181C18.2223 5.62448 16.8898 4.55222 15.341 3.91C15.614 4.265 15.864 4.657 16.087 5.076ZM15.57 7C15.4079 6.54131 15.2123 6.09512 14.985 5.665C14.295 4.371 13.464 3.602 12.626 3.346V7H15.57Z" fill="currentColor"/>
+                </svg>
+            </button>
+            
+            <!-- Sign In (Desktop Only) -->
+            <button class="hidden md:flex items-center space-x-1 text-[#AAAAAA] hover:text-white text-xs px-3 h-full">
+                <div class="relative">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <svg class="w-2 h-2 absolute top-1/2 -translate-y-1/2 -right-1" fill="currentColor" viewBox="0 0 12 12">
+                        <path d="M6 1v4h4v2H6v4H4V7H0V5h4V1h2z"/>
+                    </svg>
+                </div>
+                <span>SIGN IN</span>
+            </button>
+            
+            <!-- Download Button (Desktop Only) -->
+            <button class="hidden md:flex bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 h-full items-center">
+                DOWNLOAD
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobileMenu" class="hidden md:hidden bg-[#313131] border-t border-gray-600">
+        <div class="px-4 py-2 space-y-2">
+            <a href="#" class="block text-[#AAAAAA] hover:text-white text-xs py-2 border-b border-gray-600">
+                STORE
+            </a>
+            <a href="#" class="block text-[#AAAAAA] hover:text-white text-xs py-2 border-b border-gray-600">
+                FAQ
+            </a>
+            <a href="#" class="block text-[#AAAAAA] hover:text-white text-xs py-2 border-b border-gray-600">
+                HELP
+            </a>
+            <a href="#" class="block text-[#AAAAAA] hover:text-white text-xs py-2 border-b border-gray-600">
+                UNREAL ENGINE
+            </a>
+            <button class="flex items-center space-x-2 text-[#AAAAAA] hover:text-white text-xs py-2 border-b border-gray-600 w-full">
+                <div class="relative">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <svg class="w-2 h-2 absolute top-1/2 -translate-y-1/2 -right-1" fill="currentColor" viewBox="0 0 12 12">
+                        <path d="M6 1v4h4v2H6v4H4V7H0V5h4V1h2z"/>
+                    </svg>
+                </div>
+                <span>SIGN IN</span>
+            </button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-4 rounded w-full">
+                DOWNLOAD
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
