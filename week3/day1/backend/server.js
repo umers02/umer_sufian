@@ -28,6 +28,11 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+// Root endpoint
+app.get("/", (req, res) => {
+  res.send("Task Manager RestFul Api Running...");
+});
+
 // Routes
 const taskRoutes = require("./routes/taskRoutes");
 const statsRoutes = require("./routes/statsRoutes");
