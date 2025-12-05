@@ -84,7 +84,8 @@ const QuizPage = {
                     
                     <button 
                         onclick="QuizPage.nextQuestion()"
-                        class="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 text-sm sm:text-base order-1 sm:order-2"
+                        ${QuizPage.selectedAnswers[QuizPage.currentQuestionIndex] === undefined ? 'disabled' : ''}
+                        class="px-4 sm:px-6 py-2 ${QuizPage.selectedAnswers[QuizPage.currentQuestionIndex] === undefined ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-lg transition duration-200 text-sm sm:text-base order-1 sm:order-2"
                     >
                         ${QuizPage.currentQuestionIndex === QuizPage.currentQuiz.questions.length - 1 ? 'Finish' : 'Next'}
                     </button>
@@ -95,9 +96,15 @@ const QuizPage = {
 
     selectAnswer: (answerIndex) => {
         QuizPage.selectedAnswers[QuizPage.currentQuestionIndex] = answerIndex;
+        QuizPage.updatePage(); // Refresh to update button state
     },
 
     nextQuestion: () => {
+        // Check if current question is answered
+        if (QuizPage.selectedAnswers[QuizPage.currentQuestionIndex] === undefined) {
+            return; // Don't proceed if no answer selected
+        }
+        
         if (QuizPage.currentQuestionIndex < QuizPage.currentQuiz.questions.length - 1) {
             QuizPage.currentQuestionIndex++;
             QuizPage.resetTimer();

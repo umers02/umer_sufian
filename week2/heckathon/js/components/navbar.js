@@ -10,19 +10,17 @@ const Navbar = {
                     <div class="flex ${isSelectQuizPage ? 'justify-between' : 'justify-between'} items-center h-16">
                         <div class="flex items-center ${isSelectQuizPage ? 'space-x-8' : ''}">
                             <div class="flex items-center space-x-2">
-                                <div class="w-6 h-6 bg-black rounded-sm flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">■</span>
-                                </div>
+                                <img src="assets/img/logo.png" alt="Logo" class="w-3.5 h-3">
                                 <span class="text-lg font-semibold text-gray-900">QuizMaster</span>
                             </div>
                             
                             ${isSelectQuizPage ? `
                                 <!-- Navigation Links for Select Quiz Page -->
                                 <div class="hidden md:flex items-center space-x-6 ml-8">
-                                    <a href="#" onclick="Router.navigate('landing')" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Home</a>
+                                    <a href="#" onclick="Router.navigate('landing')" class="text-sm font-medium transition-colors" style="color: #121417;">Home</a>
                                     <a href="#" onclick="Router.navigate('quizzes')" class="text-blue-600 text-sm font-medium">Quizzes</a>
-                                    <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Leaderboard</a>
-                                    <a href="#" onclick="Navbar.navigateToProfile()" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Profile</a>
+                                    <a href="#" class="text-sm font-medium transition-colors" style="color: #121417;">Leaderboard</a>
+                                    <a href="#" onclick="Navbar.navigateToProfile()" class="text-sm font-medium transition-colors" style="color: #121417;">Profile</a>
                                 </div>
                             ` : ''}
                         </div>
@@ -57,10 +55,10 @@ const Navbar = {
                         ` : `
                             <!-- Default Navigation -->
                             <div class="hidden md:flex items-center space-x-8">
-                                <a href="#" onclick="Router.navigate('landing')" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Home</a>
-                                <a href="#" onclick="Router.navigate('quizzes')" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Quizzes</a>
-                                <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Leaderboard</a>
-                                <a href="#" onclick="Navbar.navigateToProfile()" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Profile</a>
+                                <a href="#" onclick="Router.navigate('landing')" class="text-sm font-medium transition-colors" style="color: #121417;">Home</a>
+                                <a href="#" onclick="Router.navigate('quizzes')" class="text-sm font-medium transition-colors" style="color: #121417;">Quizzes</a>
+                                <a href="#" class="text-sm font-medium transition-colors" style="color: #121417;">Leaderboard</a>
+                                <a href="#" onclick="Navbar.navigateToProfile()" class="text-sm font-medium transition-colors" style="color: #121417;">Profile</a>
                                 <div class="flex items-center space-x-3 ml-4">
                                     <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 cursor-pointer transition-colors">
                                         <i class="fa-regular fa-bell text-gray-600"></i>
@@ -88,10 +86,10 @@ const Navbar = {
                     <!-- Mobile Navigation -->
                     <div id="mobileMenu" class="md:hidden hidden">
                         <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
-                            <a href="#" onclick="Router.navigate('landing'); Navbar.closeMobileMenu()" class="block px-3 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Home</a>
-                            <a href="#" onclick="Router.navigate('quizzes'); Navbar.closeMobileMenu()" class="block px-3 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Quizzes</a>
-                            <a href="#" onclick="Navbar.closeMobileMenu()" class="block px-3 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Leaderboard</a>
-                            <a href="#" onclick="Navbar.navigateToProfile(); Navbar.closeMobileMenu()" class="block px-3 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Profile</a>
+                            <a href="#" onclick="Router.navigate('landing'); Navbar.closeMobileMenu()" class="block px-3 py-2 text-sm font-medium" style="color: #121417;">Home</a>
+                            <a href="#" onclick="Router.navigate('quizzes'); Navbar.closeMobileMenu()" class="block px-3 py-2 text-sm font-medium" style="color: #121417;">Quizzes</a>
+                            <a href="#" onclick="Navbar.closeMobileMenu()" class="block px-3 py-2 text-sm font-medium" style="color: #121417;">Leaderboard</a>
+                            <a href="#" onclick="Navbar.navigateToProfile(); Navbar.closeMobileMenu()" class="block px-3 py-2 text-sm font-medium" style="color: #121417;">Profile</a>
                         </div>
                     </div>
                 </div>
