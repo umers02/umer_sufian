@@ -9,6 +9,10 @@ const Router = {
         Router.render();
     },
     
+    getCurrentPage: () => {
+        return Router.currentPage;
+    },
+    
     render: () => {
         const app = document.getElementById('app');
         

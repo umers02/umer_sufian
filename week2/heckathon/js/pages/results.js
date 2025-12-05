@@ -23,22 +23,22 @@ const ResultsPage = {
                     </div>
 
                     <!-- Score Card -->
-                    <div class="bg-gray-100 rounded-lg p-8 mb-8 max-w-md mx-auto">
+                    <div class="rounded-lg p-4 mb-8 max-w-[120] mx-auto text-left" style="background-color: #F0F2F5;">
                         <div class="mb-4">
                             <h3 class="text-lg font-medium text-gray-700 mb-2">Score</h3>
-                            <div class="text-4xl font-bold text-gray-900">${result.score}/${result.totalQuestions}</div>
+                            <div class="text-2xl font-bold text-gray-900">${result.score}/${result.totalQuestions}</div>
                         </div>
                     </div>
 
                     <!-- Congratulations Message -->
                     <div class="mb-8">
-                        <p class="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        <p class="text-sm max-w-4xl mx-auto leading-relaxed">
                             Congratulations, ${user ? user.fullName : 'User'}! You've completed the quiz with a score of ${result.score} out of ${result.totalQuestions}. Your performance indicates a strong understanding of the subject matter. Keep up the excellent work!
                         </p>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <div class="flex flex-col gap-4 justify-center w-48 mx-auto">
                         <button 
                             id="reviewBtn"
                             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 font-medium"

@@ -61,7 +61,7 @@ const SignupPage = {
                     <div class="text-center">
                         <p class="text-gray-600">
                             Already have an account? 
-                            <a href="#" id="signInLink" class="text-blue-600 hover:text-blue-700 font-medium">Sign In</a>
+                            <a href="#" id="signInLink" class=" hover:text-blue-700 font-medium">Sign In</a>
                         </p>
                     </div>
                 </div>

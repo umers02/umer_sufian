@@ -6,45 +6,35 @@ const SelectQuizPage = {
     render: () => {
         return `
             ${Navbar.render()}
-            <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-2xl font-bold text-gray-900">Select a Quiz</h1>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <input 
-                                type="text" 
-                                id="searchInput"
-                                placeholder="Search" 
-                                value="${SelectQuizPage.searchTerm}"
-                                oninput="SelectQuizPage.handleSearch(this.value)"
-                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                <span class="text-gray-400">🔍</span>
-                            </div>
-                        </div>
-                    </div>
+            <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                <div class="mb-6 sm:mb-8">
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Select a Quiz</h1>
                 </div>
 
                 <!-- Category Tabs -->
-                <div class="border-b border-gray-200 mb-8">
-                    <nav class="flex space-x-8">
+                <div class="mb-6 sm:mb-8">
+                    <nav class="flex flex-wrap gap-2 sm:gap-0 sm:space-x-8">
                         ${SelectQuizPage.renderCategoryTabs()}
                     </nav>
                 </div>
 
                 <!-- Featured Quizzes -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Featured Quizzes</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="mb-6 sm:mb-8">
+                    <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-4">Featured Quizzes</h2>
+                    <div class="flex flex-wrap gap-4 sm:gap-6 max-w-5xl">
+                        <style>
+                            .featured-card { width: calc(28.57% - 1rem); }
+                            @media (max-width: 640px) { .featured-card { width: 100%; } }
+                            @media (min-width: 641px) and (max-width: 768px) { .featured-card { width: calc(50% - 0.5rem); } }
+                        </style>
                         ${SelectQuizPage.renderFeaturedQuizzes()}
                     </div>
                 </div>
 
                 <!-- All Quizzes -->
                 <div>
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">All Quizzes</h2>
-                    <div id="quizListContainer" class="space-y-4">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">All Quizzes</h2>
+                    <div id="quizListContainer" class="space-y-3 sm:space-y-4">
                         ${SelectQuizPage.renderAllQuizzes()}
                     </div>
                 </div>
@@ -58,7 +48,7 @@ const SelectQuizPage = {
             const isActive = category === SelectQuizPage.currentCategory;
             return `
                 <button 
-                    class="py-2 px-1 border-b-2 ${isActive ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'} font-medium text-sm"
+                    class="py-2 px-3 bg-gray-100 rounded-lg ${isActive ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'} font-medium text-xs sm:text-sm whitespace-nowrap"
                     onclick="SelectQuizPage.setCategory('${category}')"
                 >
                     ${category}
@@ -69,13 +59,17 @@ const SelectQuizPage = {
 
     renderFeaturedQuizzes: () => {
         const featuredQuizzes = QuizData.quizzes.slice(0, 3);
-        return featuredQuizzes.map(quiz => `
-            <div class="bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg p-6 cursor-pointer hover:shadow-md transition duration-300" onclick="SelectQuizPage.startQuiz(${quiz.id})">
-                <div class="w-16 h-16 bg-orange-300 rounded-full mb-4 flex items-center justify-center">
-                    <span class="text-2xl">${SelectQuizPage.getCategoryIcon(quiz.category)}</span>
+        const images = ['universe.jpg', 'science.jpg', 'history.jpg']; // Add different image names here
+        return featuredQuizzes.map((quiz, index) => `
+            <div class="cursor-pointer featured-card" onclick="SelectQuizPage.startQuiz(${quiz.id})">
+                <div class="w-full h-40 sm:h-48 rounded-lg mb-3 sm:mb-4 overflow-hidden">
+                    <img src="assets/img/${images[index]}" alt="${quiz.title}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <div class="w-full h-full bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center" style="display:none">
+                        <span class="text-3xl sm:text-4xl">${SelectQuizPage.getCategoryIcon(quiz.category)}</span>
+                    </div>
                 </div>
-                <h3 class="font-semibold text-gray-900 mb-2">${quiz.title}</h3>
-                <p class="text-sm text-gray-600">${quiz.description}</p>
+                <h3 class="font-semibold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">${quiz.title}</h3>
+                <p class="text-xs sm:text-sm text-gray-600">${quiz.description}</p>
             </div>
         `).join('');
     },
@@ -95,19 +89,18 @@ const SelectQuizPage = {
             return '<div class="text-center py-8 text-gray-500">No quizzes found matching your search.</div>';
         }
         
-        return quizzes.map(quiz => `
-            <div class="flex items-center justify-between bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition duration-300 cursor-pointer" onclick="SelectQuizPage.startQuiz(${quiz.id})">
-                <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center">
-                        <span class="text-2xl">${SelectQuizPage.getCategoryIcon(quiz.category)}</span>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900">${quiz.title}</h3>
-                        <p class="text-sm text-gray-600">${quiz.description}</p>
-                    </div>
+        const allImages = ['universe.jpg', 'science.jpg', 'history.jpg', 'Literature.jpg', 'mathematics.jpg']; // Add more images as needed
+        return quizzes.map((quiz, index) => `
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between cursor-pointer" onclick="SelectQuizPage.startQuiz(${quiz.id})">
+                <div class="flex-1 mb-3 sm:mb-0">
+                    <h3 class="font-bold text-black mb-1 sm:mb-2 text-sm sm:text-base">${quiz.title}</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">${quiz.description}</p>
                 </div>
-                <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center">
-                    <span class="text-orange-600">▶</span>
+                <div class="w-full sm:w-80 h-32 sm:h-40 rounded-lg sm:ml-6 overflow-hidden flex-shrink-0">
+                    <img src="assets/img/${allImages[index % allImages.length]}" alt="${quiz.title}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <div class="w-full h-full bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center" style="display:none">
+                        <span class="text-xl sm:text-2xl">${SelectQuizPage.getCategoryIcon(quiz.category)}</span>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -150,5 +143,10 @@ const SelectQuizPage = {
         // Initialize with All category
         SelectQuizPage.currentCategory = 'All';
         SelectQuizPage.searchTerm = '';
+        // Make globally accessible for navbar
+        window.SelectQuizPage = SelectQuizPage;
     }
 };
+
+// Make globally accessible
+window.SelectQuizPage = SelectQuizPage;
