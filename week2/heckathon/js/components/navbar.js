@@ -1,20 +1,36 @@
 // Navbar component
 const Navbar = {
-    render: () => {
-        const currentPage = Router.getCurrentPage();
-        const isSelectQuizPage = currentPage === 'quizzes';
-        
-        return `
+  render: () => {
+    const currentPage = Router.getCurrentPage();
+    const isSelectQuizPage = currentPage === "quizzes";
+
+    return `
             <nav class="bg-white border-b border-gray-100">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div class="flex ${isSelectQuizPage ? 'justify-between' : 'justify-between'} items-center h-16">
-                        <div class="flex items-center ${isSelectQuizPage ? 'space-x-8' : ''}">
+                    <div class="flex ${
+                      isSelectQuizPage ? "justify-between" : "justify-between"
+                    } items-center h-16">
+                        <div class="flex items-center ${
+                          isSelectQuizPage ? "space-x-8" : ""
+                        }">
                             <div class="flex items-center space-x-2">
-                                <img src="assets/img/logo.png" alt="Logo" class="w-3.5 h-3">
+                               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2_316)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M2 2H14L12 8L14 14H2L4 8L2 2Z" fill="#121417"/>
+</g>
+<defs>
+<clipPath id="clip0_2_316">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
                                 <span class="text-lg font-semibold text-gray-900">QuizMaster</span>
                             </div>
                             
-                            ${isSelectQuizPage ? `
+                            ${
+                              isSelectQuizPage
+                                ? `
                                 <!-- Navigation Links for Select Quiz Page -->
                                 <div class="hidden md:flex items-center space-x-6 ml-8">
                                     <a href="#" onclick="Router.navigate('landing')" class="text-sm font-medium transition-colors" style="color: #121417;">Home</a>
@@ -22,10 +38,14 @@ const Navbar = {
                                     <a href="#" class="text-sm font-medium transition-colors" style="color: #121417;">Leaderboard</a>
                                     <a href="#" onclick="Navbar.navigateToProfile()" class="text-sm font-medium transition-colors" style="color: #121417;">Profile</a>
                                 </div>
-                            ` : ''}
+                            `
+                                : ""
+                            }
                         </div>
                         
-                        ${isSelectQuizPage ? `
+                        ${
+                          isSelectQuizPage
+                            ? `
                             <!-- Search and Profile for Select Quiz Page -->
                             <div class="hidden md:flex items-center space-x-4">
                                 <div class="relative">
@@ -52,7 +72,8 @@ const Navbar = {
                                     </div>
                                 </div>
                             </div>
-                        ` : `
+                        `
+                            : `
                             <!-- Default Navigation -->
                             <div class="hidden md:flex items-center space-x-8">
                                 <a href="#" onclick="Router.navigate('landing')" class="text-sm font-medium transition-colors" style="color: #121417;">Home</a>
@@ -71,7 +92,8 @@ const Navbar = {
                                     </div>
                                 </div>
                             </div>
-                        `}
+                        `
+                        }
                         
                         <!-- Mobile menu button -->
                         <div class="md:hidden">
@@ -95,44 +117,50 @@ const Navbar = {
                 </div>
             </nav>
         `;
-    },
+  },
 
-    navigateToProfile: () => {
-        const user = Storage.getUser();
-        if (user) {
-            Router.navigate('profile');
-        } else {
-            alert('Please sign in to access your profile.');
-            Router.navigate('signin');
-        }
-    },
-
-    handleSearch: (searchValue) => {
-        if (window.SelectQuizPage && typeof window.SelectQuizPage.handleSearch === 'function') {
-            window.SelectQuizPage.handleSearch(searchValue);
-        }
-    },
-
-    toggleMobileMenu: () => {
-        const mobileMenu = document.getElementById('mobileMenu');
-        if (mobileMenu) {
-            mobileMenu.classList.toggle('hidden');
-        }
-    },
-
-    closeMobileMenu: () => {
-        const mobileMenu = document.getElementById('mobileMenu');
-        if (mobileMenu) {
-            mobileMenu.classList.add('hidden');
-        }
-    },
-
-    init: () => {
-        // Add event listener for mobile menu button
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'mobileMenuBtn' || e.target.closest('#mobileMenuBtn')) {
-                Navbar.toggleMobileMenu();
-            }
-        });
+  navigateToProfile: () => {
+    const user = Storage.getUser();
+    if (user) {
+      Router.navigate("profile");
+    } else {
+      alert("Please sign in to access your profile.");
+      Router.navigate("signin");
     }
+  },
+
+  handleSearch: (searchValue) => {
+    if (
+      window.SelectQuizPage &&
+      typeof window.SelectQuizPage.handleSearch === "function"
+    ) {
+      window.SelectQuizPage.handleSearch(searchValue);
+    }
+  },
+
+  toggleMobileMenu: () => {
+    const mobileMenu = document.getElementById("mobileMenu");
+    if (mobileMenu) {
+      mobileMenu.classList.toggle("hidden");
+    }
+  },
+
+  closeMobileMenu: () => {
+    const mobileMenu = document.getElementById("mobileMenu");
+    if (mobileMenu) {
+      mobileMenu.classList.add("hidden");
+    }
+  },
+
+  init: () => {
+    // Add event listener for mobile menu button
+    document.addEventListener("click", (e) => {
+      if (
+        e.target.id === "mobileMenuBtn" ||
+        e.target.closest("#mobileMenuBtn")
+      ) {
+        Navbar.toggleMobileMenu();
+      }
+    });
+  },
 };
