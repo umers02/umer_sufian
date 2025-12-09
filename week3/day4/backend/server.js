@@ -13,7 +13,10 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://project-management-frontend-beige.vercel.app"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
