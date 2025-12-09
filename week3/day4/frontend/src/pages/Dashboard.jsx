@@ -41,26 +41,54 @@ const Dashboard = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 0 } }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        py: { xs: 2, sm: 3, md: 5 },
+        px: { xs: 2, sm: 0 },
+        background:
+          'radial-gradient(circle at 15% 15%, rgba(105,166,255,0.2), transparent 30%), radial-gradient(circle at 85% 10%, rgba(220,0,78,0.18), transparent 28%), #0b1021',
+      }}
+    >
       <Container maxWidth="lg">
-        <Box ref={heroRef} sx={{ textAlign: 'center', mb: { xs: 3, sm: 4, md: 6 } }}>
-          <Typography variant="h2" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.5rem' } }}>
+        <Box
+          ref={heroRef}
+          sx={{
+            textAlign: 'center',
+            mb: { xs: 4, sm: 5, md: 7 },
+            color: 'white',
+          }}
+        >
+          <Typography variant="overline" sx={{ letterSpacing: 3, color: 'rgba(255,255,255,0.7)' }}>
+            Overview
+          </Typography>
+          <Typography variant="h2" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '2rem', sm: '2.8rem', md: '3.6rem' } }}>
             Team & Project Portal
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.25rem' } }}>
-            Manage your projects and team members efficiently
+          <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.8)', fontSize: { xs: '1rem', sm: '1.05rem', md: '1.2rem' } }}>
+            Manage your projects, track progress, and align your team in one place.
           </Typography>
         </Box>
-        <Grid ref={cardsRef} container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
+        <Grid ref={cardsRef} container spacing={{ xs: 2.5, sm: 3, md: 3.5 }}>
           {statCards.map((card, idx) => (
             <Grid item xs={12} sm={6} md={3} key={idx}>
-              <Card sx={{ bgcolor: card.color, color: 'white', '&:hover': { transform: 'scale(1.05)', transition: '0.3s' } }}>
-                <CardContent sx={{ textAlign: 'center', py: { xs: 2, sm: 2.5, md: 3 } }}>
+              <Card
+                sx={{
+                  height: '100%',
+                  background: `linear-gradient(160deg, ${card.color} 0%, ${card.color}cc 35%, #0b1021 100%)`,
+                  color: 'white',
+                  borderRadius: 3,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
+                  '&:hover': { transform: 'translateY(-6px)', transition: 'all 0.3s ease' },
+                }}
+              >
+                <CardContent sx={{ textAlign: 'center', py: { xs: 2.5, sm: 3 }, display: 'grid', gap: 1 }}>
                   {card.icon}
-                  <Typography variant="h3" fontWeight="bold" mt={2} sx={{ fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
+                  <Typography variant="h3" fontWeight="bold" mt={1} sx={{ fontSize: { xs: '2rem', sm: '2.6rem', md: '3rem' } }}>
                     {card.value}
                   </Typography>
-                  <Typography variant="h6" sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.25rem' } }}>{card.title}</Typography>
+                  <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.1rem' } }}>{card.title}</Typography>
                 </CardContent>
               </Card>
             </Grid>

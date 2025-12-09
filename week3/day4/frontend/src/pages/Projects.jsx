@@ -70,26 +70,101 @@ const Projects = () => {
   };
 
   return (
-    <Container sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 3, md: 4 }, flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 0 } }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>Projects</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()} sx={{ width: { xs: '100%', sm: 'auto' } }}>Add Project</Button>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background:
+          'radial-gradient(circle at 15% 15%, rgba(105,166,255,0.2), transparent 30%), radial-gradient(circle at 85% 10%, rgba(220,0,78,0.18), transparent 28%), #0b1021',
+      }}
+    >
+      <Container
+        sx={{
+          py: { xs: 2.5, sm: 3.5, md: 5 },
+          px: { xs: 2, sm: 3 },
+          color: 'white',
+        }}
+      >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: { xs: 3, sm: 4, md: 5 },
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 2, sm: 0 },
+        }}
+      >
+        <Box>
+          <Typography variant="overline" sx={{ letterSpacing: 2, color: 'rgba(255,255,255,0.7)' }}>Workspace</Typography>
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.9rem', sm: '2.2rem' } }}>Projects</Typography>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
+            Track initiatives, technology stack, and ownership in one place.
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => handleOpen()}
+          sx={{
+            width: { xs: '100%', sm: 'auto' },
+            textTransform: 'none',
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #69a6ff, #7c3aed)',
+            boxShadow: '0 10px 30px rgba(105,166,255,0.35)',
+          }}
+        >
+          Add Project
+        </Button>
       </Box>
-      <Grid ref={cardsRef} container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
+      <Grid ref={cardsRef} container spacing={{ xs: 2.5, sm: 3, md: 3.5 }}>
         {projects.map((project) => (
           <Grid item xs={12} md={6} lg={4} key={project._id}>
-            <Card sx={{ height: '100%', '&:hover': { boxShadow: 6 } }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold">{project.title}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ my: 1 }}>{project.description}</Typography>
-                <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', my: 1 }}>
-                  {project.techStack.map((tech, i) => <Chip key={i} label={tech} size="small" />)}
+            <Card
+              sx={{
+                height: '100%',
+                background: 'linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'white',
+                borderRadius: 3,
+                boxShadow: '0 14px 40px rgba(0,0,0,0.35)',
+                '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.25s ease' },
+              }}
+            >
+              <CardContent sx={{ display: 'grid', gap: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">{project.title}</Typography>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
+                      {project.description}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={project.status}
+                    color={project.status === 'active' ? 'primary' : 'success'}
+                    size="small"
+                    sx={{ fontWeight: 700, textTransform: 'capitalize' }}
+                  />
                 </Box>
-                <Chip label={project.status} color={project.status === 'active' ? 'primary' : 'success'} size="small" />
+                <Box sx={{ display: 'flex', gap: 0.6, flexWrap: 'wrap', mt: 0.5 }}>
+                  {project.techStack.map((tech, i) => (
+                    <Chip
+                      key={i}
+                      label={tech}
+                      size="small"
+                      sx={{ bgcolor: 'rgba(255,255,255,0.08)', color: 'white', borderRadius: 1.5 }}
+                    />
+                  ))}
+                </Box>
               </CardContent>
-              <CardActions>
-                <IconButton onClick={() => handleOpen(project)}><EditIcon /></IconButton>
-                <IconButton onClick={() => handleDelete(project._id)} color="error"><DeleteIcon /></IconButton>
+              <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton onClick={() => handleOpen(project)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.08)' }}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(project._id)} color="error" sx={{ bgcolor: 'rgba(255,255,255,0.08)' }}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               </CardActions>
             </Card>
           </Grid>
@@ -97,7 +172,7 @@ const Projects = () => {
       </Grid>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>{editId ? 'Edit Project' : 'Add Project'}</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>{editId ? 'Edit Project' : 'Add Project'}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField label="Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -118,6 +193,7 @@ const Projects = () => {
         </DialogActions>
       </Dialog>
     </Container>
+    </Box>
   );
 };
 
