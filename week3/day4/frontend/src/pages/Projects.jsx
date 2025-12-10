@@ -73,15 +73,14 @@ const Projects = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background:
-          'radial-gradient(circle at 15% 15%, rgba(105,166,255,0.2), transparent 30%), radial-gradient(circle at 85% 10%, rgba(220,0,78,0.18), transparent 28%), #0b1021',
+        background: theme => theme.palette.mode === 'dark' ? 'radial-gradient(circle at 15% 15%, rgba(105,166,255,0.2), transparent 30%), radial-gradient(circle at 85% 10%, rgba(220,0,78,0.18), transparent 28%), #0b1021' : 'radial-gradient(circle at 15% 15%, rgba(105,166,255,0.1), transparent 30%), radial-gradient(circle at 85% 10%, rgba(220,0,78,0.1), transparent 28%), #f8fafc',
       }}
     >
       <Container
         sx={{
           py: { xs: 2.5, sm: 3.5, md: 5 },
           px: { xs: 2, sm: 3 },
-          color: 'white',
+          color: theme => theme.palette.mode === 'dark' ? 'white' : 'black',
         }}
       >
       <Box
@@ -95,9 +94,9 @@ const Projects = () => {
         }}
       >
         <Box>
-          <Typography variant="overline" sx={{ letterSpacing: 2, color: 'rgba(255,255,255,0.7)' }}>Workspace</Typography>
+          <Typography variant="overline" sx={{ letterSpacing: 2, color: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}>Workspace</Typography>
           <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.9rem', sm: '2.2rem' } }}>Projects</Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
+          <Typography variant="body2" sx={{ color: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)', mt: 0.5 }}>
             Track initiatives, technology stack, and ownership in one place.
           </Typography>
         </Box>
@@ -122,9 +121,9 @@ const Projects = () => {
             <Card
               sx={{
                 height: '100%',
-                background: 'linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'white',
+                background: theme => theme.palette.mode === 'dark' ? 'linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))' : 'linear-gradient(160deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02))',
+                border: theme => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+                color: theme => theme.palette.mode === 'dark' ? 'white' : 'black',
                 borderRadius: 3,
                 boxShadow: '0 14px 40px rgba(0,0,0,0.35)',
                 '&:hover': { transform: 'translateY(-4px)', transition: 'all 0.25s ease' },
@@ -134,7 +133,7 @@ const Projects = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
                   <Box>
                     <Typography variant="subtitle1" fontWeight="bold">{project.title}</Typography>
-                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
+                    <Typography variant="body2" sx={{ color: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)', mt: 0.5 }}>
                       {project.description}
                     </Typography>
                   </Box>
@@ -151,17 +150,17 @@ const Projects = () => {
                       key={i}
                       label={tech}
                       size="small"
-                      sx={{ bgcolor: 'rgba(255,255,255,0.08)', color: 'white', borderRadius: 1.5 }}
+                      sx={{ bgcolor: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', color: theme => theme.palette.mode === 'dark' ? 'white' : 'black', borderRadius: 1.5 }}
                     />
                   ))}
                 </Box>
               </CardContent>
               <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton onClick={() => handleOpen(project)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.08)' }}>
+                  <IconButton onClick={() => handleOpen(project)} sx={{ color: theme => theme.palette.mode === 'dark' ? 'white' : 'black', bgcolor: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(project._id)} color="error" sx={{ bgcolor: 'rgba(255,255,255,0.08)' }}>
+                  <IconButton onClick={() => handleDelete(project._id)} color="error" sx={{ bgcolor: theme => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
                     <DeleteIcon />
                   </IconButton>
                 </Box>

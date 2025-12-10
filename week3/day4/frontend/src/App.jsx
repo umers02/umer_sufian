@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
@@ -9,20 +10,31 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Members from './pages/Members';
 
-const theme = createTheme({
-  palette: {
-    primary: { main: '#1976d2' },
-    secondary: { main: '#dc004e' },
-  },
-});
-
 function App() {
+  const [isDark, setIsDark] = useState(false);
+
+  const theme = createTheme({
+    palette: {
+      mode: isDark ? 'dark' : 'light',
+      primary: { main: '#69a6ff' },
+      secondary: { main: '#7c3aed' },
+      background: {
+        default: isDark ? '#0f172a' : '#ffffff',
+        paper: isDark ? '#1e293b' : '#f8fafc',
+      },
+    },
+  });
+
+  const handleThemeToggle = () => {
+    setIsDark(!isDark);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
         <AuthProvider>
-          <Navbar />
+          <Navbar isDark={isDark} onThemeToggle={handleThemeToggle} />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

@@ -25,6 +25,12 @@ const Login = () => {
     },
     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
     '& .MuiInputBase-input': { color: 'white' },
+    '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus': {
+      WebkitBoxShadow: '0 0 0 100px rgba(255,255,255,0.04) inset',
+      WebkitTextFillColor: 'white',
+      caretColor: 'white',
+      transition: 'background-color 5000s ease-in-out 0s',
+    },
   };
 
   useEffect(() => {

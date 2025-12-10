@@ -26,6 +26,12 @@ const Register = () => {
     },
     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
     '& .MuiInputBase-input': { color: 'white' },
+    '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus': {
+      WebkitBoxShadow: '0 0 0 100px rgba(255,255,255,0.04) inset',
+      WebkitTextFillColor: 'white',
+      caretColor: 'white',
+      transition: 'background-color 5000s ease-in-out 0s',
+    },
   };
 
   useEffect(() => {
@@ -82,17 +88,7 @@ const Register = () => {
             Set up your profile to collaborate securely with your team.
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
-          <Button size="small" disableElevation sx={{ px: 1.5, py: 0.75, borderRadius: 2, background: 'rgba(255,255,255,0.08)', color: 'white', textTransform: 'none', fontWeight: 700 }}>
-            Secure by design
-          </Button>
-          <Button size="small" disableElevation sx={{ px: 1.5, py: 0.75, borderRadius: 2, background: 'rgba(255,255,255,0.08)', color: 'white', textTransform: 'none', fontWeight: 700 }}>
-            Team-ready
-          </Button>
-          <Button size="small" disableElevation sx={{ px: 1.5, py: 0.75, borderRadius: 2, background: 'rgba(255,255,255,0.08)', color: 'white', textTransform: 'none', fontWeight: 700 }}>
-            24/7 access
-          </Button>
-        </Stack>
+
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)', mb: 2 }} />
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
