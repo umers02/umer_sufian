@@ -16,6 +16,7 @@ const memberSchema = new mongoose.Schema({
   role: {
     type: String,
     required: [true, 'Role is required'],
+    enum: ['Admin', 'Manager', 'TeamLead', 'Developer', 'Designer', 'QA', 'Support', 'HR', 'Intern'],
     trim: true
   },
   skills: [{
