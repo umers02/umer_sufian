@@ -284,8 +284,8 @@ const getOrders = async (req, res, next) => {
 
     const orders = await Order.find(filter)
       .populate('user', 'name email')
-      .populate('items.product', 'name')
-      .populate('items.variant', 'size weight')
+      .populate('items.product', 'name images')
+      .populate('items.variant', 'name size weight')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);

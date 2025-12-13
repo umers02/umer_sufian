@@ -1,19 +1,10 @@
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Card, CardContent } from '../components/ui/card'
 import { CheckCircle, Package, Truck } from 'lucide-react'
 
 export default function OrderConfirmation() {
   const navigate = useNavigate()
-  const { clearCart } = useCart()
-
-  useEffect(() => {
-    // Clear cart after successful order
-    clearCart()
-  }, [clearCart])
-
   const orderNumber = localStorage.getItem('currentOrderNumber') || 'ORD123456'
 
   return (

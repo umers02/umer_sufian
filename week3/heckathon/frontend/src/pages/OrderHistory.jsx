@@ -19,36 +19,15 @@ export default function OrderHistory() {
 
   const fetchOrders = async () => {
     try {
-      const response = await orderApi.getUserOrders()
+      setLoading(true)
+      setError('')
+      // Use getOrders which fetches orders for the current user
+      const response = await orderApi.getOrders()
       setOrders(response.orders || [])
     } catch (error) {
-      console.log('Orders API failed, using local order data:', error.message)
-      // Fallback to show current order from localStorage
-      const orderNumber = localStorage.getItem('currentOrderNumber')
-      const orderData = localStorage.getItem('orderData')
-      
-      if (orderNumber && orderData) {
-        const parsedOrderData = JSON.parse(orderData)
-        const mockOrder = {
-          _id: orderNumber,
-          status: 'confirmed',
-          createdAt: new Date().toISOString(),
-          items: parsedOrderData.items,
-          subtotal: parsedOrderData.subtotal,
-          shippingCost: parsedOrderData.delivery,
-          total: parsedOrderData.total,
-          shippingAddress: {
-            fullName: 'John Doe',
-            address: '123 Main Street',
-            city: 'New York',
-            postalCode: '10001',
-            country: 'USA'
-          }
-        }
-        setOrders([mockOrder])
-      } else {
-        setOrders([])
-      }
+      console.error('Error fetching orders:', error)
+      setError('Failed to load order history. Please try again.')
+      setOrders([])
     } finally {
       setLoading(false)
     }
@@ -106,7 +85,9 @@ export default function OrderHistory() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">Order #{order._id.slice(-8)}</CardTitle>
+                      <CardTitle className="text-lg">
+                        Order {order.orderNumber || `#${order._id?.slice(-8) || 'N/A'}`}
+                      </CardTitle>
                       <p className="text-sm text-gray-600">
                         Placed on {new Date(order.createdAt).toLocaleDateString()}
                       </p>
@@ -129,13 +110,13 @@ export default function OrderHistory() {
                               className="w-12 h-12 object-cover rounded"
                             />
                             <div>
-                              <p className="font-medium">{item.product?.name}</p>
+                              <p className="font-medium">{item.productName || item.product?.name || 'Product'}</p>
                               <p className="text-sm text-gray-600">
-                                {item.variant?.name} × {item.quantity}
+                                {item.variantName || item.variant?.name || item.variant?.size || 'Standard'} × {item.quantity}
                               </p>
                             </div>
                           </div>
-                          <p className="font-medium">{formatPrice(item.price * item.quantity)}</p>
+                          <p className="font-medium">{formatPrice((item.price || 0) * (item.quantity || 1))}</p>
                         </div>
                       ))}
                     </div>
@@ -144,28 +125,30 @@ export default function OrderHistory() {
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
                         <span>Subtotal:</span>
-                        <span>{formatPrice(order.subtotal)}</span>
+                        <span>{formatPrice(order.totalAmount || 0)}</span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
                         <span>Shipping:</span>
-                        <span>{formatPrice(order.shippingCost)}</span>
+                        <span>€3.95</span>
                       </div>
                       <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
                         <span>Total:</span>
-                        <span>{formatPrice(order.total)}</span>
+                        <span>{formatPrice((order.totalAmount || 0) + 3.95)}</span>
                       </div>
                     </div>
                     
                     {/* Shipping Address */}
-                    <div>
-                      <h4 className="font-semibold mb-2">Shipping Address</h4>
-                      <div className="text-sm text-gray-600">
-                        <p>{order.shippingAddress?.fullName}</p>
-                        <p>{order.shippingAddress?.address}</p>
-                        <p>{order.shippingAddress?.city}, {order.shippingAddress?.postalCode}</p>
-                        <p>{order.shippingAddress?.country}</p>
+                    {/* Shipping Address */}
+                    {order.shippingAddress && (
+                      <div>
+                        <h4 className="font-semibold mb-2">Shipping Address</h4>
+                        <div className="text-sm text-gray-600">
+                          <p>{order.shippingAddress.street}</p>
+                          <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
+                          <p>{order.shippingAddress.country}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

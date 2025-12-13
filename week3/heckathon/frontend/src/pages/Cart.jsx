@@ -38,44 +38,82 @@ export default function Cart() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div key={`${item.id}-${item.variant}`} className="flex items-center gap-4 p-4 border rounded-lg">
-                      <img 
-                        src={item.image || '/placeholder-tea.jpg'} 
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-sm text-gray-600">{item.variant}</p>
-                        <p className="font-medium">{formatPrice(item.price)}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
+                  {cartItems.map((item) => {
+                    // Handle variant - can be string or object
+                    let variantDisplay = 'Standard'
+                    if (item.variant) {
+                      if (typeof item.variant === 'object' && item.variant !== null) {
+                        variantDisplay = item.variant.name || item.variant.size || 'Standard'
+                      } else if (typeof item.variant === 'string') {
+                        variantDisplay = item.variant
+                      }
+                    }
+                    
+                    // Get product name - handle both string and object cases
+                    let productName = 'Product'
+                    if (item.name) {
+                      productName = typeof item.name === 'string' ? item.name : (item.name.name || 'Product')
+                    } else if (item.product) {
+                      if (typeof item.product === 'object' && item.product !== null) {
+                        productName = item.product.name || 'Product'
+                      } else if (typeof item.product === 'string') {
+                        productName = item.product
+                      }
+                    }
+                    
+                    // Get item image
+                    let itemImage = '/placeholder-tea.jpg'
+                    if (item.image) {
+                      itemImage = typeof item.image === 'string' ? item.image : (item.image[0] || '/placeholder-tea.jpg')
+                    } else if (item.product?.images && Array.isArray(item.product.images) && item.product.images.length > 0) {
+                      itemImage = item.product.images[0]
+                    }
+                    
+                    // Get item ID for operations
+                    const itemId = item._id || item.id
+                    const variantId = typeof item.variant === 'object' && item.variant?._id 
+                      ? item.variant._id 
+                      : (item.variantId || (typeof item.variant === 'string' ? item.variant : String(itemId)))
+                    
+                    return (
+                      <div key={`${itemId}-${String(variantId)}`} className="flex items-center gap-4 p-4 border rounded-lg">
+                        <img 
+                          src={itemImage} 
+                          alt={productName}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{productName}</h3>
+                          <p className="text-sm text-gray-600">{variantDisplay}</p>
+                          <p className="font-medium">{formatPrice(item.price || 0)}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="icon-sm"
+                            onClick={() => updateQuantity(itemId, item.quantity - 1)}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center">{item.quantity}</span>
+                          <Button 
+                            variant="outline" 
+                            size="icon-sm"
+                            onClick={() => updateQuantity(itemId, item.quantity + 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
                         <Button 
-                          variant="outline" 
+                          variant="destructive" 
                           size="icon-sm"
-                          onClick={() => updateQuantity(item.id, item.variant, item.quantity - 1)}
+                          onClick={() => removeFromCart(itemId)}
                         >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button 
-                          variant="outline" 
-                          size="icon-sm"
-                          onClick={() => updateQuantity(item.id, item.variant, item.quantity + 1)}
-                        >
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <Button 
-                        variant="destructive" 
-                        size="icon-sm"
-                        onClick={() => removeFromCart(item.id, item.variant)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>

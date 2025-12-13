@@ -41,116 +41,25 @@ export default function Collection() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      // Try real API first, fallback to mock data
-      try {
-        const params = {
-          page: currentPage,
-          limit: 9,
-          ...selectedFilters,
-          sortBy
-        }
-        
-        if (selectedCategories.length > 0) {
-          params.category = selectedCategories.join(',')
-        }
-        const response = await productApi.getProducts(params)
-        setProducts(response.products || [])
-        setTotalPages(response.totalPages || 1)
-      } catch (apiError) {
-        // Fallback to mock data if API fails
-        console.log('Products API failed, using mock data:', apiError.message)
-        const allMockProducts = [
-          {
-            _id: '1',
-            name: 'Ceylon Ginger Cinnamon Tea',
-            basePrice: 4.85,
-            images: ['/cineman-tea.jpg'],
-            category: { name: 'Black teas' }
-          },
-          {
-            _id: '2', 
-            name: 'Earl Grey Black Tea',
-            basePrice: 5.99,
-            images: ['/cinemon-card-2.jpg'],
-            category: { name: 'Black teas' }
-          },
-          {
-            _id: '3',
-            name: 'Green Dragon Well',
-            basePrice: 7.50,
-            images: ['/cinemon-card-3.jpg'], 
-            category: { name: 'Green teas' }
-          },
-          {
-            _id: '4',
-            name: 'Jasmine Green Tea',
-            basePrice: 6.25,
-            images: ['/cinemon-card-4.jpg'], 
-            category: { name: 'Green teas' }
-          },
-          {
-            _id: '5',
-            name: 'White Peony Tea',
-            basePrice: 8.99,
-            images: ['/cinemon-card-5.jpg'], 
-            category: { name: 'White teas' }
-          },
-          {
-            _id: '6',
-            name: 'Chamomile Herbal Tea',
-            basePrice: 4.50,
-            images: ['/cinemon-card-6.jpg'], 
-            category: { name: 'Herbal teas' }
-          },
-          {
-            _id: '7',
-            name: 'Premium Matcha',
-            basePrice: 12.99,
-            images: ['/our-collection-card-1.jpg'], 
-            category: { name: 'Matcha' }
-          },
-          {
-            _id: '8',
-            name: 'Rooibos Vanilla',
-            basePrice: 5.75,
-            images: ['/our-collection-card-2.jpg'], 
-            category: { name: 'Rooibos' }
-          }
-        ]
-        
-        // Filter mock products based on selected categories
-        let filteredProducts = allMockProducts
-        if (selectedCategories.length > 0) {
-          filteredProducts = allMockProducts.filter(product => 
-            selectedCategories.includes(product.category.name)
-          )
-        }
-        
-        // Sort filtered products
-        if (sortBy) {
-          filteredProducts.sort((a, b) => {
-            switch (sortBy) {
-              case 'price_asc':
-                return a.basePrice - b.basePrice
-              case 'price_desc':
-                return b.basePrice - a.basePrice
-              case 'name_asc':
-                return a.name.localeCompare(b.name)
-              case 'name_desc':
-                return b.name.localeCompare(a.name)
-              default:
-                return 0
-            }
-          })
-        }
-        
-        const mockProducts = filteredProducts
-        
-        setProducts(filteredProducts)
-        setTotalPages(1)
+      const params = {
+        page: currentPage,
+        limit: 9,
+        ...selectedFilters,
+        sortBy
       }
+      
+      if (selectedCategories.length > 0) {
+        params.category = selectedCategories.join(',')
+      }
+      
+      const response = await productApi.getProducts(params)
+      setProducts(response.products || [])
+      setTotalPages(response.pagination?.totalPages || response.totalPages || 1)
     } catch (error) {
       console.error('Error fetching products:', error)
+      // Set empty array if API fails - no fallback to mock data
+      setProducts([])
+      setTotalPages(1)
     } finally {
       setLoading(false)
     }
@@ -743,7 +652,14 @@ export default function Collection() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 w-full min-w-0">
                   {products.map((product) => (
-                    <Link key={product._id} to={`/product/${product._id}`} className="group cursor-pointer w-full">
+                    <Link 
+                      key={product._id} 
+                      to={`/product/${product._id}`} 
+                      className="group cursor-pointer w-full"
+                      onClick={() => {
+                        console.log('Navigating to product:', product._id, product.name)
+                      }}
+                    >
                       <div className="bg-gray-100 aspect-square mb-4 w-full">
                         <img 
                           src={product.images?.[0] || '/cineman-tea.jpg'} 

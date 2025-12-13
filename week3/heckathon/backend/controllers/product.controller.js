@@ -24,14 +24,42 @@ const getProducts = async (req, res, next) => {
     // Build filter object
     let filter = { isActive: true };
 
-    // Handle multiple categories
+    // Handle multiple categories - can be names or IDs
     if (category) {
+      let categoryIds = [];
+      
       if (Array.isArray(category)) {
-        filter.category = { $in: category };
+        categoryIds = category;
       } else if (category.includes(',')) {
-        filter.category = { $in: category.split(',') };
+        categoryIds = category.split(',');
       } else {
-        filter.category = category;
+        categoryIds = [category];
+      }
+      
+      // Check if categories are ObjectIds or names
+      const isValidObjectId = (id) => {
+        return /^[0-9a-fA-F]{24}$/.test(String(id));
+      };
+      
+      const isObjectId = categoryIds.every(id => isValidObjectId(id));
+      
+      if (isObjectId) {
+        // All are ObjectIds, use directly
+        filter.category = categoryIds.length === 1 ? categoryIds[0] : { $in: categoryIds };
+      } else {
+        // Categories are names, need to find their IDs
+        const categories = await Category.find({ 
+          name: { $in: categoryIds },
+          isActive: true 
+        });
+        const foundIds = categories.map(cat => cat._id);
+        
+        if (foundIds.length > 0) {
+          filter.category = foundIds.length === 1 ? foundIds[0] : { $in: foundIds };
+        } else {
+          // No categories found, return empty result
+          filter.category = { $in: [] };
+        }
       }
     }
     if (flavor) filter.flavor = new RegExp(flavor, "i");
@@ -76,9 +104,14 @@ const getProducts = async (req, res, next) => {
     }
 
     // Add sorting
-    const sortObj = {};
-    sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
-    pipeline.push({ $sort: sortObj });
+    if (sortBy && sortBy.trim() !== '') {
+      const sortObj = {};
+      sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
+      pipeline.push({ $sort: sortObj });
+    } else {
+      // Default sort by createdAt descending
+      pipeline.push({ $sort: { createdAt: -1 } });
+    }
 
     // Add pagination
     pipeline.push({ $skip: skip }, { $limit: limitNum });
@@ -120,12 +153,17 @@ const getProducts = async (req, res, next) => {
 
 const getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate("category")
-      .populate({
-        path: "variants",
-        match: { isActive: true },
-      });
+    const { id } = req.params;
+    
+    // Validate ObjectId format
+    if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+      return next(new ErrorResponse("Invalid product ID format", 400));
+    }
+
+    // Find product with category population
+    const product = await Product.findById(id)
+      .populate("category", "name _id")
+      .lean(); // Use lean() for better performance
 
     if (!product) {
       return next(new ErrorResponse("Product not found", 404));
@@ -135,16 +173,21 @@ const getProduct = async (req, res, next) => {
     const variants = await Variant.find({
       product: product._id,
       isActive: true,
-    });
+    }).lean();
 
     res.json({
       success: true,
       product: {
-        ...product.toObject(),
-        variants,
+        ...product,
+        variants: variants || [],
       },
     });
   } catch (error) {
+    console.error('Error in getProduct:', error);
+    // Handle MongoDB cast errors
+    if (error.name === 'CastError') {
+      return next(new ErrorResponse("Invalid product ID", 400));
+    }
     next(error);
   }
 };

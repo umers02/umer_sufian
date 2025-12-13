@@ -29,9 +29,11 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
       const response = await cartApi.getCart()
-      setCartItems(response.items || [])
+      // Backend returns { success: true, cart: { items: [...] } }
+      setCartItems(response.cart?.items || response.items || [])
     } catch (error) {
       console.error('Failed to fetch cart:', error)
+      setCartItems([])
     }
   }
 
@@ -58,7 +60,7 @@ export const CartProvider = ({ children }) => {
         )
         setCartItems(updatedItems)
       } else {
-        // Add new item
+        // Add new item - store variantId so we can sync later
         const newItem = {
           _id: Date.now().toString(),
           id: product.id,
@@ -66,10 +68,12 @@ export const CartProvider = ({ children }) => {
           image: product.image,
           product: {
             id: product.id,
+            _id: product.id, // Store both for compatibility
             name: product.name,
             images: [product.image]
           },
           variant: product.variant,
+          variantId: product.variantId, // Store variantId for syncing
           quantity: product.quantity,
           price: typeof product.price === 'number' ? product.price : parseFloat(product.price.toString().replace('€', ''))
         }

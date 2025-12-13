@@ -1,160 +1,242 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { useCart } from '../context/CartContext'
+import { productApi } from '../services/product.api'
+import Loader from '../components/ui/Loader'
 
 export default function Product() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { addToCart } = useCart()
   const [productData, setProductData] = useState(null)
-  const [selectedVariant, setSelectedVariant] = useState('50g')
+  const [selectedVariant, setSelectedVariant] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const variants = [
-    { size: '50 g bag', value: '50g', price: '€3.90' },
-    { size: '100 g bag', value: '100g', price: '€7.50' },
-    { size: '170 g bag', value: '170g', price: '€12.00' },
-    { size: '250 g bag', value: '250g', price: '€17.50' },
-    { size: '1 kg g bag', value: '1kg', price: '€65.00' },
-    { size: 'Sampler', value: 'sampler', price: '€2.50' }
-  ]
-
-  // Get product data based on ID
+  // Fetch product from API
   useEffect(() => {
-    const fetchProductData = () => {
-      const products = {
-        '1': {
-          id: 1,
-          name: 'Ceylon Ginger Cinnamon Tea',
-          price: '€4.85',
-          basePrice: 4.85,
-          weight: '50 g',
-          image: '/cineman-tea.jpg',
-          description: 'A warming blend of Ceylon black tea with aromatic ginger and cinnamon spices.',
-          category: 'Black teas'
-        },
-        '2': {
-          id: 2,
-          name: 'Earl Grey Black Tea',
-          price: '€5.99',
-          basePrice: 5.99,
-          weight: '50 g',
-          image: '/cinemon-card-2.jpg',
-          description: 'Classic Earl Grey black tea infused with bergamot oil for a distinctive citrusy flavor.',
-          category: 'Black teas'
-        },
-        '3': {
-          id: 3,
-          name: 'Green Dragon Well',
-          price: '€7.50',
-          basePrice: 7.50,
-          weight: '50 g',
-          image: '/cinemon-card-3.jpg',
-          description: 'Premium Chinese green tea with a delicate, fresh flavor and beautiful flat leaves.',
-          category: 'Green teas'
-        },
-        '4': {
-          id: 4,
-          name: 'Jasmine Green Tea',
-          price: '€6.25',
-          basePrice: 6.25,
-          weight: '50 g',
-          image: '/cinemon-card-4.jpg',
-          description: 'Fragrant green tea scented with jasmine flowers for a floral and refreshing taste.',
-          category: 'Green teas'
-        },
-        '5': {
-          id: 5,
-          name: 'White Peony Tea',
-          price: '€8.99',
-          basePrice: 8.99,
-          weight: '50 g',
-          image: '/cinemon-card-5.jpg',
-          description: 'Delicate white tea with subtle sweetness and light, refreshing character.',
-          category: 'White teas'
-        },
-        '6': {
-          id: 6,
-          name: 'Chamomile Herbal Tea',
-          price: '€4.50',
-          basePrice: 4.50,
-          weight: '50 g',
-          image: '/cinemon-card-6.jpg',
-          description: 'Soothing caffeine-free herbal tea made from dried chamomile flowers.',
-          category: 'Herbal teas'
-        },
-        '7': {
-          id: 7,
-          name: 'Premium Matcha',
-          price: '€12.99',
-          basePrice: 12.99,
-          weight: '30 g',
-          image: '/our-collection-card-1.jpg',
-          description: 'Ceremonial grade matcha powder from Japan with vibrant green color and umami flavor.',
-          category: 'Matcha'
-        },
-        '8': {
-          id: 8,
-          name: 'Rooibos Vanilla',
-          price: '€5.75',
-          basePrice: 5.75,
-          weight: '50 g',
-          image: '/our-collection-card-2.jpg',
-          description: 'Naturally caffeine-free rooibos tea with sweet vanilla flavoring.',
-          category: 'Rooibos'
+    const fetchProductData = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        setProductData(null) // Reset product data
+        
+        if (!id) {
+          setError('No product ID provided')
+          setLoading(false)
+          return
         }
+        
+        // Validate that ID is a valid MongoDB ObjectId (24 hex characters)
+        const isValidObjectId = (id) => {
+          if (!id) return false
+          const idStr = String(id)
+          return /^[0-9a-fA-F]{24}$/.test(idStr)
+        }
+        
+        if (!isValidObjectId(id)) {
+          setError('Invalid product ID. Please select a product from the Collection page.')
+          setLoading(false)
+          return
+        }
+        
+        console.log('Fetching product with ID:', id)
+        const response = await productApi.getProduct(id)
+        console.log('Product API response:', response)
+        
+        // Handle different response structures
+        let product = null
+        if (response.product) {
+          product = response.product
+        } else if (response._id) {
+          product = response
+        } else if (response.success && response.product) {
+          product = response.product
+        }
+        
+        if (product && product._id) {
+          console.log('Product loaded successfully:', product.name)
+          setProductData(product)
+          // Set first variant as selected if variants exist
+          if (product.variants && product.variants.length > 0) {
+            setSelectedVariant(product.variants[0]._id)
+            console.log('First variant selected:', product.variants[0]._id)
+          } else {
+            console.log('No variants found for product')
+          }
+        } else {
+          console.error('Product not found in response:', response)
+          setError('Product not found. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error)
+        console.error('Error details:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        })
+        if (error.response?.status === 404) {
+          setError('Product not found. Please select a product from the Collection page.')
+        } else if (error.response?.status === 500) {
+          setError('Server error. Please try again later.')
+        } else {
+          setError('Failed to load product. Please try again.')
+        }
+      } finally {
+        setLoading(false)
       }
-      
-      const product = products[id]
-      setProductData(product || products['1'])
-      setLoading(false)
     }
     
-    fetchProductData()
+    if (id) {
+      fetchProductData()
+    } else {
+      setError('No product ID in URL')
+      setLoading(false)
+    }
   }, [id])
 
-  const relatedProducts = [
-    { id: 1, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-1.jpg' },
-    { id: 2, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-2.jpg' },
-    { id: 3, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-3.jpg' }
-  ].filter(p => p.id !== parseInt(id)).slice(0, 3)
+  const [relatedProducts, setRelatedProducts] = useState([])
+  
+  // Fetch related products when product data is loaded
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      if (!productData) return
+      
+      try {
+        const params = {
+          limit: 3,
+          category: productData.category?._id || productData.category
+        }
+        const response = await productApi.getProducts(params)
+        // Filter out current product and get up to 3 related products
+        const related = (response.products || [])
+          .filter(p => p._id !== productData._id)
+          .slice(0, 3)
+        setRelatedProducts(related)
+      } catch (error) {
+        console.error('Error fetching related products:', error)
+        // If API fails, just show empty array
+        setRelatedProducts([])
+      }
+    }
+    
+    fetchRelatedProducts()
+  }, [productData])
 
   const getCurrentPrice = () => {
-    const variant = variants.find(v => v.value === selectedVariant)
-    return variant ? variant.price : '€3.90'
+    if (!productData || !selectedVariant) return 0
+    
+    const variant = productData.variants?.find(v => v._id === selectedVariant)
+    if (variant && productData.basePrice) {
+      return productData.basePrice + (variant.priceDifference || 0)
+    }
+    return productData.basePrice || 0
   }
 
   const handleAddToCart = () => {
     if (!productData) return
     
-    const currentPriceStr = getCurrentPrice()
-    const numericPrice = parseFloat(currentPriceStr.replace('€', ''))
+    if (!selectedVariant) {
+      setError('Please select a variant')
+      return
+    }
+    
+    const variant = productData.variants?.find(v => v._id === selectedVariant)
+    if (!variant) {
+      setError('Selected variant not found')
+      return
+    }
+    
+    if (variant.stock < quantity) {
+      setError('Not enough stock available')
+      return
+    }
+    
+    const finalPrice = getCurrentPrice()
     
     const cartItem = {
-      id: productData.id,
+      id: productData._id,
       name: productData.name,
-      price: numericPrice,
-      variant: selectedVariant,
-      variantId: `variant-${productData.id}-${selectedVariant}`,
+      price: finalPrice,
+      variant: variant.name || variant.size || 'Standard',
+      variantId: variant._id, // Use real variant ID from database
       quantity: quantity,
-      image: productData.image
+      image: productData.images?.[0] || productData.image
     }
     
     addToCart(cartItem)
+    setError('')
+    // Show success message
     alert('Product added to bag!')
   }
 
-  if (loading || !productData) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <Loader />
         </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error && !productData && !loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">{error}</h1>
+            <p className="text-gray-600 mb-6">The product you're looking for doesn't exist or has been removed.</p>
+            <Button onClick={() => navigate('/collection')} className="bg-black hover:bg-gray-800 text-white">
+              Go to Collection
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Show loading state while fetching
+  if (!productData && loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="flex items-center justify-center h-96">
+          <Loader />
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  // If no product data after loading, show error
+  if (!productData && !loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              {error || 'Product not found'}
+            </h1>
+            <p className="text-gray-600 mb-6">
+              The product you're looking for doesn't exist or couldn't be loaded.
+            </p>
+            <Button onClick={() => navigate('/collection')} className="bg-black hover:bg-gray-800 text-white">
+              Go to Collection
+            </Button>
+          </div>
+        </div>
+        <Footer />
       </div>
     )
   }
@@ -167,7 +249,17 @@ export default function Product() {
       <div className="bg-gray-50 py-4 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-xs sm:text-sm text-gray-600 truncate" style={{fontFamily: 'Montserrat, sans-serif'}}>
-            HOME/COLLECTIONS/CHAI/CEYLON GINGER CINNAMON CHAI TEA
+            <Link to="/" className="hover:text-gray-900">HOME</Link>
+            {' / '}
+            <Link to="/collection" className="hover:text-gray-900">COLLECTIONS</Link>
+            {productData.category?.name && (
+              <>
+                {' / '}
+                <span>{productData.category.name.toUpperCase()}</span>
+              </>
+            )}
+            {' / '}
+            <span className="text-gray-900">{productData.name.toUpperCase()}</span>
           </p>
         </div>
       </div>
@@ -179,7 +271,7 @@ export default function Product() {
           <div className="w-full">
             <div className="bg-gray-100 aspect-square w-full">
               <img 
-                src={productData.image} 
+                src={productData.images?.[0] || productData.image || '/cineman-tea.jpg'} 
                 alt={productData.name}
                 className="w-full h-full object-cover"
               />
@@ -238,29 +330,37 @@ export default function Product() {
             {/* Price */}
             <div className="mb-6">
               <span className="text-3xl font-bold text-gray-900" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                {getCurrentPrice()}
+                €{getCurrentPrice().toFixed(2)}
               </span>
             </div>
+            
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Variants */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                Variants
-              </h3>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                {variants.map((variant) => (
-                  <button
-                    key={variant.value}
-                    onClick={() => setSelectedVariant(variant.value)}
-                    className={`transition-all duration-200 ${
-                      selectedVariant === variant.value 
-                        ? 'scale-105' 
-                        : 'hover:scale-102'
-                    }`}
-                  >
-                    {variant.value === '50g' ? (
-                      <svg width="84" height="101" viewBox="0 0 84 101" fill="none" xmlns="http://www.w3.org/2000/svg" className={selectedVariant === variant.value ? 'opacity-100' : 'opacity-70 hover:opacity-90'}>
-                        <rect x="0.5" y="0.5" width="83" height="100" stroke={selectedVariant === variant.value ? "#C3B212" : "#C3B212"}/>
+            {productData.variants && productData.variants.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                  Variants
+                </h3>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                  {productData.variants.map((variant) => (
+                    <button
+                      key={variant._id}
+                      onClick={() => setSelectedVariant(variant._id)}
+                      className={`transition-all duration-200 ${
+                        selectedVariant === variant._id 
+                          ? 'scale-105' 
+                          : 'hover:scale-102'
+                      }`}
+                    >
+                      {variant.size === '50g' || variant.name?.toLowerCase().includes('50g') ? (
+                      <svg width="84" height="101" viewBox="0 0 84 101" fill="none" xmlns="http://www.w3.org/2000/svg" className={selectedVariant === variant._id ? 'opacity-100' : 'opacity-70 hover:opacity-90'}>
+                        <rect x="0.5" y="0.5" width="83" height="100" stroke={selectedVariant === variant._id ? "#C3B212" : "#C3B212"}/>
                         <path d="M38.0874 41.0603C37.5874 41.0603 37.1108 40.9803 36.6574 40.8203C36.2041 40.6536 35.8441 40.4336 35.5774 40.1603L35.9274 39.5903C36.1474 39.8236 36.4474 40.0169 36.8274 40.1703C37.2141 40.3236 37.6308 40.4003 38.0774 40.4003C38.6708 40.4003 39.1208 40.2703 39.4274 40.0103C39.7408 39.7436 39.8974 39.3969 39.8974 38.9703C39.8974 38.6703 39.8241 38.4136 39.6774 38.2003C39.5374 37.9803 39.2974 37.8103 38.9574 37.6903C38.6174 37.5703 38.1508 37.5103 37.5574 37.5103H36.0674L36.4274 34.0003H40.2574V34.6403H36.7174L37.0874 34.2903L36.7774 37.2303L36.4074 36.8703H37.7174C38.4241 36.8703 38.9908 36.9569 39.4174 37.1303C39.8441 37.3036 40.1508 37.5469 40.3374 37.8603C40.5308 38.1669 40.6274 38.5269 40.6274 38.9403C40.6274 39.3336 40.5341 39.6936 40.3474 40.0203C40.1608 40.3403 39.8808 40.5936 39.5074 40.7803C39.1341 40.9669 38.6608 41.0603 38.0874 41.0603ZM44.3315 41.0603C43.7915 41.0603 43.3115 40.9203 42.8915 40.6403C42.4715 40.3536 42.1415 39.9469 41.9015 39.4203C41.6615 38.8869 41.5415 38.2469 41.5415 37.5003C41.5415 36.7536 41.6615 36.1169 41.9015 35.5903C42.1415 35.0569 42.4715 34.6503 42.8915 34.3703C43.3115 34.0836 43.7915 33.9403 44.3315 33.9403C44.8715 33.9403 45.3515 34.0836 45.7715 34.3703C46.1915 34.6503 46.5215 35.0569 46.7615 35.5903C47.0082 36.1169 47.1315 36.7536 47.1315 37.5003C47.1315 38.2469 47.0082 38.8869 46.7615 39.4203C46.5215 39.9469 46.1915 40.3536 45.7715 40.6403C45.3515 40.9203 44.8715 41.0603 44.3315 41.0603ZM44.3315 40.4003C44.7448 40.4003 45.1048 40.2903 45.4115 40.0703C45.7182 39.8436 45.9582 39.5169 46.1315 39.0903C46.3048 38.6569 46.3915 38.1269 46.3915 37.5003C46.3915 36.8736 46.3048 36.3469 46.1315 35.9203C45.9582 35.4869 45.7182 35.1603 45.4115 34.9403C45.1048 34.7136 44.7448 34.6003 44.3315 34.6003C43.9315 34.6003 43.5748 34.7136 43.2615 34.9403C42.9482 35.1603 42.7048 35.4869 42.5315 35.9203C42.3582 36.3469 42.2715 36.8736 42.2715 37.5003C42.2715 38.1269 42.3582 38.6569 42.5315 39.0903C42.7048 39.5169 42.9482 39.8436 43.2615 40.0703C43.5748 40.2903 43.9315 40.4003 44.3315 40.4003Z" fill="#282828"/>
                         <path d="M30 15H54" stroke="#282828" strokeLinecap="round"/>
                         <path d="M31.3547 10.5H52.6458C53.4302 10.5001 54.0816 11.1046 54.1409 11.8867L57.8391 60.8877C57.9046 61.7579 57.2166 62.4998 56.344 62.5H27.6565C26.7839 62.4998 26.0959 61.7578 26.1614 60.8877L29.8596 11.8867C29.9189 11.1046 30.5704 10.5001 31.3547 10.5Z" stroke="#282828"/>
@@ -270,17 +370,20 @@ export default function Product() {
                       </svg>
                     ) : (
                       <div className={`w-20 h-24 border-2 flex items-center justify-center text-center transition-colors ${
-                        selectedVariant === variant.value 
+                        selectedVariant === variant._id 
                           ? 'border-gray-900 bg-gray-50' 
                           : 'border-gray-200 hover:border-gray-300'
                       }`}>
-                        <div className="text-xs text-gray-600" style={{fontFamily: 'Montserrat, sans-serif'}}>{variant.size}</div>
+                        <div className="text-xs text-gray-600" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                          {variant.size || variant.name || 'Standard'}
+                        </div>
                       </div>
                     )}
                   </button>
                 ))}
               </div>
             </div>
+            )}
 
             {/* Quantity & Add to Cart */}
             <div className="flex items-center gap-4 mb-8">
@@ -415,37 +518,36 @@ export default function Product() {
         </div>
 
         {/* You may also like */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-8" style={{fontFamily: 'Prosto One, cursive'}}>
-            You may also like
-          </h2>
-          <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
-              {relatedProducts.map((product) => (
-                <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer">
-                  <div className="bg-gray-100 aspect-square mb-4 w-48 h-48 mx-auto">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="text-center mb-2">
-                    <h3 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                      Ceylon Ginger
-                    </h3>
-                    <h4 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                      Cinnamon chai tea
-                    </h4>
-                  </div>
-                  <p className="text-center text-gray-600 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                    {product.price} / {product.weight}
-                  </p>
-                </Link>
-              ))}
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8" style={{fontFamily: 'Prosto One, cursive'}}>
+              You may also like
+            </h2>
+            <div className="flex justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
+                {relatedProducts.map((product) => (
+                  <Link key={product._id} to={`/product/${product._id}`} className="group cursor-pointer">
+                    <div className="bg-gray-100 aspect-square mb-4 w-48 h-48 mx-auto">
+                      <img 
+                        src={product.images?.[0] || '/cineman-tea.jpg'} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-center mb-2">
+                      <h3 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                        {product.name}
+                      </h3>
+                    </div>
+                    <p className="text-center text-gray-600 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                      €{product.basePrice?.toFixed(2) || '0.00'}
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <Footer />
