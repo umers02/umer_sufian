@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
       // Decode token to get user info
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
+        // console.log('Token payload:', payload)
         setUser({ ...payload, token })
       } catch (error) {
         localStorage.removeItem('token')

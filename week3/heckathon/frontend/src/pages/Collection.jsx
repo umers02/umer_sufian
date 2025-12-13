@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import { Button } from '../components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
+import { productApi } from '../services/product.api'
+import { formatPrice } from '../utils/formatPrice'
+import Loader from '../components/ui/Loader'
 
 export default function Collection() {
   const [filters, setFilters] = useState({
@@ -16,6 +19,12 @@ export default function Collection() {
     organic: false
   })
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [selectedFilters, setSelectedFilters] = useState({})
+  const [sortBy, setSortBy] = useState('')
 
   const toggleFilter = (filterName) => {
     setFilters(prev => ({
@@ -24,17 +33,73 @@ export default function Collection() {
     }))
   }
 
-  const products = [
-    { id: 1, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cineman-tea.jpg' },
-    { id: 2, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-2.jpg' },
-    { id: 3, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-2 (1).jpg' },
-    { id: 4, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-3.jpg' },
-    { id: 5, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-4.jpg' },
-    { id: 6, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-5.jpg' },
-    { id: 7, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-6.jpg' },
-    { id: 8, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cinemon-card-2.jpg' },
-    { id: 9, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/cineman-tea.jpg' }
-  ]
+  useEffect(() => {
+    fetchProducts()
+  }, [currentPage, selectedFilters, sortBy])
+
+  const fetchProducts = async () => {
+    setLoading(true)
+    try {
+      // Try real API first, fallback to mock data
+      try {
+        const params = {
+          page: currentPage,
+          limit: 9,
+          ...selectedFilters,
+          sortBy
+        }
+        const response = await productApi.getProducts(params)
+        setProducts(response.products || [])
+        setTotalPages(response.totalPages || 1)
+      } catch (apiError) {
+        // Fallback to mock data if API fails
+        console.log('Products API failed, using mock data:', apiError.message)
+        const mockProducts = [
+          {
+            _id: '1',
+            name: 'Ceylon Ginger Cinnamon Tea',
+            basePrice: 4.85,
+            images: ['/cineman-tea.jpg'],
+            category: { name: 'Chai Tea' }
+          },
+          {
+            _id: '2', 
+            name: 'Earl Grey Black Tea',
+            basePrice: 5.99,
+            images: ['/cinemon-card-2.jpg'],
+            category: { name: 'Black Tea' }
+          },
+          {
+            _id: '3',
+            name: 'Green Dragon Well',
+            basePrice: 7.50,
+            images: ['/cinemon-card-3.jpg'], 
+            category: { name: 'Green Tea' }
+          }
+        ]
+        
+        setProducts(mockProducts)
+        setTotalPages(1)
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }))
+    setCurrentPage(1)
+  }
+
+  const handleSortChange = (value) => {
+    setSortBy(value)
+    setCurrentPage(1)
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden" style={{fontFamily: 'Montserrat, sans-serif'}}>
@@ -72,42 +137,24 @@ export default function Collection() {
                 </button>
                 {filters.collectiona && (
                   <div className="space-y-2 text-sm">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Black teas
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Green teas
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      White teas
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Oolong
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Matcha
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Herbal teas
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Oolong
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Rooibos
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Teaware
-                    </label>
+                    {['Black teas', 'Green teas', 'White teas', 'Oolong', 'Matcha', 'Herbal teas', 'Rooibos', 'Teaware'].map(category => (
+                      <label key={category} className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          className="mr-2" 
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              handleFilterChange('category', category)
+                            } else {
+                              const newFilters = { ...selectedFilters }
+                              delete newFilters.category
+                              setSelectedFilters(newFilters)
+                            }
+                          }}
+                        />
+                        {category}
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>
@@ -325,14 +372,16 @@ export default function Collection() {
               >
                 Filters
               </Button>
-              <Select>
+              <Select onValueChange={handleSortChange}>
                 <SelectTrigger className="w-32 sm:w-48 border-none text-black" style={{fontFamily: 'Montserrat, sans-serif'}}>
                   <SelectValue placeholder="SORT BY" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                  <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                  <SelectItem value="name_asc">Name A-Z</SelectItem>
+                  <SelectItem value="name_desc">Name Z-A</SelectItem>
+                  <SelectItem value="rating_desc">Highest Rated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -592,30 +641,61 @@ export default function Collection() {
             )}
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 w-full min-w-0">
-              {products.map((product) => (
-                <Link key={product.id} to={`/product/${product.id}`} className="group cursor-pointer w-full">
-                  <div className="bg-gray-100 aspect-square mb-4 w-full">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader />
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 w-full min-w-0">
+                  {products.map((product) => (
+                    <Link key={product._id} to={`/product/${product._id}`} className="group cursor-pointer w-full">
+                      <div className="bg-gray-100 aspect-square mb-4 w-full">
+                        <img 
+                          src={product.images?.[0] || '/cineman-tea.jpg'} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="text-center mb-2 px-2">
+                        <h3 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                          {product.name}
+                        </h3>
+                        <p className="text-gray-600 text-xs" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                          {product.category?.name}
+                        </p>
+                      </div>
+                      <p className="text-center text-gray-600 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                        {formatPrice(product.basePrice)}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-8 gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="flex items-center px-4">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
                   </div>
-                  <div className="text-center mb-2 px-2">
-                    <h3 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                      Ceylon Ginger
-                    </h3>
-                    <h4 className="text-gray-900 font-medium text-sm sm:text-base" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                      Cinnamon chai tea
-                    </h4>
-                  </div>
-                  <p className="text-center text-gray-600 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                    {product.price} / {product.weight}
-                  </p>
-                </Link>
-              ))}
-            </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

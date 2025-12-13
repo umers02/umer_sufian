@@ -5,11 +5,17 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import Landing from './pages/Landing'
 import Collection from './pages/Collection'
 import Product from './pages/Product'
+import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
+import CheckoutNew from './pages/CheckoutNew'
 import OrderConfirmation from './pages/OrderConfirmation'
+import OrderHistory from './pages/OrderHistory'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import Dashboard from './pages/Admin/Dashboard'
+import ManageProducts from './pages/Admin/ManageProducts'
+import ManageOrders from './pages/Admin/ManageOrders'
+import ManageUsers from './pages/Admin/ManageUsers'
 import CartPopup from './components/ui/CartPopup'
 
 function App() {
@@ -32,7 +38,7 @@ function App() {
             } />
             <Route path="/product/:id" element={
               <ProtectedRoute>
-                <Product />
+                <ProductDetail />
               </ProtectedRoute>
             } />
             <Route path="/cart" element={
@@ -42,7 +48,34 @@ function App() {
             } />
             <Route path="/checkout" element={
               <ProtectedRoute>
-                <Checkout />
+                <CheckoutNew />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <OrderHistory />
+              </ProtectedRoute>
+            } />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute requiredRole="superadmin">
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/products" element={
+              <ProtectedRoute requiredRole="admin">
+                <ManageProducts />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/orders" element={
+              <ProtectedRoute requiredRole="admin">
+                <ManageOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute requiredRole="superadmin">
+                <ManageUsers />
               </ProtectedRoute>
             } />
             <Route path="/order-confirmation" element={

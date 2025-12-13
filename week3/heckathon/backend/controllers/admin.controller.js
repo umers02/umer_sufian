@@ -72,24 +72,59 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
+// const getUsers = async (req, res, next) => {
+//   try {
+//     const { page = 1, limit = 10, role, isBlocked } = req.query;
+//     const { skip, limit: limitNum, page: pageNum } = getPagination(page, limit);
+    
+//     let filter = {};
+//     if (role) filter.role = role;
+//     if (isBlocked !== undefined) filter.isBlocked = isBlocked === 'true';
+    
+//     const users = await User.find(filter)
+//       .select('-password')
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limitNum);
+    
+//     const totalCount = await User.countDocuments(filter);
+//     const pagination = getPaginationResult(totalCount, pageNum, limitNum);
+    
+//     res.json({
+//       success: true,
+//       users,
+//       pagination
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 const getUsers = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, role, isBlocked } = req.query;
+    const { page = 1, limit = 10, role, isBlocked, search } = req.query;
     const { skip, limit: limitNum, page: pageNum } = getPagination(page, limit);
-    
+
     let filter = {};
+
     if (role) filter.role = role;
     if (isBlocked !== undefined) filter.isBlocked = isBlocked === 'true';
-    
+
+    // ✅ Search by name OR email
+    if (search && search.trim() !== '') {
+      filter.$or = [
+        { name: { $regex: search.trim(), $options: 'i' } },
+      ];
+    }
+
     const users = await User.find(filter)
       .select('-password')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum);
-    
+
     const totalCount = await User.countDocuments(filter);
     const pagination = getPaginationResult(totalCount, pageNum, limitNum);
-    
+
     res.json({
       success: true,
       users,

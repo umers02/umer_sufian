@@ -1,4 +1,6 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { cartApi } from '../services/cart.api'
+import { useAuth } from './AuthContext'
 
 const CartContext = createContext()
 
@@ -13,48 +15,76 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
 
-  const addToCart = (product) => {
-    setCartItems(prev => {
-      const existingItem = prev.find(item => 
-        item.id === product.id && item.variant === product.variant
-      )
-      
-      if (existingItem) {
-        return prev.map(item =>
-          item.id === product.id && item.variant === product.variant
-            ? { ...item, quantity: item.quantity + product.quantity }
-            : item
-        )
-      }
-      
-      return [...prev, product]
-    })
+  useEffect(() => {
+    if (user) {
+      fetchCart()
+    } else {
+      setCartItems([])
+    }
+  }, [user])
+
+  const fetchCart = async () => {
+    try {
+      const response = await cartApi.getCart()
+      setCartItems(response.items || [])
+    } catch (error) {
+      console.error('Failed to fetch cart:', error)
+    }
   }
 
-  const removeFromCart = (productId, variant) => {
-    setCartItems(prev => prev.filter(item => 
-      !(item.id === productId && item.variant === variant)
-    ))
+  const addToCart = async (product) => {
+    if (!user) return
+    
+    setLoading(true)
+    try {
+      await cartApi.addToCart(product.id, product.variantId, product.quantity)
+      await fetchCart()
+    } catch (error) {
+      console.error('Failed to add to cart:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const updateQuantity = (productId, variant, quantity) => {
+  const removeFromCart = async (itemId) => {
+    if (!user) return
+    
+    setLoading(true)
+    try {
+      await cartApi.removeFromCart(itemId)
+      await fetchCart()
+    } catch (error) {
+      console.error('Failed to remove from cart:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateQuantity = async (itemId, quantity) => {
+    if (!user) return
+    
     if (quantity <= 0) {
-      removeFromCart(productId, variant)
+      await removeFromCart(itemId)
       return
     }
     
-    setCartItems(prev => prev.map(item =>
-      item.id === productId && item.variant === variant
-        ? { ...item, quantity }
-        : item
-    ))
+    setLoading(true)
+    try {
+      await cartApi.updateCartItem(itemId, quantity)
+      await fetchCart()
+    } catch (error) {
+      console.error('Failed to update quantity:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = parseFloat(item.price.replace('€', ''))
-      return total + (price * item.quantity)
+      return total + (item.price * item.quantity)
     }, 0)
   }
 
@@ -70,8 +100,21 @@ export const CartProvider = ({ children }) => {
     setIsCartOpen(false)
   }
 
-  const clearCart = () => {
-    setCartItems([])
+  const clearCart = async () => {
+    if (!user) {
+      setCartItems([])
+      return
+    }
+    
+    setLoading(true)
+    try {
+      await cartApi.clearCart()
+      setCartItems([])
+    } catch (error) {
+      console.error('Failed to clear cart:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -85,7 +128,9 @@ export const CartProvider = ({ children }) => {
       isCartOpen,
       toggleCart,
       closeCart,
-      clearCart
+      clearCart,
+      loading,
+      fetchCart
     }}>
       {children}
     </CartContext.Provider>
