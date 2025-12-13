@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './card'
 import { Button } from './button'
 import { Input } from './input'
@@ -7,8 +7,10 @@ import { Textarea } from './textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
 import { X, Plus, Trash2 } from 'lucide-react'
 import { adminApi } from '../../services/admin.api'
+import { productApi } from '../../services/product.api'
 
-export default function AddProductModal({ isOpen, onClose, onSuccess }) {
+export default function AddProductModal({ isOpen, onClose, onSuccess, product = null }) {
+  const isEdit = !!product
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -20,6 +22,39 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (isOpen && product) {
+      // Populate form with product data
+      setFormData({
+        name: product.name || '',
+        description: product.description || '',
+        category: product.category?._id || product.category || '',
+        basePrice: product.basePrice || '',
+        flavor: product.flavor || '',
+        tags: product.tags?.join(', ') || '',
+        variants: product.variants && product.variants.length > 0
+          ? product.variants.map(v => ({
+              size: v.size || '',
+              weight: v.weight || '',
+              price: v.price || '',
+              stock: v.stock || ''
+            }))
+          : [{ size: '250g', weight: 250, price: '', stock: '' }]
+      })
+    } else if (isOpen && !product) {
+      // Reset form for new product
+      setFormData({
+        name: '',
+        description: '',
+        category: '',
+        basePrice: '',
+        flavor: '',
+        tags: '',
+        variants: [{ size: '250g', weight: 250, price: '', stock: '' }]
+      })
+    }
+  }, [isOpen, product])
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -51,34 +86,69 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
     setError('')
 
     try {
-      const productData = {
-        ...formData,
-        basePrice: parseFloat(formData.basePrice),
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        variants: formData.variants.map(variant => ({
-          ...variant,
-          price: parseFloat(variant.price),
-          stock: parseInt(variant.stock),
-          weight: parseInt(variant.weight)
-        }))
+      if (isEdit) {
+        // For update, send all required fields that backend validator expects
+        const productData = {
+          name: formData.name,
+          description: formData.description,
+          basePrice: parseFloat(formData.basePrice),
+          flavor: formData.flavor || product.flavor || 'Classic',
+          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+          isActive: product.isActive !== undefined ? product.isActive : true
+        }
+        
+        // Only include category if it's a valid MongoDB ObjectId
+        // Don't include category at all if it's empty (validator will skip it)
+        if (formData.category && formData.category.trim() !== '') {
+          // Validate it's a valid MongoDB ObjectId format (24 hex characters)
+          const mongoIdRegex = /^[0-9a-fA-F]{24}$/
+          if (mongoIdRegex.test(formData.category.trim())) {
+            productData.category = formData.category.trim()
+          }
+        }
+        
+        console.log('Updating product with ID:', product._id)
+        console.log('Product data:', productData)
+        // Use productApi instead of adminApi for update
+        await productApi.updateProduct(product._id, productData)
+      } else {
+        // For create, send all fields including variants
+        const productData = {
+          ...formData,
+          basePrice: parseFloat(formData.basePrice),
+          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+          variants: formData.variants.map(variant => ({
+            ...variant,
+            price: parseFloat(variant.price),
+            stock: parseInt(variant.stock),
+            weight: parseInt(variant.weight)
+          }))
+        }
+        await adminApi.createProduct(productData)
       }
-
-      await adminApi.createProduct(productData)
+      
       onSuccess()
       onClose()
       
       // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        category: '',
-        basePrice: '',
-        flavor: '',
-        tags: '',
-        variants: [{ size: '250g', weight: 250, price: '', stock: '' }]
-      })
+      if (!isEdit) {
+        setFormData({
+          name: '',
+          description: '',
+          category: '',
+          basePrice: '',
+          flavor: '',
+          tags: '',
+          variants: [{ size: '250g', weight: 250, price: '', stock: '' }]
+        })
+      }
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to create product')
+      console.error('Product error:', error)
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.message || 
+                          `Failed to ${isEdit ? 'update' : 'create'} product`
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -90,7 +160,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Add New Product</CardTitle>
+          <CardTitle>{isEdit ? 'Edit Product' : 'Add New Product'}</CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -240,7 +310,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }) {
 
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? 'Creating...' : 'Create Product'}
+                {loading ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update Product' : 'Create Product')}
               </Button>
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

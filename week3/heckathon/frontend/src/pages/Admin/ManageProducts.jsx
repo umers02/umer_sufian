@@ -19,6 +19,7 @@ export default function ManageProducts() {
   const [totalPages, setTotalPages] = useState(1)
   const [error, setError] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
     fetchProducts()
@@ -56,6 +57,22 @@ export default function ManageProducts() {
   const handleAddSuccess = () => {
     fetchProducts()
     setShowAddModal(false)
+    setEditingProduct(null)
+  }
+
+  const handleEdit = async (productId) => {
+    try {
+      const response = await adminApi.getProductDetails(productId)
+      setEditingProduct(response.product)
+      setShowAddModal(true)
+    } catch (error) {
+      setError('Failed to load product details')
+    }
+  }
+
+  const handleCloseModal = () => {
+    setShowAddModal(false)
+    setEditingProduct(null)
   }
 
   const getStockStatus = (stock) => {
@@ -155,7 +172,11 @@ export default function ManageProducts() {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEdit(product._id)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -199,8 +220,9 @@ export default function ManageProducts() {
       
       <AddProductModal 
         isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={handleCloseModal}
         onSuccess={handleAddSuccess}
+        product={editingProduct}
       />
       </div>
     </AdminLayout>

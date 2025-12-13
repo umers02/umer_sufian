@@ -40,11 +40,21 @@ export default function ManageOrders() {
     try {
       const params = {
         page: currentPage,
-        limit: 10,
-        search: debouncedSearchTerm,
-        status: statusFilter
+        limit: 10
       }
+      
+      // Only add search and status if they have values
+      if (debouncedSearchTerm && debouncedSearchTerm.trim() !== '') {
+        params.search = debouncedSearchTerm.trim()
+      }
+      
+      if (statusFilter && statusFilter.trim() !== '') {
+        params.status = statusFilter.trim()
+      }
+      
+      console.log('Fetching orders with params:', params)
       const response = await adminApi.getAllOrders(params)
+      console.log('Orders response:', response)
       setOrders(response.orders || [])
       setTotalPages(response.pagination?.totalPages || 1)
     } catch (error) {
@@ -90,7 +100,7 @@ export default function ManageOrders() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search orders by ID or customer name..."
+                  placeholder="Search by order number, ID, customer name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"

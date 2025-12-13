@@ -13,7 +13,14 @@ const validateProduct = [
     .isFloat({ min: 0 })
     .withMessage('Base price must be a positive number'),
   body('category')
-    .isMongoId()
+    .optional({ nullable: true, checkFalsy: true })
+    .custom((value) => {
+      // If category is provided, it must be a valid MongoDB ObjectId
+      if (value !== undefined && value !== null && value !== '') {
+        return /^[0-9a-fA-F]{24}$/.test(value);
+      }
+      return true; // Skip validation if category is not provided
+    })
     .withMessage('Valid category ID is required'),
   body('flavor')
     .trim()

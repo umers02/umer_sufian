@@ -273,32 +273,59 @@ const getOrders = async (req, res, next) => {
     const { skip, limit: limitNum, page: pageNum } = getPagination(page, limit);
 
     let filter = {};
-    if (status && status !== 'all') filter.status = status;
     
-    if (search && search.trim() !== '') {
-      filter.$or = [
-        { _id: { $regex: search.trim(), $options: 'i' } },
-        { 'user.name': { $regex: search.trim(), $options: 'i' } }
-      ];
+    // Status filter
+    if (status && status !== 'all' && status.trim() !== '') {
+      filter.status = status;
     }
+    
+    // Note: We'll do search filtering after populating, to handle partial ObjectId searches better
+    // Only filter by status here for database query
 
-    const orders = await Order.find(filter)
+    // Get orders with basic filters
+    let orders = await Order.find(filter)
       .populate('user', 'name email')
       .populate('items.product', 'name images')
       .populate('items.variant', 'name size weight')
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
-
-    const totalCount = await Order.countDocuments(filter);
+      .lean();
+    
+    // If search term exists, also filter by customer name/email (after population)
+    if (search && search.trim() !== '') {
+      const searchTerm = search.trim().replace(/^#/, '').toLowerCase(); // Remove # if present
+      orders = orders.filter(order => {
+        // Check orderNumber
+        const orderNumberMatch = order.orderNumber?.toLowerCase().includes(searchTerm);
+        
+        // Check order ID (full or partial - last characters)
+        const orderIdString = order._id.toString().toLowerCase();
+        const orderIdMatch = orderIdString.includes(searchTerm) || 
+                            orderIdString.endsWith(searchTerm);
+        
+        // Check customer name/email
+        const user = order.user;
+        const userMatch = user?.name?.toLowerCase().includes(searchTerm) ||
+                         user?.email?.toLowerCase().includes(searchTerm);
+        
+        return orderNumberMatch || orderIdMatch || userMatch;
+      });
+    }
+    
+    // Get total count after filtering
+    const totalCount = orders.length;
+    
+    // Apply pagination
+    const paginatedOrders = orders.slice(skip, skip + limitNum);
+    
     const pagination = getPaginationResult(totalCount, pageNum, limitNum);
 
     res.json({
       success: true,
-      orders,
+      orders: paginatedOrders,
       pagination
     });
   } catch (error) {
+    console.error('Error in getOrders:', error);
     next(error);
   }
 };
@@ -403,6 +430,8 @@ const createProduct = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
   try {
     const { productId } = req.params;
+    console.log('Update product request - productId:', productId);
+    console.log('Request body:', req.body);
     const { name, description, category, basePrice, tags, isActive } = req.body;
 
     const product = await Product.findById(productId);
@@ -453,15 +482,21 @@ const getProductDetails = async (req, res, next) => {
 
     const product = await Product.findById(productId)
       .populate('category', 'name')
-      .populate('variants');
+      .lean();
 
     if (!product) {
       return next(new ErrorResponse('Product not found', 404));
     }
 
+    // Fetch variants separately since they're in a different collection
+    const variants = await Variant.find({ product: productId, isActive: true });
+
     res.json({
       success: true,
-      product
+      product: {
+        ...product,
+        variants
+      }
     });
   } catch (error) {
     next(error);
