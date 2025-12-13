@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Badge } from '../../components/ui/badge'
-import { Users, Package, ShoppingCart, DollarSign, TrendingUp, Eye } from 'lucide-react'
+import { Package, ShoppingCart } from 'lucide-react'
 import { adminApi } from '../../services/admin.api'
 import { formatPrice } from '../../utils/formatPrice'
 import Loader from '../../components/ui/Loader'
 import AdminLayout from '../../components/layout/AdminLayout'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [analytics, setAnalytics] = useState(null)
   const [recentOrders, setRecentOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -104,154 +106,114 @@ export default function Dashboard() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-        <h1 className="text-3xl font-bold">Superadmin Dashboard</h1>
-        <p className="text-gray-600">Welcome to your superadmin dashboard</p>
-      </div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-gray-600">Manage your products and orders</p>
+        </div>
 
-      {/* Analytics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatPrice(analytics?.totalRevenue || 0)}</div>
-            <p className="text-xs text-muted-foreground">
-              +{analytics?.revenueGrowth || 0}% from last month
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalOrders || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              +{analytics?.ordersGrowth || 0}% from last month
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              +{analytics?.usersGrowth || 0}% from last month
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalProducts || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.lowStockProducts || 0} low stock items
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        {/* Management Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Product Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">Product Management</CardTitle>
+                <Package className="h-8 w-8 text-gray-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-3xl font-bold mb-2">{analytics?.totalProducts || 0}</p>
+                  <p className="text-sm text-gray-600">Total Products</p>
+                </div>
+                {analytics?.lowStockProducts > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <p className="text-sm font-medium text-yellow-800">
+                      {analytics.lowStockProducts} products need restocking
+                    </p>
+                  </div>
+                )}
+                <Button 
+                  className="w-full mt-4" 
+                  onClick={() => navigate('/admin/products')}
+                >
+                  Manage Products
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Recent Orders */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {recentOrders.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No recent orders</p>
-          ) : (
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order._id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-4">
+          {/* Order Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">Order Management</CardTitle>
+                <ShoppingCart className="h-8 w-8 text-gray-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-3xl font-bold mb-2">{analytics?.totalOrders || 0}</p>
+                  <p className="text-sm text-gray-600">Total Orders</p>
+                </div>
+                {analytics?.pendingOrders > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                    <p className="text-sm font-medium text-orange-800">
+                      {analytics.pendingOrders} orders pending
+                    </p>
+                  </div>
+                )}
+                <Button 
+                  className="w-full mt-4" 
+                  onClick={() => navigate('/admin/orders')}
+                >
+                  Manage Orders
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Orders Preview */}
+        {recentOrders.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Recent Orders</CardTitle>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/admin/orders')}
+                >
+                  View All
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentOrders.slice(0, 5).map((order) => (
+                  <div key={order._id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                     <div>
-                      <p className="font-medium">Order #{order._id.slice(-8)}</p>
+                      <p className="font-medium">
+                        Order {order.orderNumber || `#${order._id?.slice(-8) || 'N/A'}`}
+                      </p>
                       <p className="text-sm text-gray-600">
                         {order.user?.name || 'Unknown User'} • {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <Badge className={getStatusColor(order.status)}>
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </Badge>
+                      <p className="font-medium">{formatPrice(order.totalAmount || 0)}</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </Badge>
-                    <p className="font-medium">{formatPrice(order.totalAmount || order.total)}</p>
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button className="w-full" variant="outline">
-              Add New Product
-            </Button>
-            <Button className="w-full" variant="outline">
-              Manage Categories
-            </Button>
-            <Button className="w-full" variant="outline">
-              View All Orders
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Low Stock Alert</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {analytics?.lowStockProducts > 0 ? (
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">{analytics.lowStockProducts}</p>
-                <p className="text-sm text-gray-600">Products need restocking</p>
-                <Button className="mt-2" variant="outline" size="sm">
-                  View Products
-                </Button>
+                ))}
               </div>
-            ) : (
-              <p className="text-green-600 text-center">All products in stock</p>
-            )}
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{analytics?.pendingOrders || 0}</p>
-              <p className="text-sm text-gray-600">Orders awaiting processing</p>
-              <Button className="mt-2" variant="outline" size="sm">
-                Process Orders
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AdminLayout>
   )
