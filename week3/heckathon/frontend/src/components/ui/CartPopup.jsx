@@ -47,18 +47,18 @@ export default function CartPopup() {
           ) : (
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div key={`${item.id}-${item.variant}`} className="flex items-start gap-3">
+                <div key={`${item._id || item.id}-${item.variant}`} className="flex items-start gap-3">
                   <img 
-                    src={item.image} 
-                    alt={item.name}
+                    src={item.product?.images?.[0] || item.image || '/placeholder-tea.jpg'} 
+                    alt={item.product?.name || item.name}
                     className="w-16 h-16 object-cover bg-gray-100"
                   />
                   <div className="flex-1">
                     <h3 className="font-medium text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                      {item.name} - {item.variant}
+                      {item.product?.name || item.name} - {item.variant}
                     </h3>
                     <button 
-                      onClick={() => removeFromCart(item.id, item.variant)}
+                      onClick={() => removeFromCart(item._id || item.id)}
                       className="text-xs text-gray-500 hover:text-gray-700 underline"
                       style={{fontFamily: 'Montserrat, sans-serif'}}
                     >
@@ -67,21 +67,21 @@ export default function CartPopup() {
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border">
                         <button 
-                          onClick={() => updateQuantity(item.id, item.variant, item.quantity - 1)}
+                          onClick={() => updateQuantity(item._id || item.id, item.quantity - 1)}
                           className="px-2 py-1 hover:bg-gray-50"
                         >
                           −
                         </button>
                         <span className="px-3 py-1 text-sm">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, item.variant, item.quantity + 1)}
+                          onClick={() => updateQuantity(item._id || item.id, item.quantity + 1)}
                           className="px-2 py-1 hover:bg-gray-50"
                         >
                           +
                         </button>
                       </div>
                       <span className="font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                        {item.price}
+                        €{(item.price || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ export default function Product() {
   const [productData, setProductData] = useState(null)
   const [selectedVariant, setSelectedVariant] = useState('50g')
   const [quantity, setQuantity] = useState(1)
+  const [loading, setLoading] = useState(true)
 
   const variants = [
     { size: '50 g bag', value: '50g', price: '€3.90' },
@@ -24,20 +25,96 @@ export default function Product() {
 
   // Get product data based on ID
   useEffect(() => {
-    const products = [
-      { id: 1, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-1.jpg' },
-      { id: 2, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-2.jpg' },
-      { id: 3, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-3.jpg' },
-      { id: 4, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-4.jpg' },
-      { id: 5, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-5.jpg' },
-      { id: 6, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-6.jpg' },
-      { id: 7, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-7.jpg' },
-      { id: 8, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-8.jpg' },
-      { id: 9, name: 'Ceylon Ginger Cinnamon chai tea', price: '€4.85', weight: '50 g', image: '/our-collection-card-9.jpg' }
-    ]
+    const fetchProductData = () => {
+      const products = {
+        '1': {
+          id: 1,
+          name: 'Ceylon Ginger Cinnamon Tea',
+          price: '€4.85',
+          basePrice: 4.85,
+          weight: '50 g',
+          image: '/cineman-tea.jpg',
+          description: 'A warming blend of Ceylon black tea with aromatic ginger and cinnamon spices.',
+          category: 'Black teas'
+        },
+        '2': {
+          id: 2,
+          name: 'Earl Grey Black Tea',
+          price: '€5.99',
+          basePrice: 5.99,
+          weight: '50 g',
+          image: '/cinemon-card-2.jpg',
+          description: 'Classic Earl Grey black tea infused with bergamot oil for a distinctive citrusy flavor.',
+          category: 'Black teas'
+        },
+        '3': {
+          id: 3,
+          name: 'Green Dragon Well',
+          price: '€7.50',
+          basePrice: 7.50,
+          weight: '50 g',
+          image: '/cinemon-card-3.jpg',
+          description: 'Premium Chinese green tea with a delicate, fresh flavor and beautiful flat leaves.',
+          category: 'Green teas'
+        },
+        '4': {
+          id: 4,
+          name: 'Jasmine Green Tea',
+          price: '€6.25',
+          basePrice: 6.25,
+          weight: '50 g',
+          image: '/cinemon-card-4.jpg',
+          description: 'Fragrant green tea scented with jasmine flowers for a floral and refreshing taste.',
+          category: 'Green teas'
+        },
+        '5': {
+          id: 5,
+          name: 'White Peony Tea',
+          price: '€8.99',
+          basePrice: 8.99,
+          weight: '50 g',
+          image: '/cinemon-card-5.jpg',
+          description: 'Delicate white tea with subtle sweetness and light, refreshing character.',
+          category: 'White teas'
+        },
+        '6': {
+          id: 6,
+          name: 'Chamomile Herbal Tea',
+          price: '€4.50',
+          basePrice: 4.50,
+          weight: '50 g',
+          image: '/cinemon-card-6.jpg',
+          description: 'Soothing caffeine-free herbal tea made from dried chamomile flowers.',
+          category: 'Herbal teas'
+        },
+        '7': {
+          id: 7,
+          name: 'Premium Matcha',
+          price: '€12.99',
+          basePrice: 12.99,
+          weight: '30 g',
+          image: '/our-collection-card-1.jpg',
+          description: 'Ceremonial grade matcha powder from Japan with vibrant green color and umami flavor.',
+          category: 'Matcha'
+        },
+        '8': {
+          id: 8,
+          name: 'Rooibos Vanilla',
+          price: '€5.75',
+          basePrice: 5.75,
+          weight: '50 g',
+          image: '/our-collection-card-2.jpg',
+          description: 'Naturally caffeine-free rooibos tea with sweet vanilla flavoring.',
+          category: 'Rooibos'
+        }
+      }
+      
+      const product = products[id]
+      setProductData(product || products['1'])
+      setLoading(false)
+    }
     
-    const product = products.find(p => p.id === parseInt(id))
-    setProductData(product || products[0])
+    fetchProductData()
   }, [id])
 
   const relatedProducts = [
@@ -54,19 +131,24 @@ export default function Product() {
   const handleAddToCart = () => {
     if (!productData) return
     
+    const currentPriceStr = getCurrentPrice()
+    const numericPrice = parseFloat(currentPriceStr.replace('€', ''))
+    
     const cartItem = {
       id: productData.id,
       name: productData.name,
-      price: getCurrentPrice(),
+      price: numericPrice,
       variant: selectedVariant,
+      variantId: `variant-${productData.id}-${selectedVariant}`,
       quantity: quantity,
       image: productData.image
     }
     
     addToCart(cartItem)
+    alert('Product added to bag!')
   }
 
-  if (!productData) {
+  if (loading || !productData) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -109,10 +191,10 @@ export default function Product() {
             {/* Title */}
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4" style={{fontFamily: 'Prosto One, cursive'}}>
-                Ceylon Ginger Cinnamon chai tea
+                {productData.name}
               </h1>
               <p className="text-gray-600 mb-6" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                A lovely warming Chai tea with ginger cinnamon flavours.
+                {productData.description}
               </p>
             </div>
 

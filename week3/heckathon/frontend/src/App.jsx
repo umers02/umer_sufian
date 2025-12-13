@@ -7,7 +7,7 @@ import Collection from './pages/Collection'
 import Product from './pages/Product'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
-import CheckoutNew from './pages/CheckoutNew'
+import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import OrderHistory from './pages/OrderHistory'
 import Login from './pages/Login'
@@ -38,7 +38,7 @@ function App() {
             } />
             <Route path="/product/:id" element={
               <ProtectedRoute>
-                <ProductDetail />
+                <Product />
               </ProtectedRoute>
             } />
             <Route path="/cart" element={
@@ -48,7 +48,7 @@ function App() {
             } />
             <Route path="/checkout" element={
               <ProtectedRoute>
-                <CheckoutNew />
+                <Checkout />
               </ProtectedRoute>
             } />
             <Route path="/orders" element={

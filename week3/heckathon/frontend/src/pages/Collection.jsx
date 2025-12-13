@@ -24,6 +24,7 @@ export default function Collection() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [selectedFilters, setSelectedFilters] = useState({})
+  const [selectedCategories, setSelectedCategories] = useState([])
   const [sortBy, setSortBy] = useState('')
 
   const toggleFilter = (filterName) => {
@@ -35,7 +36,7 @@ export default function Collection() {
 
   useEffect(() => {
     fetchProducts()
-  }, [currentPage, selectedFilters, sortBy])
+  }, [currentPage, selectedFilters, selectedCategories, sortBy])
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -48,37 +49,104 @@ export default function Collection() {
           ...selectedFilters,
           sortBy
         }
+        
+        if (selectedCategories.length > 0) {
+          params.category = selectedCategories.join(',')
+        }
         const response = await productApi.getProducts(params)
         setProducts(response.products || [])
         setTotalPages(response.totalPages || 1)
       } catch (apiError) {
         // Fallback to mock data if API fails
         console.log('Products API failed, using mock data:', apiError.message)
-        const mockProducts = [
+        const allMockProducts = [
           {
             _id: '1',
             name: 'Ceylon Ginger Cinnamon Tea',
             basePrice: 4.85,
             images: ['/cineman-tea.jpg'],
-            category: { name: 'Chai Tea' }
+            category: { name: 'Black teas' }
           },
           {
             _id: '2', 
             name: 'Earl Grey Black Tea',
             basePrice: 5.99,
             images: ['/cinemon-card-2.jpg'],
-            category: { name: 'Black Tea' }
+            category: { name: 'Black teas' }
           },
           {
             _id: '3',
             name: 'Green Dragon Well',
             basePrice: 7.50,
             images: ['/cinemon-card-3.jpg'], 
-            category: { name: 'Green Tea' }
+            category: { name: 'Green teas' }
+          },
+          {
+            _id: '4',
+            name: 'Jasmine Green Tea',
+            basePrice: 6.25,
+            images: ['/cinemon-card-4.jpg'], 
+            category: { name: 'Green teas' }
+          },
+          {
+            _id: '5',
+            name: 'White Peony Tea',
+            basePrice: 8.99,
+            images: ['/cinemon-card-5.jpg'], 
+            category: { name: 'White teas' }
+          },
+          {
+            _id: '6',
+            name: 'Chamomile Herbal Tea',
+            basePrice: 4.50,
+            images: ['/cinemon-card-6.jpg'], 
+            category: { name: 'Herbal teas' }
+          },
+          {
+            _id: '7',
+            name: 'Premium Matcha',
+            basePrice: 12.99,
+            images: ['/our-collection-card-1.jpg'], 
+            category: { name: 'Matcha' }
+          },
+          {
+            _id: '8',
+            name: 'Rooibos Vanilla',
+            basePrice: 5.75,
+            images: ['/our-collection-card-2.jpg'], 
+            category: { name: 'Rooibos' }
           }
         ]
         
-        setProducts(mockProducts)
+        // Filter mock products based on selected categories
+        let filteredProducts = allMockProducts
+        if (selectedCategories.length > 0) {
+          filteredProducts = allMockProducts.filter(product => 
+            selectedCategories.includes(product.category.name)
+          )
+        }
+        
+        // Sort filtered products
+        if (sortBy) {
+          filteredProducts.sort((a, b) => {
+            switch (sortBy) {
+              case 'price_asc':
+                return a.basePrice - b.basePrice
+              case 'price_desc':
+                return b.basePrice - a.basePrice
+              case 'name_asc':
+                return a.name.localeCompare(b.name)
+              case 'name_desc':
+                return b.name.localeCompare(a.name)
+              default:
+                return 0
+            }
+          })
+        }
+        
+        const mockProducts = filteredProducts
+        
+        setProducts(filteredProducts)
         setTotalPages(1)
       }
     } catch (error) {
@@ -93,6 +161,21 @@ export default function Collection() {
       ...prev,
       [filterType]: value
     }))
+    setCurrentPage(1)
+  }
+
+  const handleCategoryChange = (category, isChecked) => {
+    if (isChecked) {
+      setSelectedCategories(prev => [...prev, category])
+    } else {
+      setSelectedCategories(prev => prev.filter(cat => cat !== category))
+    }
+    setCurrentPage(1)
+  }
+
+  const clearAllFilters = () => {
+    setSelectedCategories([])
+    setSelectedFilters({})
     setCurrentPage(1)
   }
 
@@ -142,15 +225,8 @@ export default function Collection() {
                         <input 
                           type="checkbox" 
                           className="mr-2" 
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              handleFilterChange('category', category)
-                            } else {
-                              const newFilters = { ...selectedFilters }
-                              delete newFilters.category
-                              setSelectedFilters(newFilters)
-                            }
-                          }}
+                          checked={selectedCategories.includes(category)}
+                          onChange={(e) => handleCategoryChange(category, e.target.checked)}
                         />
                         {category}
                       </label>
@@ -372,11 +448,11 @@ export default function Collection() {
               >
                 Filters
               </Button>
-              <Select onValueChange={handleSortChange}>
+              <Select value={sortBy} onValueChange={handleSortChange}>
                 <SelectTrigger className="w-32 sm:w-48 border-none text-black" style={{fontFamily: 'Montserrat, sans-serif'}}>
                   <SelectValue placeholder="SORT BY" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent> 
                   <SelectItem value="price_asc">Price: Low to High</SelectItem>
                   <SelectItem value="price_desc">Price: High to Low</SelectItem>
                   <SelectItem value="name_asc">Name A-Z</SelectItem>
@@ -402,38 +478,17 @@ export default function Collection() {
                     </button>
                     {filters.collectiona && (
                       <div className="space-y-2 text-sm" style={{fontFamily: 'Montserrat, sans-serif'}}>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Black teas
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Green teas
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          White teas
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Oolong
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Matcha
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Herbal teas
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Rooibos
-                        </label>
-                        <label className="flex items-center">
-                          <input type="checkbox" className="mr-2" />
-                          Teaware
-                        </label>
+                        {['Black teas', 'Green teas', 'White teas', 'Oolong', 'Matcha', 'Herbal teas', 'Rooibos', 'Teaware'].map(category => (
+                          <label key={category} className="flex items-center">
+                            <input 
+                              type="checkbox" 
+                              className="mr-2" 
+                              checked={selectedCategories.includes(category)}
+                              onChange={(e) => handleCategoryChange(category, e.target.checked)}
+                            />
+                            {category}
+                          </label>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -640,10 +695,49 @@ export default function Collection() {
               </div>
             )}
 
+            {/* Selected Filters Display */}
+            {selectedCategories.length > 0 && (
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium">Selected:</span>
+                  {selectedCategories.map(category => (
+                    <span key={category} className="px-2 py-1 bg-gray-200 text-xs rounded flex items-center gap-1">
+                      {category}
+                      <button 
+                        onClick={() => handleCategoryChange(category, false)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <button 
+                    onClick={clearAllFilters}
+                    className="text-xs text-red-600 hover:text-red-800 underline"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Products Grid */}
             {loading ? (
               <div className="flex justify-center py-12">
                 <Loader />
+              </div>
+            ) : products.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-500 text-lg mb-2">Not Available</div>
+                <p className="text-gray-400 text-sm">No products found for selected categories</p>
+                {selectedCategories.length > 0 && (
+                  <button 
+                    onClick={clearAllFilters}
+                    className="mt-4 px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700"
+                  >
+                    Clear Filters
+                  </button>
+                )}
               </div>
             ) : (
               <>

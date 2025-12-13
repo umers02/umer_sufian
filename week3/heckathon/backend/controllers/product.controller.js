@@ -22,10 +22,18 @@ const getProducts = async (req, res, next) => {
     const { skip, limit: limitNum, page: pageNum } = getPagination(page, limit);
 
     // Build filter object
-
     let filter = { isActive: true };
 
-    if (category) filter.category = category;
+    // Handle multiple categories
+    if (category) {
+      if (Array.isArray(category)) {
+        filter.category = { $in: category };
+      } else if (category.includes(',')) {
+        filter.category = { $in: category.split(',') };
+      } else {
+        filter.category = category;
+      }
+    }
     if (flavor) filter.flavor = new RegExp(flavor, "i");
     if (rating) filter["rating.average"] = { $gte: parseFloat(rating) };
 
@@ -102,6 +110,8 @@ const getProducts = async (req, res, next) => {
       success: true,
       products,
       pagination,
+      totalCount,
+      hasResults: products.length > 0
     });
   } catch (error) {
     next(error);

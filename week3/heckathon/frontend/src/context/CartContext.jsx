@@ -43,7 +43,38 @@ export const CartProvider = ({ children }) => {
       await cartApi.addToCart(product.id, product.variantId, product.quantity)
       await fetchCart()
     } catch (error) {
-      console.error('Failed to add to cart:', error)
+      console.error('Failed to add to cart, using local storage:', error)
+      // Fallback to local cart management
+      const existingItem = cartItems.find(item => 
+        item.product?.id === product.id && item.variant === product.variant
+      )
+      
+      if (existingItem) {
+        // Update quantity if item already exists
+        const updatedItems = cartItems.map(item => 
+          item.product?.id === product.id && item.variant === product.variant
+            ? { ...item, quantity: item.quantity + product.quantity }
+            : item
+        )
+        setCartItems(updatedItems)
+      } else {
+        // Add new item
+        const newItem = {
+          _id: Date.now().toString(),
+          id: product.id,
+          name: product.name,
+          image: product.image,
+          product: {
+            id: product.id,
+            name: product.name,
+            images: [product.image]
+          },
+          variant: product.variant,
+          quantity: product.quantity,
+          price: typeof product.price === 'number' ? product.price : parseFloat(product.price.toString().replace('€', ''))
+        }
+        setCartItems(prev => [...prev, newItem])
+      }
     } finally {
       setLoading(false)
     }
@@ -57,7 +88,9 @@ export const CartProvider = ({ children }) => {
       await cartApi.removeFromCart(itemId)
       await fetchCart()
     } catch (error) {
-      console.error('Failed to remove from cart:', error)
+      console.error('Failed to remove from cart, using local storage:', error)
+      // Fallback to local cart management
+      setCartItems(prev => prev.filter(item => (item._id || item.id) !== itemId))
     } finally {
       setLoading(false)
     }
@@ -76,7 +109,13 @@ export const CartProvider = ({ children }) => {
       await cartApi.updateCartItem(itemId, quantity)
       await fetchCart()
     } catch (error) {
-      console.error('Failed to update quantity:', error)
+      console.error('Failed to update quantity, using local storage:', error)
+      // Fallback to local cart management
+      setCartItems(prev => prev.map(item => 
+        (item._id || item.id) === itemId 
+          ? { ...item, quantity }
+          : item
+      ))
     } finally {
       setLoading(false)
     }

@@ -14,7 +14,7 @@ export default function OrderConfirmation() {
     clearCart()
   }, [clearCart])
 
-  const orderNumber = Math.random().toString(36).substr(2, 9).toUpperCase()
+  const orderNumber = localStorage.getItem('currentOrderNumber') || 'ORD123456'
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -52,7 +52,7 @@ export default function OrderConfirmation() {
             <div className="space-y-3">
               <Button 
                 className="w-full" 
-                onClick={() => navigate('/order-history')}
+                onClick={() => navigate('/orders')}
               >
                 View Order History
               </Button>
