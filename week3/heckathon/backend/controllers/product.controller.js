@@ -86,7 +86,10 @@ const getProducts = async (req, res, next) => {
     });
 
     pipeline.push({
-      $unwind: "$category",
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true
+      }
     });
 
     const products = await Product.aggregate(pipeline);

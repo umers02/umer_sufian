@@ -266,6 +266,208 @@ const getInventoryReport = async (req, res, next) => {
   }
 };
 
+// Order Management Functions
+const getOrders = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10, status, search } = req.query;
+    const { skip, limit: limitNum, page: pageNum } = getPagination(page, limit);
+
+    let filter = {};
+    if (status && status !== 'all') filter.status = status;
+    
+    if (search && search.trim() !== '') {
+      filter.$or = [
+        { _id: { $regex: search.trim(), $options: 'i' } },
+        { 'user.name': { $regex: search.trim(), $options: 'i' } }
+      ];
+    }
+
+    const orders = await Order.find(filter)
+      .populate('user', 'name email')
+      .populate('items.product', 'name')
+      .populate('items.variant', 'size weight')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    const totalCount = await Order.countDocuments(filter);
+    const pagination = getPaginationResult(totalCount, pageNum, limitNum);
+
+    res.json({
+      success: true,
+      orders,
+      pagination
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return next(new ErrorResponse('Invalid order status', 400));
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return next(new ErrorResponse('Order not found', 404));
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.json({
+      success: true,
+      message: 'Order status updated successfully',
+      order
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getOrderDetails = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+      .populate('user', 'name email phone')
+      .populate('items.product', 'name images')
+      .populate('items.variant', 'size weight price');
+
+    if (!order) {
+      return next(new ErrorResponse('Order not found', 404));
+    }
+
+    res.json({
+      success: true,
+      order
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Product Management Functions
+const createProduct = async (req, res, next) => {
+  try {
+    console.log('Request body:', req.body);
+    const { name, description, category, basePrice, tags, variants, flavor } = req.body;
+
+    const product = await Product.create({
+      name,
+      description,
+      category: null,
+      basePrice: Number(basePrice),
+      flavor: flavor || 'Classic',
+      tags: tags || [],
+      images: ['/cineman-tea.jpg']
+    });
+    
+    console.log('Product created:', product);
+
+    if (variants && variants.length > 0) {
+      const variantPromises = variants.map((variant, index) => 
+        Variant.create({
+          ...variant,
+          product: product._id,
+          name: `${product.name} - ${variant.size}`,
+          sku: `${product.name.replace(/\s+/g, '-').toLowerCase()}-${variant.size.toLowerCase()}-${Date.now()}-${index}`,
+          price: Number(variant.price),
+          stock: Number(variant.stock),
+          weight: Number(variant.weight)
+        })
+      );
+      await Promise.all(variantPromises);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Product created successfully',
+      product
+    });
+  } catch (error) {
+    console.log('Product creation error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+const updateProduct = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+    const { name, description, category, basePrice, tags, isActive } = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return next(new ErrorResponse('Product not found', 404));
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { name, description, category, basePrice, tags, isActive },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Product updated successfully',
+      product: updatedProduct
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteProduct = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return next(new ErrorResponse('Product not found', 404));
+    }
+
+    await Variant.deleteMany({ product: productId });
+    await Product.findByIdAndDelete(productId);
+
+    res.json({
+      success: true,
+      message: 'Product deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getProductDetails = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+
+    const product = await Product.findById(productId)
+      .populate('category', 'name')
+      .populate('variants');
+
+    if (!product) {
+      return next(new ErrorResponse('Product not found', 404));
+    }
+
+    res.json({
+      success: true,
+      product
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getUsers,
@@ -273,5 +475,12 @@ module.exports = {
   unblockUser,
   createAdmin,
   deleteAdmin,
-  getInventoryReport
+  getInventoryReport,
+  getOrders,
+  updateOrderStatus,
+  getOrderDetails,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductDetails
 };

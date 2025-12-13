@@ -29,8 +29,34 @@ export const adminApi = {
     return response.data
   },
   
+  getOrderDetails: async (orderId) => {
+    const response = await api.get(`/admin/orders/${orderId}`)
+    return response.data
+  },
+  
   updateOrderStatus: async (orderId, status) => {
     const response = await api.put(`/admin/orders/${orderId}/status`, { status })
+    return response.data
+  },
+  
+  // Product Management
+  createProduct: async (productData) => {
+    const response = await api.post('/admin/products', productData)
+    return response.data
+  },
+  
+  getProductDetails: async (productId) => {
+    const response = await api.get(`/admin/products/${productId}`)
+    return response.data
+  },
+  
+  updateProduct: async (productId, productData) => {
+    const response = await api.put(`/admin/products/${productId}`, productData)
+    return response.data
+  },
+  
+  deleteProduct: async (productId) => {
+    const response = await api.delete(`/admin/products/${productId}`)
     return response.data
   }
 }

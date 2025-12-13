@@ -5,9 +5,11 @@ import { Input } from '../../components/ui/input'
 import { Badge } from '../../components/ui/badge'
 import { Edit, Trash2, Plus, Search } from 'lucide-react'
 import { productApi } from '../../services/product.api'
+import { adminApi } from '../../services/admin.api'
 import { formatPrice } from '../../utils/formatPrice'
 import Loader from '../../components/ui/Loader'
 import AdminLayout from '../../components/layout/AdminLayout'
+import AddProductModal from '../../components/ui/AddProductModal'
 
 export default function ManageProducts() {
   const [products, setProducts] = useState([])
@@ -16,6 +18,7 @@ export default function ManageProducts() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [error, setError] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
 
   useEffect(() => {
     fetchProducts()
@@ -42,12 +45,17 @@ export default function ManageProducts() {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await productApi.deleteProduct(productId)
+        await adminApi.deleteProduct(productId)
         fetchProducts()
       } catch (error) {
         setError('Failed to delete product')
       }
     }
+  }
+
+  const handleAddSuccess = () => {
+    fetchProducts()
+    setShowAddModal(false)
   }
 
   const getStockStatus = (stock) => {
@@ -64,7 +72,7 @@ export default function ManageProducts() {
           <h1 className="text-3xl font-bold">Manage Products</h1>
           <p className="text-gray-600">Add, edit, and manage your product catalog</p>
         </div>
-        <Button>
+        <Button onClick={() => setShowAddModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Product
         </Button>
@@ -188,6 +196,12 @@ export default function ManageProducts() {
           )}
         </CardContent>
       </Card>
+      
+      <AddProductModal 
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={handleAddSuccess}
+      />
       </div>
     </AdminLayout>
   )
