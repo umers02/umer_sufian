@@ -25,7 +25,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
 
   useEffect(() => {
     if (isOpen && product) {
-      // Populate form with product data
       setFormData({
         name: product.name || '',
         description: product.description || '',
@@ -43,7 +42,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
           : [{ size: '250g', weight: 250, price: '', stock: '' }]
       })
     } else if (isOpen && !product) {
-      // Reset form for new product
       setFormData({
         name: '',
         description: '',
@@ -87,7 +85,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
 
     try {
       if (isEdit) {
-        // For update, send all required fields that backend validator expects
         const productData = {
           name: formData.name,
           description: formData.description,
@@ -96,23 +93,16 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
           isActive: product.isActive !== undefined ? product.isActive : true
         }
-        
-        // Only include category if it's a valid MongoDB ObjectId
-        // Don't include category at all if it's empty (validator will skip it)
+
         if (formData.category && formData.category.trim() !== '') {
-          // Validate it's a valid MongoDB ObjectId format (24 hex characters)
           const mongoIdRegex = /^[0-9a-fA-F]{24}$/
           if (mongoIdRegex.test(formData.category.trim())) {
             productData.category = formData.category.trim()
           }
         }
-        
-        console.log('Updating product with ID:', product._id)
-        console.log('Product data:', productData)
-        // Use productApi instead of adminApi for update
+
         await productApi.updateProduct(product._id, productData)
       } else {
-        // For create, send all fields including variants
         const productData = {
           ...formData,
           basePrice: parseFloat(formData.basePrice),
@@ -126,11 +116,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
         }
         await adminApi.createProduct(productData)
       }
-      
+
       onSuccess()
       onClose()
-      
-      // Reset form
+
       if (!isEdit) {
         setFormData({
           name: '',
@@ -144,10 +133,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
       }
     } catch (error) {
       console.error('Product error:', error)
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.error || 
-                          error.message || 
-                          `Failed to ${isEdit ? 'update' : 'create'} product`
+      const errorMessage = error.response?.data?.message ||
+                           error.response?.data?.error ||
+                           error.message ||
+                           `Failed to ${isEdit ? 'update' : 'create'} product`
       setError(errorMessage)
     } finally {
       setLoading(false)
@@ -173,7 +162,8 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Product Name</Label>
                 <Input
@@ -185,7 +175,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
               </div>
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => handleInputChange('category', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -210,7 +203,8 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            {/* Pricing & Tags */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="basePrice">Base Price ($)</Label>
                 <Input
@@ -243,6 +237,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
               </div>
             </div>
 
+            {/* Variants */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Product Variants</Label>
@@ -251,7 +246,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
                   Add Variant
                 </Button>
               </div>
-              
+
               {formData.variants.map((variant, index) => (
                 <div key={index} className="border rounded p-3 mb-2">
                   <div className="flex items-center justify-between mb-2">
@@ -267,7 +262,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
                       </Button>
                     )}
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
                       <Label>Size</Label>
                       <Input
@@ -308,7 +303,8 @@ export default function AddProductModal({ isOpen, onClose, onSuccess, product = 
               ))}
             </div>
 
-            <div className="flex gap-2 pt-4">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 pt-4">
               <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update Product' : 'Create Product')}
               </Button>

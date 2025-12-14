@@ -10,18 +10,25 @@ import { orderApi } from "../services/order.api";
 import { cartApi } from "../services/cart.api";
 
 export default function Checkout() {
-  const { cartItems, getCartTotal, updateQuantity, removeFromCart, clearCart, fetchCart } = useCart();
+  const {
+    cartItems,
+    getCartTotal,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    fetchCart,
+  } = useCart();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Shipping address form state
   const [shippingAddress, setShippingAddress] = useState({
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: ''
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
   });
 
   // Only show empty cart message if cart is truly empty
@@ -49,19 +56,25 @@ export default function Checkout() {
 
   const handleCheckout = async () => {
     // Validate shipping address
-    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode || !shippingAddress.country) {
-      setError('Please fill in all shipping address fields');
+    if (
+      !shippingAddress.street ||
+      !shippingAddress.city ||
+      !shippingAddress.state ||
+      !shippingAddress.zipCode ||
+      !shippingAddress.country
+    ) {
+      setError("Please fill in all shipping address fields");
       return;
     }
 
     // Validate cart has items
     if (cartItems.length === 0) {
-      setError('Your cart is empty. Please add items to cart first.');
+      setError("Your cart is empty. Please add items to cart first.");
       return;
     }
 
     setIsProcessing(true);
-    setError('');
+    setError("");
 
     try {
       // First, ensure cart items are in database
@@ -69,12 +82,13 @@ export default function Checkout() {
       let cartResponse;
       try {
         cartResponse = await cartApi.getCart();
-        const dbCartItems = cartResponse.cart?.items || cartResponse.items || [];
-        
+        const dbCartItems =
+          cartResponse.cart?.items || cartResponse.items || [];
+
         // If database cart is empty but we have items in state, sync them
         if (dbCartItems.length === 0 && cartItems.length > 0) {
-          setError('Syncing cart items to database...');
-          
+          setError("Syncing cart items to database...");
+
           // Validate that IDs look like MongoDB ObjectIds (24 hex characters)
           // Skip if IDs are not valid ObjectIds (e.g., numeric IDs or fake variant IDs)
           const isValidObjectId = (id) => {
@@ -84,70 +98,92 @@ export default function Checkout() {
             // MongoDB ObjectId is 24 hex characters
             return /^[0-9a-fA-F]{24}$/.test(idStr);
           };
-          
+
           // Try to add items to database cart
           let syncSuccess = false;
           let syncErrors = [];
-          
+
           for (const item of cartItems) {
             try {
               let productId, variantId;
-              
+
               // Try to get product ID
               productId = item.product?._id || item.product?.id || item.id;
-              
+
               // Try to get variant ID - check multiple possible structures
-              variantId = item.variant?._id || item.variant?.id || item.variantId;
-              
-              if (productId && variantId && isValidObjectId(productId) && isValidObjectId(variantId)) {
+              variantId =
+                item.variant?._id || item.variant?.id || item.variantId;
+
+              if (
+                productId &&
+                variantId &&
+                isValidObjectId(productId) &&
+                isValidObjectId(variantId)
+              ) {
                 // We have both valid ObjectIds, try to add to cart
                 await cartApi.addToCart(productId, variantId, item.quantity);
                 syncSuccess = true;
               } else {
                 // Invalid IDs - this item was probably added with hardcoded data
-                const itemName = item.name || item.product?.name || 'Unknown item';
-                syncErrors.push(`${itemName}: Invalid product/variant IDs (productId: ${productId}, variantId: ${variantId}). Please remove this item and add it again from the Collection page.`);
-                console.warn('Cannot sync item - invalid IDs:', { 
-                  productId, 
-                  variantId, 
+                const itemName =
+                  item.name || item.product?.name || "Unknown item";
+                syncErrors.push(
+                  `${itemName}: Invalid product/variant IDs (productId: ${productId}, variantId: ${variantId}). Please remove this item and add it again from the Collection page.`
+                );
+                console.warn("Cannot sync item - invalid IDs:", {
+                  productId,
+                  variantId,
                   productIdValid: isValidObjectId(productId),
                   variantIdValid: isValidObjectId(variantId),
-                  item 
+                  item,
                 });
               }
             } catch (syncError) {
-              const errorMsg = syncError.response?.data?.message || syncError.message || 'Unknown error';
-              syncErrors.push(`Failed to sync "${item.name || item.product?.name}": ${errorMsg}`);
-              console.error('Error syncing item:', syncError);
+              const errorMsg =
+                syncError.response?.data?.message ||
+                syncError.message ||
+                "Unknown error";
+              syncErrors.push(
+                `Failed to sync "${
+                  item.name || item.product?.name
+                }": ${errorMsg}`
+              );
+              console.error("Error syncing item:", syncError);
               // Log full error for debugging
-              console.error('Full sync error:', {
+              console.error("Full sync error:", {
                 error: syncError,
                 response: syncError.response?.data,
-                item: item
+                item: item,
               });
             }
           }
-          
+
           if (syncErrors.length > 0 && !syncSuccess) {
-            setError(`Unable to sync cart items: ${syncErrors.join('; ')}. Please go back and add items again.`);
+            setError(
+              `Unable to sync cart items: ${syncErrors.join(
+                "; "
+              )}. Please go back and add items again.`
+            );
             setIsProcessing(false);
             return;
           }
-          
+
           if (syncSuccess) {
             // Wait a moment for sync to complete
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise((resolve) => setTimeout(resolve, 500));
             // Refresh cart from database
             await fetchCart();
           } else {
             // If sync failed, show helpful error
-            setError('Unable to sync cart items. Please go back and add items to cart again.');
+            setError(
+              "Unable to sync cart items. Please go back and add items to cart again."
+            );
             setIsProcessing(false);
             return;
           }
         }
       } catch (cartError) {
-        console.error('Error checking/syncing cart:', cartError);
+        console.error("Error checking/syncing cart:", cartError);
         // Continue anyway - backend will handle it
       }
 
@@ -158,11 +194,11 @@ export default function Checkout() {
           city: shippingAddress.city.trim(),
           state: shippingAddress.state.trim(),
           zipCode: shippingAddress.zipCode.trim(),
-          country: shippingAddress.country.trim()
-        }
+          country: shippingAddress.country.trim(),
+        },
       };
-      
-      console.log('Creating order with data:', orderData);
+
+      console.log("Creating order with data:", orderData);
       const response = await orderApi.createOrder(orderData);
 
       // Clear cart after successful order
@@ -170,31 +206,44 @@ export default function Checkout() {
 
       // Save order number for confirmation page
       if (response.order) {
-        localStorage.setItem('currentOrderNumber', response.order.orderNumber || response.order._id);
+        localStorage.setItem(
+          "currentOrderNumber",
+          response.order.orderNumber || response.order._id
+        );
         navigate("/order-confirmation");
       } else {
-        throw new Error('Order creation failed');
+        throw new Error("Order creation failed");
       }
     } catch (error) {
-      console.error('Order creation error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
-      
-      let errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to create order. Please try again.';
-      
+      console.error("Order creation error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+
+      let errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to create order. Please try again.";
+
       // Provide specific error messages
       if (error.response?.status === 400) {
-        if (errorMessage.toLowerCase().includes('cart is empty') || errorMessage.toLowerCase().includes('cart empty')) {
-          errorMessage = 'Your cart is empty in the database. Please go back and add items to cart again, then try checkout.';
-        } else if (errorMessage.toLowerCase().includes('missing required')) {
+        if (
+          errorMessage.toLowerCase().includes("cart is empty") ||
+          errorMessage.toLowerCase().includes("cart empty")
+        ) {
+          errorMessage =
+            "Your cart is empty in the database. Please go back and add items to cart again, then try checkout.";
+        } else if (errorMessage.toLowerCase().includes("missing required")) {
           errorMessage = errorMessage; // Keep the specific message about missing fields
-        } else if (errorMessage.toLowerCase().includes('insufficient stock')) {
+        } else if (errorMessage.toLowerCase().includes("insufficient stock")) {
           errorMessage = errorMessage; // Keep the specific stock message
         } else {
-          errorMessage = errorMessage || 'Invalid request. Please check your shipping address and try again.';
+          errorMessage =
+            errorMessage ||
+            "Invalid request. Please check your shipping address and try again.";
         }
       }
-      
+
       setError(errorMessage);
       setIsProcessing(false);
     }
@@ -245,37 +294,56 @@ export default function Checkout() {
             <div className="space-y-4 sm:space-y-6">
               {cartItems.map((item) => {
                 // Handle variant - can be string or object
-                let variantDisplay = 'Standard'
+                let variantDisplay = "Standard";
                 if (item.variant) {
-                  if (typeof item.variant === 'object' && item.variant !== null) {
-                    variantDisplay = item.variant.name || item.variant.size || 'Standard'
-                  } else if (typeof item.variant === 'string') {
-                    variantDisplay = item.variant
+                  if (
+                    typeof item.variant === "object" &&
+                    item.variant !== null
+                  ) {
+                    variantDisplay =
+                      item.variant.name || item.variant.size || "Standard";
+                  } else if (typeof item.variant === "string") {
+                    variantDisplay = item.variant;
                   }
                 }
-                
+
                 // Get product name - handle both string and object cases
-                let productName = 'Product'
+                let productName = "Product";
                 if (item.name) {
-                  productName = typeof item.name === 'string' ? item.name : (item.name.name || 'Product')
+                  productName =
+                    typeof item.name === "string"
+                      ? item.name
+                      : item.name.name || "Product";
                 } else if (item.product) {
-                  if (typeof item.product === 'object' && item.product !== null) {
-                    productName = item.product.name || 'Product'
-                  } else if (typeof item.product === 'string') {
-                    productName = item.product
+                  if (
+                    typeof item.product === "object" &&
+                    item.product !== null
+                  ) {
+                    productName = item.product.name || "Product";
+                  } else if (typeof item.product === "string") {
+                    productName = item.product;
                   }
                 }
-                
+
                 // Get item image
-                let itemImage = '/placeholder-tea.jpg'
+                let itemImage = "/placeholder-tea.jpg";
                 if (item.image) {
-                  itemImage = typeof item.image === 'string' ? item.image : (Array.isArray(item.image) ? item.image[0] : '/placeholder-tea.jpg')
-                } else if (item.product?.images && Array.isArray(item.product.images) && item.product.images.length > 0) {
-                  itemImage = item.product.images[0]
+                  itemImage =
+                    typeof item.image === "string"
+                      ? item.image
+                      : Array.isArray(item.image)
+                      ? item.image[0]
+                      : "/placeholder-tea.jpg";
+                } else if (
+                  item.product?.images &&
+                  Array.isArray(item.product.images) &&
+                  item.product.images.length > 0
+                ) {
+                  itemImage = item.product.images[0];
                 }
-                
-                const itemId = item._id || item.id
-                
+
+                const itemId = item._id || item.id;
+
                 return (
                   <div
                     key={`${itemId}-${variantDisplay}`}
@@ -304,10 +372,7 @@ export default function Checkout() {
                       <div className="flex items-center border border-gray-300">
                         <button
                           onClick={() =>
-                            updateQuantity(
-                              itemId,
-                              item.quantity - 1
-                            )
+                            updateQuantity(itemId, item.quantity - 1)
                           }
                           className="px-2 sm:px-3 py-1 hover:bg-gray-50 text-sm sm:text-lg"
                         >
@@ -318,10 +383,7 @@ export default function Checkout() {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(
-                              itemId,
-                              item.quantity + 1
-                            )
+                            updateQuantity(itemId, item.quantity + 1)
                           }
                           className="px-2 sm:px-3 py-1 hover:bg-gray-50 text-sm sm:text-lg"
                         >
@@ -333,7 +395,7 @@ export default function Checkout() {
                       </span>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
 
@@ -367,7 +429,7 @@ export default function Checkout() {
               <h2 className="text-lg sm:text-xl font-medium mb-4 sm:mb-6">
                 Shipping Address
               </h2>
-              
+
               {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
                   {error}
@@ -379,7 +441,12 @@ export default function Checkout() {
                   <Input
                     placeholder="Street Address"
                     value={shippingAddress.street}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, street: e.target.value })}
+                    onChange={(e) =>
+                      setShippingAddress({
+                        ...shippingAddress,
+                        street: e.target.value,
+                      })
+                    }
                     className="w-full"
                     required
                   />
@@ -388,13 +455,23 @@ export default function Checkout() {
                   <Input
                     placeholder="City"
                     value={shippingAddress.city}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
+                    onChange={(e) =>
+                      setShippingAddress({
+                        ...shippingAddress,
+                        city: e.target.value,
+                      })
+                    }
                     required
                   />
                   <Input
                     placeholder="State"
                     value={shippingAddress.state}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
+                    onChange={(e) =>
+                      setShippingAddress({
+                        ...shippingAddress,
+                        state: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>
@@ -402,13 +479,23 @@ export default function Checkout() {
                   <Input
                     placeholder="Zip Code"
                     value={shippingAddress.zipCode}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, zipCode: e.target.value })}
+                    onChange={(e) =>
+                      setShippingAddress({
+                        ...shippingAddress,
+                        zipCode: e.target.value,
+                      })
+                    }
                     required
                   />
                   <Input
                     placeholder="Country"
                     value={shippingAddress.country}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, country: e.target.value })}
+                    onChange={(e) =>
+                      setShippingAddress({
+                        ...shippingAddress,
+                        country: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>

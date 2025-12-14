@@ -1,55 +1,61 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { Button } from '../components/ui/button'
-import { Card, CardContent } from '../components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
-import { Badge } from '../components/ui/badge'
-import { Star, ShoppingCart, ArrowLeft } from 'lucide-react'
-import Navbar from '../components/layout/Navbar'
-import Footer from '../components/layout/Footer'
-import { productApi } from '../services/product.api'
-import { useCart } from '../context/CartContext'
-import { formatPrice } from '../utils/formatPrice'
-import Loader from '../components/ui/Loader'
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Badge } from "../components/ui/badge";
+import { Star, ShoppingCart, ArrowLeft } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import { productApi } from "../services/product.api";
+import { useCart } from "../context/CartContext";
+import { formatPrice } from "../utils/formatPrice";
+import Loader from "../components/ui/Loader";
 
 export default function ProductDetail() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { addToCart } = useCart()
-  const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedVariant, setSelectedVariant] = useState('')
-  const [quantity, setQuantity] = useState(1)
-  const [error, setError] = useState('')
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedVariant, setSelectedVariant] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchProduct()
-  }, [id])
+    fetchProduct();
+  }, [id]);
 
   const fetchProduct = async () => {
     try {
-      const response = await productApi.getProduct(id)
-      setProduct(response.product)
+      const response = await productApi.getProduct(id);
+      setProduct(response.product);
       if (response.product?.variants?.length > 0) {
-        setSelectedVariant(response.product.variants[0]._id)
+        setSelectedVariant(response.product.variants[0]._id);
       }
     } catch (error) {
-      setError('Product not found')
+      setError("Product not found");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAddToCart = () => {
     if (!selectedVariant) {
-      setError('Please select a variant')
-      return
+      setError("Please select a variant");
+      return;
     }
-    
-    const variant = product.variants.find(v => v._id === selectedVariant)
+
+    const variant = product.variants.find((v) => v._id === selectedVariant);
     if (variant.stock < quantity) {
-      setError('Not enough stock available')
-      return
+      setError("Not enough stock available");
+      return;
     }
 
     addToCart({
@@ -59,12 +65,12 @@ export default function ProductDetail() {
       variant: variant.name,
       variantId: variant._id,
       quantity,
-      image: product.images?.[0]
-    })
-    
-    setError('')
+      image: product.images?.[0],
+    });
+
+    setError("");
     // Show success message or redirect
-  }
+  };
 
   if (loading) {
     return (
@@ -75,7 +81,7 @@ export default function ProductDetail() {
         </div>
         <Footer />
       </div>
-    )
+    );
   }
 
   if (error && !product) {
@@ -84,26 +90,35 @@ export default function ProductDetail() {
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-            <Button onClick={() => navigate('/collection')}>Back to Collection</Button>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Product Not Found
+            </h1>
+            <Button onClick={() => navigate("/collection")}>
+              Back to Collection
+            </Button>
           </div>
         </div>
         <Footer />
       </div>
-    )
+    );
   }
 
-  const selectedVariantData = product?.variants?.find(v => v._id === selectedVariant)
-  const currentPrice = selectedVariantData?.price || product?.basePrice || 0
+  const selectedVariantData = product?.variants?.find(
+    (v) => v._id === selectedVariant
+  );
+  const currentPrice = selectedVariantData?.price || product?.basePrice || 0;
 
   return (
-    <div className="min-h-screen bg-white" style={{fontFamily: 'Montserrat, sans-serif'}}>
+    <div
+      className="min-h-screen bg-white"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
       <Navbar />
-      
+
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/collection')}
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/collection")}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -114,8 +129,8 @@ export default function ProductDetail() {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-              <img 
-                src={product?.images?.[0] || '/cineman-tea.jpg'} 
+              <img
+                src={product?.images?.[0] || "/cineman-tea.jpg"}
                 alt={product?.name}
                 className="w-full h-full object-cover"
               />
@@ -123,8 +138,15 @@ export default function ProductDetail() {
             {product?.images?.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {product.images.slice(1, 5).map((image, index) => (
-                  <div key={index} className="aspect-square bg-gray-100 rounded overflow-hidden">
-                    <img src={image} alt={`${product.name} ${index + 2}`} className="w-full h-full object-cover" />
+                  <div
+                    key={index}
+                    className="aspect-square bg-gray-100 rounded overflow-hidden"
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 2}`}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 ))}
               </div>
@@ -134,19 +156,29 @@ export default function ProductDetail() {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product?.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {product?.name}
+              </h1>
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-4 w-4 ${i < (product?.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < (product?.rating || 0)
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
+                      }`}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">({product?.reviewCount || 0} reviews)</span>
+                <span className="text-sm text-gray-600">
+                  ({product?.reviewCount || 0} reviews)
+                </span>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{formatPrice(currentPrice)}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatPrice(currentPrice)}
+              </p>
             </div>
 
             <div>
@@ -158,15 +190,18 @@ export default function ProductDetail() {
             {product?.variants?.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-2">Size/Weight</h3>
-                <Select value={selectedVariant} onValueChange={setSelectedVariant}>
+                <Select
+                  value={selectedVariant}
+                  onValueChange={setSelectedVariant}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select variant" />
                   </SelectTrigger>
                   <SelectContent>
                     {product.variants.map((variant) => (
                       <SelectItem key={variant._id} value={variant._id}>
-                        {variant.name} - {formatPrice(variant.price)} 
-                        {variant.stock === 0 && ' (Out of Stock)'}
+                        {variant.name} - {formatPrice(variant.price)}
+                        {variant.stock === 0 && " (Out of Stock)"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -178,19 +213,21 @@ export default function ProductDetail() {
             <div>
               <h3 className="font-semibold mb-2">Quantity</h3>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="icon"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 >
                   -
                 </Button>
                 <span className="w-12 text-center">{quantity}</span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="icon"
                   onClick={() => setQuantity(quantity + 1)}
-                  disabled={selectedVariantData && quantity >= selectedVariantData.stock}
+                  disabled={
+                    selectedVariantData && quantity >= selectedVariantData.stock
+                  }
                 >
                   +
                 </Button>
@@ -202,11 +239,9 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            <Button 
+            <Button
               onClick={handleAddToCart}
               className="w-full"
               size="lg"
@@ -227,18 +262,22 @@ export default function ProductDetail() {
                   </div>
                   <div className="flex justify-between">
                     <span>Origin:</span>
-                    <span>{product?.origin || 'N/A'}</span>
+                    <span>{product?.origin || "N/A"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Caffeine Level:</span>
-                    <span>{product?.caffeineLevel || 'N/A'}</span>
+                    <span>{product?.caffeineLevel || "N/A"}</span>
                   </div>
                   {product?.tags?.length > 0 && (
                     <div>
                       <span className="block mb-1">Tags:</span>
                       <div className="flex flex-wrap gap-1">
                         {product.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -254,5 +293,5 @@ export default function ProductDetail() {
 
       <Footer />
     </div>
-  )
+  );
 }

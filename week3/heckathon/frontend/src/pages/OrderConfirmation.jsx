@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom'
-import { Button } from '../components/ui/button'
-import { Card, CardContent } from '../components/ui/card'
-import { CheckCircle, Package, Truck } from 'lucide-react'
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { CheckCircle, Package, Truck } from "lucide-react";
 
 export default function OrderConfirmation() {
-  const navigate = useNavigate()
-  const orderNumber = localStorage.getItem('currentOrderNumber') || 'ORD123456'
+  const navigate = useNavigate();
+  const orderNumber = localStorage.getItem("currentOrderNumber") || "ORD123456";
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -15,9 +15,10 @@ export default function OrderConfirmation() {
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
             <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
             <p className="text-gray-600 mb-6">
-              Thank you for your purchase. Your order has been successfully placed.
+              Thank you for your purchase. Your order has been successfully
+              placed.
             </p>
-            
+
             <div className="bg-gray-100 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-600">Order Number</p>
               <p className="font-bold text-lg">{orderNumber}</p>
@@ -41,16 +42,13 @@ export default function OrderConfirmation() {
             </div>
 
             <div className="space-y-3">
-              <Button 
-                className="w-full" 
-                onClick={() => navigate('/orders')}
-              >
+              <Button className="w-full" onClick={() => navigate("/orders")}>
                 View Order History
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
-                onClick={() => navigate('/collection')}
+                onClick={() => navigate("/collection")}
               >
                 Continue Shopping
               </Button>
@@ -59,5 +57,5 @@ export default function OrderConfirmation() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
