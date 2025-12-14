@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import PublicRoute from './components/layout/PublicRoute'
+import UserOnlyRoute from './components/layout/UserOnlyRoute'
 import Landing from './pages/Landing'
 import Collection from './pages/Collection'
 import Product from './pages/Product'
@@ -35,37 +37,45 @@ function App() {
       <CartProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            } />
             <Route path="/" element={
               <ProtectedRoute>
                 <HomeRedirect />
               </ProtectedRoute>
             } />
             <Route path="/collection" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <Collection />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             <Route path="/product/:id" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <Product />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             <Route path="/cart" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <Cart />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             <Route path="/checkout" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <Checkout />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             <Route path="/orders" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <OrderHistory />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             
             {/* Admin Routes */}
@@ -90,9 +100,9 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/order-confirmation" element={
-              <ProtectedRoute>
+              <UserOnlyRoute>
                 <OrderConfirmation />
-              </ProtectedRoute>
+              </UserOnlyRoute>
             } />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
