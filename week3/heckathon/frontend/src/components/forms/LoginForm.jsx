@@ -11,8 +11,11 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { login } = useAuth()
+
+  const { login, user } = useAuth()
   const navigate = useNavigate()
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,7 +25,17 @@ export default function LoginForm() {
     try {
       const response = await authApi.login(formData)
       login(response)
-      navigate('/')
+      
+      // Decode token to get role
+      const payload = JSON.parse(atob(response.token.split('.')[1]))
+      const userRole = payload.role || response.role
+      
+      // Direct redirect based on user role
+      if (userRole === 'admin' || userRole === 'superadmin') {
+        navigate('/admin/dashboard', { replace: true })
+      } else {
+        navigate('/', { replace: true })
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed')
     } finally {

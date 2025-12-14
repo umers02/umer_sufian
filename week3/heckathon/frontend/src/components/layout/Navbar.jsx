@@ -59,20 +59,22 @@ export default function Navbar() {
           </Link>
 
           {/* Navigation Links - Desktop */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/collection" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
-              TEA COLLECTIONS
-            </Link>
-            <Link to="/accessories" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
-              ACCESSORIES
-            </Link>
-            <Link to="/blog" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
-              BLOG
-            </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
-              CONTACT US
-            </Link>
-          </div>
+          {!(user?.role === 'admin' || user?.role === 'superadmin') && (
+            <div className="hidden md:flex items-center space-x-6">
+              <Link to="/collection" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                TEA COLLECTIONS
+              </Link>
+              <Link to="/accessories" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                ACCESSORIES
+              </Link>
+              <Link to="/blog" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                BLOG
+              </Link>
+              <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                CONTACT US
+              </Link>
+            </div>
+          )}
 
           {/* Right Side Icons */}
           <div className="flex items-center space-x-4">
@@ -85,34 +87,36 @@ export default function Navbar() {
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
-            {/* Search - Hidden on mobile */}
-            <div className="relative hidden sm:block">
-              {showSearch ? (
-                <div className="flex items-center">
-                  <Input 
-                    placeholder="Search..." 
-                    className="w-64"
-                    autoFocus
-                    onBlur={() => setShowSearch(false)}
-                  />
-                </div>
-              ) : (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowSearch(true)}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <mask id="mask0_166_99" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-                      <rect width="24" height="24" fill="#D9D9D9"/>
-                    </mask>
-                    <g mask="url(#mask0_166_99)">
-                      <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.146 15.371 4.888 14.113C3.62933 12.8543 3 11.3167 3 9.5C3 7.68333 3.62933 6.14567 4.888 4.887C6.146 3.629 7.68333 3 9.5 3C11.3167 3 12.8543 3.629 14.113 4.887C15.371 6.14567 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8127 13.5627 12.688 12.688C13.5627 11.8127 14 10.75 14 9.5C14 8.25 13.5627 7.18733 12.688 6.312C11.8127 5.43733 10.75 5 9.5 5C8.25 5 7.18733 5.43733 6.312 6.312C5.43733 7.18733 5 8.25 5 9.5C5 10.75 5.43733 11.8127 6.312 12.688C7.18733 13.5627 8.25 14 9.5 14Z" fill="#282828"/>
-                    </g>
-                  </svg>
-                </Button>
-              )}
-            </div>
+            {/* Search - Hidden on mobile and for admin users */}
+            {!(user?.role === 'admin' || user?.role === 'superadmin') && (
+              <div className="relative hidden sm:block">
+                {showSearch ? (
+                  <div className="flex items-center">
+                    <Input 
+                      placeholder="Search..." 
+                      className="w-64"
+                      autoFocus
+                      onBlur={() => setShowSearch(false)}
+                    />
+                  </div>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setShowSearch(true)}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_166_99" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                        <rect width="24" height="24" fill="#D9D9D9"/>
+                      </mask>
+                      <g mask="url(#mask0_166_99)">
+                        <path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.146 15.371 4.888 14.113C3.62933 12.8543 3 11.3167 3 9.5C3 7.68333 3.62933 6.14567 4.888 4.887C6.146 3.629 7.68333 3 9.5 3C11.3167 3 12.8543 3.629 14.113 4.887C15.371 6.14567 16 7.68333 16 9.5C16 10.2333 15.8833 10.925 15.65 11.575C15.4167 12.225 15.1 12.8 14.7 13.3L21 19.6L19.6 21ZM9.5 14C10.75 14 11.8127 13.5627 12.688 12.688C13.5627 11.8127 14 10.75 14 9.5C14 8.25 13.5627 7.18733 12.688 6.312C11.8127 5.43733 10.75 5 9.5 5C8.25 5 7.18733 5.43733 6.312 6.312C5.43733 7.18733 5 8.25 5 9.5C5 10.75 5.43733 11.8127 6.312 12.688C7.18733 13.5627 8.25 14 9.5 14Z" fill="#282828"/>
+                      </g>
+                    </svg>
+                  </Button>
+                )}
+              </div>
+            )}
 
             {/* User Menu */}
             {user ? (
@@ -139,22 +143,23 @@ export default function Navbar() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/orders')}>
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    Orders
-                  </DropdownMenuItem>
-                  {(user.role === 'admin' || user.role === 'superadmin') && (
+                  {/* Show different options based on user role */}
+                  {(user.role === 'admin' || user.role === 'superadmin') ? (
                     <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => navigate('/admin/dashboard')}>
-                        <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        Admin Dashboard
+                      <DropdownMenuItem onClick={() => navigate('/profile')}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/profile')}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/orders')}>
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        Orders
                       </DropdownMenuItem>
                     </>
                   )}
@@ -178,27 +183,29 @@ export default function Navbar() {
               </Button>
             )}
 
-            {/* Cart */}
-            <Button variant="ghost" onClick={toggleCart} className="hidden sm:block relative">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <mask id="mask0_166_105" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-                  <rect width="24" height="24" fill="#D9D9D9"/>
-                </mask>
-                <g mask="url(#mask0_166_105)">
-                  <path d="M5 22C4.45 22 3.979 21.8043 3.587 21.413C3.19567 21.021 3 20.55 3 20V8C3 7.45 3.19567 6.97933 3.587 6.588C3.979 6.196 4.45 6 5 6H7C7 4.61667 7.48767 3.43733 8.463 2.462C9.43767 1.48733 10.6167 1 12 1C13.3833 1 14.5627 1.48733 15.538 2.462C16.5127 3.43733 17 4.61667 17 6H19C19.55 6 20.021 6.196 20.413 6.588C20.8043 6.97933 21 7.45 21 8V20C21 20.55 20.8043 21.021 20.413 21.413C20.021 21.8043 19.55 22 19 22H5ZM5 20H19V8H5V20ZM12 14C13.3833 14 14.5627 13.5123 15.538 12.537C16.5127 11.5623 17 10.3833 17 9H15C15 9.83333 14.7083 10.5417 14.125 11.125C13.5417 11.7083 12.8333 12 12 12C11.1667 12 10.4583 11.7083 9.875 11.125C9.29167 10.5417 9 9.83333 9 9H7C7 10.3833 7.48767 11.5623 8.463 12.537C9.43767 13.5123 10.6167 14 12 14ZM9 6H15C15 5.16667 14.7083 4.45833 14.125 3.875C13.5417 3.29167 12.8333 3 12 3C11.1667 3 10.4583 3.29167 9.875 3.875C9.29167 4.45833 9 5.16667 9 6Z" fill="#282828"/>
-                </g>
-              </svg>
-              {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItemsCount}
-                </span>
-              )}
-            </Button>
+            {/* Cart - Hidden for admin users */}
+            {!(user?.role === 'admin' || user?.role === 'superadmin') && (
+              <Button variant="ghost" onClick={toggleCart} className="hidden sm:block relative">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <mask id="mask0_166_105" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                    <rect width="24" height="24" fill="#D9D9D9"/>
+                  </mask>
+                  <g mask="url(#mask0_166_105)">
+                    <path d="M5 22C4.45 22 3.979 21.8043 3.587 21.413C3.19567 21.021 3 20.55 3 20V8C3 7.45 3.19567 6.97933 3.587 6.588C3.979 6.196 4.45 6 5 6H7C7 4.61667 7.48767 3.43733 8.463 2.462C9.43767 1.48733 10.6167 1 12 1C13.3833 1 14.5627 1.48733 15.538 2.462C16.5127 3.43733 17 4.61667 17 6H19C19.55 6 20.021 6.196 20.413 6.588C20.8043 6.97933 21 7.45 21 8V20C21 20.55 20.8043 21.021 20.413 21.413C20.021 21.8043 19.55 22 19 22H5ZM5 20H19V8H5V20ZM12 14C13.3833 14 14.5627 13.5123 15.538 12.537C16.5127 11.5623 17 10.3833 17 9H15C15 9.83333 14.7083 10.5417 14.125 11.125C13.5417 11.7083 12.8333 12 12 12C11.1667 12 10.4583 11.7083 9.875 11.125C9.29167 10.5417 9 9.83333 9 9H7C7 10.3833 7.48767 11.5623 8.463 12.537C9.43767 13.5123 10.6167 14 12 14ZM9 6H15C15 5.16667 14.7083 4.45833 14.125 3.875C13.5417 3.29167 12.8333 3 12 3C11.1667 3 10.4583 3.29167 9.875 3.875C9.29167 4.45833 9 5.16667 9 6Z" fill="#282828"/>
+                  </g>
+                </svg>
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
+        {mobileMenuOpen && !(user?.role === 'admin' || user?.role === 'superadmin') && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
               <Link 

@@ -23,7 +23,13 @@ export function AuthProvider({ children }) {
 
   const login = (userData) => {
     localStorage.setItem('token', userData.token)
-    setUser(userData)
+    // Decode token to get user info immediately
+    try {
+      const payload = JSON.parse(atob(userData.token.split('.')[1]))
+      setUser({ ...payload, token: userData.token })
+    } catch (error) {
+      setUser(userData)
+    }
   }
 
   const logout = () => {

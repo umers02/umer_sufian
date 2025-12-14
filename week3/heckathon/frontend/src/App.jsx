@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Landing from './pages/Landing'
@@ -18,6 +18,17 @@ import ManageOrders from './pages/Admin/ManageOrders'
 import ManageUsers from './pages/Admin/ManageUsers'
 import CartPopup from './components/ui/CartPopup'
 
+// Component to handle home route redirect
+function HomeRedirect() {
+  const { user } = useAuth()
+  
+  if (user?.role === 'admin' || user?.role === 'superadmin') {
+    return <Navigate to="/admin/dashboard" replace />
+  }
+  
+  return <Landing />
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -28,7 +39,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/" element={
               <ProtectedRoute>
-                <Landing />
+                <HomeRedirect />
               </ProtectedRoute>
             } />
             <Route path="/collection" element={
