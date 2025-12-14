@@ -1,9 +1,45 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import { Button } from '../components/ui/button'
+import { productApi } from '../services/product.api'
 
 export default function Landing() {
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await productApi.getProducts({ limit: 100 })
+      // Extract unique categories from products
+      const uniqueCategories = []
+      const categoryNames = new Set()
+      
+      response.products?.forEach(product => {
+        if (product.category && !categoryNames.has(product.category.name)) {
+          categoryNames.add(product.category.name)
+          uniqueCategories.push(product.category)
+        }
+      })
+      
+      setCategories(uniqueCategories)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCategoryClick = (categoryName) => {
+    // Navigate to collection page with category pre-selected
+    return `/collection?category=${encodeURIComponent(categoryName)}`
+  }
+
   return (
     <div className="min-h-screen bg-white" style={{fontFamily: 'Montserrat, sans-serif'}}>
       <Navbar />
@@ -45,9 +81,11 @@ export default function Landing() {
                   Lorem ipsum dolor sit amet consectetur. Orci nibh nullam risus adipiscing odio. Neque lacus nibh eros in.
                 </p>
               </div>
-              <Button className="bg-black hover:bg-gray-900 text-white px-16 py-3 rounded-none text-sm font-light">
-                BROWSE TEAS
-              </Button>
+              <Link to="/collection">
+                <Button className="bg-black hover:bg-gray-900 text-white px-16 py-3 rounded-none text-sm font-light">
+                  BROWSE TEAS
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -115,55 +153,46 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-medium text-center text-gray-900 mb-16" style={{fontFamily: 'Prosto One, cursive'}}>Our Collections</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Row 1 */}
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-1.jpg" alt="Black Tea" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>BLACK TEA</h3>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="text-gray-500">Loading collections...</div>
             </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-2.jpg" alt="Green Tea" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>GREEN TEA</h3>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {categories.slice(0, 8).map((category, index) => {
+                // Map category names to image numbers - only show database categories
+                const imageMap = {
+                  'Black teas': 1,
+                  'Green teas': 2, 
+                  'White teas': 3,
+                  'Matcha': 4,
+                  'Herbal teas': 5,
+                  'Oolong': 7,
+                  'Rooibos': 8,
+                  'Teaware': 9
+                }
+                
+                const imageNumber = imageMap[category.name] || 1
+                
+                return (
+                  <Link 
+                    key={category._id} 
+                    to={handleCategoryClick(category.name)}
+                    className="group cursor-pointer hover:opacity-80 transition-opacity block"
+                  >
+                    <img 
+                      src={`/our-collection-card-${imageNumber}.jpg`} 
+                      alt={category.name} 
+                      className="w-full h-64 object-cover" 
+                    />
+                    <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>
+                      {category.name.toUpperCase()}
+                    </h3>
+                  </Link>
+                )
+              })}
             </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-3.jpg" alt="White Tea" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>WHITE TEA</h3>
-            </div>
-            
-            {/* Row 2 */}
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-4.jpg" alt="Matcha" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>MATCHA</h3>
-            </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-5.jpg" alt="Herbal Tea" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>HERBAL TEA</h3>
-            </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-6.jpg" alt="Chai" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>CHAI</h3>
-            </div>
-            
-            {/* Row 3 */}
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-7.jpg" alt="Oolong" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>OOLONG</h3>
-            </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-8.jpg" alt="Rooibos" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>ROOIBOS</h3>
-            </div>
-            
-            <div className="group cursor-pointer">
-              <img src="/our-collection-card-9.jpg" alt="Teaware" className="w-full h-64 object-cover" />
-              <h3 className="text-gray-900 text-lg font-light p-6 text-center" style={{fontFamily: 'Montserrat, sans-serif'}}>TEAWARE</h3>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
