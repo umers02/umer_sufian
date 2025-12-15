@@ -239,23 +239,26 @@
 
 
 
-"use client"
+import { useEffect, useState } from "react";
+import API from "../api/axiosConfig";
+import Navbar from "../components/Navbar";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
 
-import { useEffect, useState } from "react"
-import API from "../api/axiosConfig"
-import Navbar from "../components/Navbar"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Card, CardContent } from "../components/ui/card"
-import { Plus, Trash2, Edit3, CheckCircle2, Loader2, ListTodo, CheckCheck, Clock } from "lucide-react"
+import { Plus, Trash2, Edit3, CheckCircle2, Loader2, ListTodo, CheckCheck, Clock, Calendar, User } from "lucide-react";
+import { Task, TaskStats } from "../types";
 
 const Dashboard = () => {
-  const [tasks, setTasks] = useState([])
-  const [title, setTitle] = useState("")
-  const [editingId, setEditingId] = useState(null)
-  const [editTitle, setEditTitle] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0 })
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [stats, setStats] = useState<TaskStats>({ total: 0, completed: 0, pending: 0 });
+
 
   const getTasks = async () => {
     try {
@@ -276,55 +279,57 @@ const Dashboard = () => {
     }
   }
 
-  const toggleComplete = async (id, completed) => {
+  const toggleComplete = async (id: string, completed: boolean) => {
     try {
-      await API.put(`/api/tasks/${id}`, { completed: !completed })
-      getTasks()
+      await API.put(`/api/tasks/${id}`, { completed: !completed });
+      getTasks();
     } catch (error) {
-      console.error("Error toggling task:", error)
+      console.error("Error toggling task:", error);
     }
-  }
+  };
 
-  const createTask = async (e) => {
-    e.preventDefault()
-    if (!title.trim()) return
-    setLoading(true)
+  const createTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    setLoading(true);
     try {
-      await API.post("/api/tasks", { title })
-      setTitle("")
-      getTasks()
+      await API.post("/api/tasks", { title, description });
+      setTitle("");
+      setDescription("");
+
+      getTasks();
     } catch (error) {
-      console.error("Error creating task:", error)
+      console.error("Error creating task:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const deleteTask = async (id) => {
+  const deleteTask = async (id: string) => {
     try {
-      await API.delete(`/api/tasks/${id}`)
-      getTasks()
+      await API.delete(`/api/tasks/${id}`);
+      getTasks();
     } catch (error) {
-      console.error("Error deleting task:", error)
+      console.error("Error deleting task:", error);
     }
-  }
+  };
 
-  const startEdit = (task) => {
-    setEditingId(task._id)
-    setEditTitle(task.title)
-  }
+  const startEdit = (task: Task) => {
+    setEditingId(task._id);
+    setEditTitle(task.title);
+  };
 
-  const saveEdit = async (id) => {
-    if (!editTitle.trim()) return
+  const saveEdit = async (id: string) => {
+    if (!editTitle.trim()) return;
     try {
-      await API.put(`/api/tasks/${id}`, { title: editTitle })
-      setEditingId(null)
-      setEditTitle("")
-      getTasks()
+      await API.put(`/api/tasks/${id}`, { title: editTitle });
+      setEditingId(null);
+      setEditTitle("");
+      getTasks();
     } catch (error) {
-      console.error("Error updating task:", error)
+      console.error("Error updating task:", error);
     }
-  }
+  };
 
   useEffect(() => {
     getTasks()
@@ -392,15 +397,25 @@ const Dashboard = () => {
         </div>
 
         <Card className="mb-8 animate-fade-in shadow-md border border-border">
-          <CardContent className="pt-6">
-            <form onSubmit={createTask} className="flex gap-3">
+          <CardHeader>
+            <CardTitle>Add New Task</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={createTask} className="space-y-4">
               <Input
                 value={title}
                 placeholder="What needs to be done?"
                 onChange={(e) => setTitle(e.target.value)}
-                className="flex-1 bg-input border-border"
+                className="w-full bg-input border-border"
+                required
               />
-              <Button type="submit" size="lg" className="gap-2" disabled={loading}>
+              <Input
+                value={description}
+                placeholder="Task description (optional)"
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full bg-input border-border"
+              />
+              <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
                 {loading ? "Adding..." : "Add Task"}
               </Button>
@@ -449,11 +464,23 @@ const Dashboard = () => {
                           className="w-5 h-5 cursor-pointer rounded border-border"
                         />
                         <div className="flex-1">
-                          <p
-                            className={`text-base font-medium ${task.completed ? "line-through text-muted-foreground" : "text-foreground"}`}
-                          >
-                            {task.title}
-                          </p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p
+                              className={`text-base font-medium ${task.completed ? "line-through text-muted-foreground" : "text-foreground"}`}
+                            >
+                              {task.title}
+                            </p>
+                            <Badge variant={task.completed ? "success" : "secondary"}>
+                              {task.completed ? "Completed" : "Pending"}
+                            </Badge>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-muted-foreground">{task.description}</p>
+                          )}
+                          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                            <Calendar className="w-3 h-3" />
+                            <span>{new Date(task.createdAt).toLocaleDateString()}</span>
+                          </div>
                         </div>
                         <Button onClick={() => startEdit(task)} variant="outline" size="sm" className="gap-2">
                           <Edit3 className="w-4 h-4" />

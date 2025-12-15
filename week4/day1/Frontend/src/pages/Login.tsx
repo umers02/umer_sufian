@@ -94,36 +94,36 @@
 // export default Login;
 
 
-"use client"
-
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import API from "../api/axiosConfig"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
-import { LogIn, Mail, Lock, AlertCircle } from "lucide-react"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import API from "../api/axiosConfig";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { LogIn, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { LoginRequest } from "../types";
 
 const Login = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
-      const { data } = await API.post("/api/auth/login", { email, password })
-      localStorage.setItem("token", data.token)
-      window.location.href = "/dashboard"
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed")
+      const loginData: LoginRequest = { email, password };
+      const { data } = await API.post("/api/auth/login", loginData);
+      localStorage.setItem("token", data.token);
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Login failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -175,7 +175,14 @@ const Login = () => {
             </div>
 
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
