@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: fade-in 0.5s ease-out;
+  }
+}
