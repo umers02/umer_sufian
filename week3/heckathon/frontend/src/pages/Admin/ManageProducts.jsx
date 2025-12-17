@@ -36,7 +36,7 @@ export default function ManageProducts() {
       const params = { page: currentPage, limit: 10, search: searchTerm };
       const response = await productApi.getProducts(params);
       setProducts(response.products || []);
-      setTotalPages(response.totalPages || 1);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       setError("Failed to fetch products");
     } finally {
