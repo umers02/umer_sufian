@@ -65,11 +65,11 @@ export default function VotingHistory() {
       <CardHeader>
         <CardTitle>Your Voting History</CardTitle>
         <CardDescription>
-          {votes?.data?.votes?.length || 0} votes cast • {user.votingPower} voting power
+          {(votes as any)?.data?.votes?.length || 0} votes cast • {user.votingPower} voting power
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!votes || !votes.data || !votes.data.votes || votes.data.votes.length === 0 ? (
+        {!votes || !(votes as any).data || !(votes as any).data.votes || (votes as any).data.votes.length === 0 ? (
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium">No votes yet</h3>
@@ -79,7 +79,7 @@ export default function VotingHistory() {
           </div>
         ) : (
           <div className="space-y-3">
-            {votes.data.votes.slice(0, 5).map((vote: any, index) => (
+            {(votes as any).data.votes.slice(0, 5).map((vote: any, index: number) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   {getVoteIcon(vote.vote)}

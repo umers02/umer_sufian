@@ -38,7 +38,7 @@ export default function ProposalList() {
   useEffect(() => {
     if (data) {
       // Backend returns { success: true, data: proposals[] }
-      const proposalsArray = Array.isArray(data) ? data : (data.data || [])
+      const proposalsArray = Array.isArray(data) ? data : ((data as any).data || [])
       setProposals(proposalsArray)
     }
   }, [data])
@@ -47,7 +47,7 @@ export default function ProposalList() {
     const socket = getSocket()
     if (socket) {
       socket.on('proposals:update', (updatedProposals: Proposal[]) => {
-        const proposalsArray = Array.isArray(updatedProposals) ? updatedProposals : (updatedProposals.data || [])
+        const proposalsArray = Array.isArray(updatedProposals) ? updatedProposals : ((updatedProposals as any).data || [])
         setProposals(proposalsArray)
         // Clear managing state when an update arrives
         setManagingId(null)
@@ -212,13 +212,13 @@ export default function ProposalList() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-1">
               {filteredProposals.map((proposal) => (
                 <ProposalCard
-                  key={proposal._id || proposal.id}
+                  key={proposal._id}
                   proposal={proposal}
                   onVote={handleVote}
                   onManage={handleManage}
                   isConnected={isConnected}
                   isAdmin={user?.isAdmin}
-                  isManaging={managingId === (proposal._id || proposal.id?.toString())}
+                  isManaging={managingId === proposal._id}
                 />
               ))}
             </div>

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Socket } from 'socket.io-client'
 
 interface SocketState {
-  socket: Socket | null
+  socket: any | null
   isConnected: boolean
   activeUsers: number
 }
@@ -17,7 +17,7 @@ const socketSlice = createSlice({
   name: 'socket',
   initialState,
   reducers: {
-    setSocket: (state, action: PayloadAction<Socket>) => {
+    setSocket: (state, action: PayloadAction<any>) => {
       state.socket = action.payload
       state.isConnected = true
     },

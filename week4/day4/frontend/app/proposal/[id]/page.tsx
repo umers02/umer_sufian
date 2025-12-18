@@ -19,7 +19,7 @@ export default function ProposalDetail() {
   const [castVote] = useCastVoteMutation()
   const { isConnected, user } = useAppSelector((state) => state.auth)
 
-  const proposal = proposalData?.data || proposalData
+  const proposal = (proposalData as any)?.data || proposalData
 
   const handleVote = async (vote: 'yes' | 'no' | 'abstain') => {
     if (!user) return

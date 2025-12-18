@@ -11,7 +11,7 @@ export interface GovernanceStats {
 export const governanceApi = createApi({
   reducerPath: 'governanceApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5001/api/governance',
+    baseUrl: 'https://governance-system-backend.onrender.com/api/governance',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token
       if (token) {

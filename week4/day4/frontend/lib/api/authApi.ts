@@ -22,7 +22,7 @@ export interface ConnectWalletRequest {
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5001/api/auth',
+    baseUrl: 'https://governance-system-backend.onrender.com/api/auth',
   }),
   tagTypes: ['User'],
   endpoints: (builder) => ({

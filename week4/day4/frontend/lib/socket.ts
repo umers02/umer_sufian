@@ -4,7 +4,7 @@ let socket: Socket | null = null
 
 export const initializeSocket = (walletAddress?: string): Socket => {
   if (!socket) {
-    socket = io('http://localhost:5001', {
+    socket = io('https://governance-system-backend.onrender.com', {
       transports: ['websocket'],
     })
 

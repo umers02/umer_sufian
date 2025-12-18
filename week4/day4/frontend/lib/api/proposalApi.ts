@@ -28,7 +28,7 @@ export interface Vote {
 export const proposalApi = createApi({
   reducerPath: 'proposalApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5001/api/proposals',
+    baseUrl: 'https://governance-system-backend.onrender.com/api/proposals',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token
       if (token) {
