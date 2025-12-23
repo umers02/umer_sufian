@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Play, Search, Bell, Plus, Share, Volume2, Star, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -11,8 +11,7 @@ import Navbar from '@/components/Navbar'
 import FreeTrialCTA from '@/components/FreeTrialCTA'
 import Footer from '@/components/Footer'
 
-export default function MovieDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params)
+export default function MovieDetailPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState('description')
 
   const [movie, setMovie] = useState<any>(null)
@@ -34,14 +33,14 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
 
   useEffect(() => {
     loadMovieData()
-  }, [resolvedParams.id])
+  }, [params.id])
 
   const loadMovieData = async () => {
     try {
-      console.log('Loading movie with ID:', resolvedParams.id)
+      console.log('Loading movie with ID:', params.id)
       
       // Use combined API endpoint
-      const response = await fetch(`http://localhost:5000/api/movies/${resolvedParams.id}`)
+      const response = await fetch(`http://localhost:5000/api/movies/${params.id}`)
       const movieData = await response.json()
       
       console.log('Movie data received:', movieData)
@@ -73,9 +72,9 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
           setReviews(movieReviews.results.slice(0, 2))
           setVideos(movieVideos.results || [])
         }
-      } else {
-        console.log('No movie found with ID:', resolvedParams.id)
-      }
+        } else {
+          console.log('No movie found with ID:', params.id)
+        }
     } catch (error) {
       console.error('Error loading movie data:', error)
     }

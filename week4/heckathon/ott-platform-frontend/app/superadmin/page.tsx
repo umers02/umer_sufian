@@ -7,7 +7,8 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
-  const [admins, setAdmins] = useState([])
+  interface Admin { _id: string; name: string; email: string; isBlocked?: boolean; createdAt?: string }
+  const [admins, setAdmins] = useState<Admin[]>([])
   const [loading, setLoading] = useState(false)
 
   const fetchAdmins = async () => {
@@ -31,7 +32,7 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  const handleBlockAdmin = async (adminId) => {
+  const handleBlockAdmin = async (adminId: string) => {
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`http://localhost:5000/api/super-admin/admins/${adminId}/block`, {
@@ -49,7 +50,7 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  const handleUnblockAdmin = async (adminId) => {
+  const handleUnblockAdmin = async (adminId: string) => {
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`http://localhost:5000/api/super-admin/admins/${adminId}/unblock`, {
@@ -67,7 +68,7 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  const handleDeleteAdmin = async (adminId) => {
+  const handleDeleteAdmin = async (adminId: string) => {
     if (confirm('Are you sure you want to delete this admin? This action cannot be undone.')) {
       try {
         const token = localStorage.getItem('token')
@@ -290,13 +291,13 @@ export default function SuperAdminDashboard() {
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan="5" className="text-center py-8 text-gray-400">
+                          <td colSpan={5} className="text-center py-8 text-gray-400">
                             Loading admins...
                           </td>
                         </tr>
                       ) : admins.length === 0 ? (
                         <tr>
-                          <td colSpan="5" className="text-center py-8 text-gray-400">
+                          <td colSpan={5} className="text-center py-8 text-gray-400">
                             No admins found
                           </td>
                         </tr>
@@ -313,7 +314,7 @@ export default function SuperAdminDashboard() {
                               </span>
                             </td>
                             <td className="py-3 px-4 text-gray-400">
-                              {new Date(admin.createdAt).toLocaleDateString()}
+                              {admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : ''}
                             </td>
                             <td className="py-3 px-4">
                               <div className="flex gap-2">

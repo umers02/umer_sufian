@@ -18,7 +18,20 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard')
 
   // Manual movie form state
-  const [manualMovie, setManualMovie] = useState({
+  type Genre = { id: number; name: string }
+  interface ManualMovie {
+    title: string
+    overview: string
+    release_date: string
+    vote_average: number
+    runtime: number
+    status: string
+    genres: Genre[]
+    spoken_languages: { iso_639_1?: string; name?: string }[]
+    cast: { id?: number; name?: string }[]
+  }
+
+  const initialManualMovie: ManualMovie = {
     title: '',
     overview: '',
     release_date: '',
@@ -28,8 +41,10 @@ export default function AdminDashboard() {
     genres: [],
     spoken_languages: [],
     cast: []
-  })
-  const [files, setFiles] = useState({
+  }
+
+  const [manualMovie, setManualMovie] = useState<ManualMovie>(initialManualMovie) 
+  const [files, setFiles] = useState<{ poster: File | null; backdrop: File | null; trailer: File | null }>({
     poster: null,
     backdrop: null,
     trailer: null
@@ -177,7 +192,7 @@ export default function AdminDashboard() {
       loadSelectedMovies();
       loadDashboardStats();
       alert('Movie added successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding movie:', error);
       if (error.response?.status === 401) {
         alert('Authentication failed. Please login again.');
@@ -209,10 +224,11 @@ export default function AdminDashboard() {
     
     const formData = new FormData()
     Object.keys(manualMovie).forEach(key => {
+      const typedKey = key as keyof typeof manualMovie
       if (key === 'genres' || key === 'spoken_languages' || key === 'cast') {
-        formData.append(key, JSON.stringify(manualMovie[key]))
+        formData.append(key, JSON.stringify(manualMovie[typedKey]))
       } else {
-        formData.append(key, manualMovie[key])
+        formData.append(key, String(manualMovie[typedKey]))
       }
     })
 
@@ -246,17 +262,7 @@ export default function AdminDashboard() {
   }
 
   const resetManualForm = () => {
-    setManualMovie({
-      title: '',
-      overview: '',
-      release_date: '',
-      vote_average: 0,
-      runtime: 0,
-      status: 'Released',
-      genres: [],
-      spoken_languages: [],
-      cast: []
-    })
+    setManualMovie(initialManualMovie)
     setFiles({ poster: null, backdrop: null, trailer: null })
   }
 

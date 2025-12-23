@@ -13,13 +13,13 @@ import FreeTrialCTA from '@/components/FreeTrialCTA'
 import Footer from '@/components/Footer'
 
 export default function HomePage() {
-  const [openFaq, setOpenFaq] = useState(null)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  const toggleFaq = (index) => {
+  const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
   }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Play, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getImageUrl } from '@/lib/tmdb'
@@ -15,8 +15,11 @@ export default function MoviesPage() {
   const [movies, setMovies] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const genreFilter = searchParams.get('genre')
+  const [genreFilter, setGenreFilter] = useState<string | null>(null)
+
+  useEffect(() => {
+    setGenreFilter(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('genre') : null)
+  }, [])
 
   // Check if user should be redirected based on role
   useEffect(() => {
@@ -48,6 +51,8 @@ export default function MoviesPage() {
       
       const data = await movieAPI.getAllMovies(params)
       console.log('Loaded movies from DB:', data.movies)
+      console.log('Manual movies:', data.movies?.filter(m => m.source === 'manual'))
+      console.log('TMDB movies:', data.movies?.filter(m => m.source !== 'manual'))
       setMovies(data.movies || [])
     } catch (error) {
       console.error('Error loading movies:', error)
@@ -105,6 +110,7 @@ export default function MoviesPage() {
   ]
 
   return (
+    <React.Suspense fallback={null}>
     <div className="min-h-screen text-white" style={{backgroundColor: '#141414'}}>
       <Navbar />
 
@@ -178,7 +184,6 @@ export default function MoviesPage() {
         newReleases={[]}
         mustWatchMovies={[]}
         dbMovies={movies}
-        loading={loading}
       />
 
       {/* Shows Section with Border */}
@@ -194,5 +199,6 @@ export default function MoviesPage() {
       <FreeTrialCTA />
       <Footer />
     </div>
+    </React.Suspense>
   )
 }

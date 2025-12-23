@@ -46,7 +46,29 @@ export default function ContentSection({
   
   const moviesPerPage = 5
   const genresPerPage = 5
+  
+  // Calculate filtered movie arrays
+  const filteredTrendingMovies = dbMovies.filter(movie => 
+    (movie.vote_average >= 7 || movie.popularity > 100) && (movie.tmdbId || movie.source === 'manual')
+  )
+  const filteredNewReleases = dbMovies.filter(movie => {
+    const currentYear = new Date().getFullYear()
+    const releaseYear = movie.release_date ? parseInt(movie.release_date.split('-')[0]) : 0
+    return releaseYear >= currentYear - 2 && (movie.tmdbId || movie.source === 'manual')
+  })
+  const filteredMustWatchMovies = dbMovies.filter(movie => 
+    !movie.tmdbId || movie.source === 'manual' || movie.source === 'Manual' || movie.vote_average >= 8
+  )
+  
+  console.log('ContentSection - dbMovies:', dbMovies.length)
+  console.log('ContentSection - manual movies:', dbMovies.filter(m => m.source === 'manual').length)
+  console.log('ContentSection - all movie sources:', dbMovies.map(m => ({ title: m.title, source: m.source })))
+  console.log('ContentSection - filteredMustWatchMovies:', filteredMustWatchMovies.length)
+  
   const totalPages = Math.ceil(dbMovies.length / moviesPerPage)
+  const totalTrendingPages = Math.ceil(filteredTrendingMovies.length / moviesPerPage)
+  const totalNewReleasePages = Math.ceil(filteredNewReleases.length / moviesPerPage)
+  const totalMustWatchPages = Math.ceil(filteredMustWatchMovies.length / moviesPerPage)
   const totalGenrePages = Math.ceil(categories.length / genresPerPage)
   
   // Create genre categories from DB movies
@@ -55,7 +77,7 @@ export default function ContentSection({
     
     dbMovies.forEach(movie => {
       if (movie.genres && Array.isArray(movie.genres)) {
-        movie.genres.forEach(genre => {
+        movie.genres.forEach((genre: any) => {
           if (!genreMap.has(genre.name)) {
             genreMap.set(genre.name, [])
           }
@@ -63,13 +85,13 @@ export default function ContentSection({
         })
       } else if (movie.genre_ids && Array.isArray(movie.genre_ids)) {
         // Handle TMDB genre_ids
-        const genreNames = {
+        const genreNames: Record<number, string> = {
           28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
           99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
           27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Science Fiction',
           10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western'
         }
-        movie.genre_ids.forEach(genreId => {
+        movie.genre_ids.forEach((genreId: number) => {
           const genreName = genreNames[genreId]
           if (genreName) {
             if (!genreMap.has(genreName)) {
@@ -83,7 +105,7 @@ export default function ContentSection({
     
     return Array.from(genreMap.entries()).map(([name, movies]) => ({
       name,
-      movies: movies.slice(0, 4).map(movie => ({
+      movies: movies.slice(0, 4).map((movie: any) => ({
         id: movie._id || movie.tmdbId,
         title: movie.title,
         image: movie.poster_path?.startsWith('http') ? movie.poster_path : getImageUrl(movie.poster_path),
@@ -101,17 +123,17 @@ export default function ContentSection({
   
   const getTrendingMovies = () => {
     const start = trendingPage * moviesPerPage
-    return dbMovies.slice(start, start + moviesPerPage)
+    return filteredTrendingMovies.slice(start, start + moviesPerPage)
   }
   
   const getNewReleaseMovies = () => {
     const start = newReleasePage * moviesPerPage
-    return dbMovies.slice(start, start + moviesPerPage)
+    return filteredNewReleases.slice(start, start + moviesPerPage)
   }
   
   const getMustWatchMovies = () => {
     const start = mustWatchPage * moviesPerPage
-    return dbMovies.slice(start, start + moviesPerPage)
+    return filteredMustWatchMovies.slice(start, start + moviesPerPage)
   }
   
   const handleGenreNext = () => {
@@ -123,42 +145,54 @@ export default function ContentSection({
   }
   
   const handleTrendingNext = () => {
-    setTrendingPage((prev) => (prev + 1) % totalPages)
+    if (totalTrendingPages > 0) {
+      setTrendingPage((prev) => (prev + 1) % totalTrendingPages)
+    }
   }
   
   const handleTrendingPrev = () => {
-    setTrendingPage((prev) => (prev - 1 + totalPages) % totalPages)
+    if (totalTrendingPages > 0) {
+      setTrendingPage((prev) => (prev - 1 + totalTrendingPages) % totalTrendingPages)
+    }
   }
   
   const handleNewReleaseNext = () => {
-    setNewReleasePage((prev) => (prev + 1) % totalPages)
+    if (totalNewReleasePages > 0) {
+      setNewReleasePage((prev) => (prev + 1) % totalNewReleasePages)
+    }
   }
   
   const handleNewReleasePrev = () => {
-    setNewReleasePage((prev) => (prev - 1 + totalPages) % totalPages)
+    if (totalNewReleasePages > 0) {
+      setNewReleasePage((prev) => (prev - 1 + totalNewReleasePages) % totalNewReleasePages)
+    }
   }
   
   const handleMustWatchNext = () => {
-    setMustWatchPage((prev) => (prev + 1) % totalPages)
+    if (totalMustWatchPages > 0) {
+      setMustWatchPage((prev) => (prev + 1) % totalMustWatchPages)
+    }
   }
   
   const handleMustWatchPrev = () => {
-    setMustWatchPage((prev) => (prev - 1 + totalPages) % totalPages)
+    if (totalMustWatchPages > 0) {
+      setMustWatchPage((prev) => (prev - 1 + totalMustWatchPages) % totalMustWatchPages)
+    }
   }
   
   const handleGenreClick = (genreName: string) => {
     setSelectedGenre(genreName)
     const filtered = dbMovies.filter(movie => {
       if (movie.genres && Array.isArray(movie.genres)) {
-        return movie.genres.some(genre => genre.name === genreName)
+        return movie.genres.some((genre: any) => genre.name === genreName)
       } else if (movie.genre_ids && Array.isArray(movie.genre_ids)) {
-        const genreNames = {
+        const genreNames: Record<number, string> = {
           28: 'Action', 12: 'Adventure', 16: 'Animation', 35: 'Comedy', 80: 'Crime',
           99: 'Documentary', 18: 'Drama', 10751: 'Family', 14: 'Fantasy', 36: 'History',
           27: 'Horror', 10402: 'Music', 9648: 'Mystery', 10749: 'Romance', 878: 'Science Fiction',
           10770: 'TV Movie', 53: 'Thriller', 10752: 'War', 37: 'Western'
         }
-        return movie.genre_ids.some(genreId => genreNames[genreId] === genreName)
+        return movie.genre_ids.some((genreId: number) => genreNames[genreId] === genreName)
       }
       return false
     })
@@ -249,14 +283,14 @@ export default function ContentSection({
           </div>
 
           {/* Trending Now */}
-          {dbMovies.length > 0 && (
+          {filteredTrendingMovies.length > 0 && (
             <div className="mb-16">
               <SectionHeader 
                 title="Trending Now" 
                 onNext={handleTrendingNext}
                 onPrevious={handleTrendingPrev}
                 currentPage={trendingPage}
-                totalPages={totalPages}
+                totalPages={totalTrendingPages}
               />
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {getTrendingMovies().map((movie) => (
@@ -305,14 +339,14 @@ export default function ContentSection({
           )}
 
           {/* New Releases */}
-          {dbMovies.length > 0 && (
+          {filteredNewReleases.length > 0 && (
             <div className="mb-16">
               <SectionHeader 
                 title="New Releases" 
                 onNext={handleNewReleaseNext}
                 onPrevious={handleNewReleasePrev}
                 currentPage={newReleasePage}
-                totalPages={totalPages}
+                totalPages={totalNewReleasePages}
               />
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {getNewReleaseMovies().map((movie) => (
@@ -361,14 +395,14 @@ export default function ContentSection({
           )}
 
           {/* Must - Watch */}
-          {dbMovies.length > 0 && (
+          {filteredMustWatchMovies.length > 0 && (
             <div>
               <SectionHeader 
                 title={`Must - Watch ${title}`} 
                 onNext={handleMustWatchNext}
                 onPrevious={handleMustWatchPrev}
                 currentPage={mustWatchPage}
-                totalPages={totalPages}
+                totalPages={totalMustWatchPages}
               />
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {getMustWatchMovies().map((movie) => (

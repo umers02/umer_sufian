@@ -1,16 +1,22 @@
 const Movie = require('../../models/Movie.model');
+const ManualMovie = require('../../models/ManualMovie.model');
 
 // Get movie details for user (with mock data)
 const getMovieDetails = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Try to find movie in database first
+    // Try to find movie in database first (TMDB)
     let movie = await Movie.findOne({ tmdbId: parseInt(id), isActive: true });
     
     if (movie) {
-      // Return database movie with mock data
-      return res.json(movie);
+      return res.json({ ...movie.toObject(), source: 'tmdb' });
+    }
+    
+    // Try to find manual movie
+    movie = await ManualMovie.findById(id);
+    if (movie) {
+      return res.json({ ...movie.toObject(), source: 'manual' });
     }
     
     // If not found in database, return default mock data structure
@@ -83,34 +89,50 @@ const getMovieDetails = async (req, res) => {
   }
 };
 
-// Get all active movies (for listing)
+// Get all active movies (for listing) - Combined TMDB + Manual
 const getAllMovies = async (req, res) => {
   try {
     const { page = 1, limit = 20, genre, search } = req.query;
     
-    let query = { isActive: true };
-    
+    // Get TMDB movies
+    let tmdbQuery = { isActive: true };
     if (genre) {
-      query.genre_ids = { $in: [parseInt(genre)] };
+      tmdbQuery.genre_ids = { $in: [parseInt(genre)] };
     }
-    
     if (search) {
-      query.title = { $regex: search, $options: 'i' };
+      tmdbQuery.title = { $regex: search, $options: 'i' };
     }
 
-    const movies = await Movie.find(query)
+    const tmdbMovies = await Movie.find(tmdbQuery)
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .select('tmdbId title overview poster_path backdrop_path release_date vote_average vote_count genre_ids');
+      .select('tmdbId title overview poster_path backdrop_path release_date vote_average vote_count genre_ids popularity');
 
-    const total = await Movie.countDocuments(query);
+    // Get Manual movies
+    let manualQuery = { isActive: true };
+    if (search) {
+      manualQuery.title = { $regex: search, $options: 'i' };
+    }
+
+    const manualMovies = await ManualMovie.find(manualQuery)
+      .sort({ createdAt: -1 })
+      .select('_id title overview poster_path backdrop_path release_date vote_average vote_count genres');
+
+    // Combine and format movies
+    const allMovies = [
+      ...tmdbMovies.map(movie => ({ ...movie.toObject(), source: 'tmdb' })),
+      ...manualMovies.map(movie => ({ ...movie.toObject(), source: 'manual' }))
+    ];
+
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + parseInt(limit);
+    const paginatedMovies = allMovies.slice(startIndex, endIndex);
 
     res.json({
-      movies,
-      totalPages: Math.ceil(total / limit),
+      movies: paginatedMovies,
+      totalPages: Math.ceil(allMovies.length / limit),
       currentPage: page,
-      total
+      total: allMovies.length
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching movies', error: error.message });
