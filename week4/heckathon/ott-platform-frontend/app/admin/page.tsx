@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Plus, Edit, Trash2, Eye, Users, Film, TrendingUp, Star, LogOut, Ban, CheckCircle } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, Eye, Users, Film, TrendingUp, Star, LogOut, Ban, CheckCircle, Upload } from 'lucide-react'
 import { searchMovies, getPopularMovies, getImageUrl, Movie } from '@/lib/tmdb'
 import { movieAPI } from '@/lib/api'
 import { auth } from '@/lib/auth'
@@ -16,6 +16,47 @@ export default function AdminDashboard() {
   const [dashboardStats, setDashboardStats] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
+
+  // Manual movie form state
+  const [manualMovie, setManualMovie] = useState({
+    title: '',
+    overview: '',
+    release_date: '',
+    vote_average: 0,
+    runtime: 0,
+    status: 'Released',
+    genres: [],
+    spoken_languages: [],
+    cast: []
+  })
+  const [files, setFiles] = useState({
+    poster: null,
+    backdrop: null,
+    trailer: null
+  })
+
+  // Genre options
+  const genreOptions = [
+    { id: 28, name: 'Action' },
+    { id: 12, name: 'Adventure' },
+    { id: 16, name: 'Animation' },
+    { id: 35, name: 'Comedy' },
+    { id: 80, name: 'Crime' },
+    { id: 99, name: 'Documentary' },
+    { id: 18, name: 'Drama' },
+    { id: 10751, name: 'Family' },
+    { id: 14, name: 'Fantasy' },
+    { id: 36, name: 'History' },
+    { id: 27, name: 'Horror' },
+    { id: 10402, name: 'Music' },
+    { id: 9648, name: 'Mystery' },
+    { id: 10749, name: 'Romance' },
+    { id: 878, name: 'Science Fiction' },
+    { id: 10770, name: 'TV Movie' },
+    { id: 53, name: 'Thriller' },
+    { id: 10752, name: 'War' },
+    { id: 37, name: 'Western' }
+  ]
 
   useEffect(() => {
     loadPopularMovies()
@@ -97,7 +138,7 @@ export default function AdminDashboard() {
 
   const loadSelectedMovies = async () => {
     try {
-      const data = await movieAPI.getAllMovies()
+      const data = await movieAPI.getAllMoviesAdmin()
       setSelectedMovies(data.movies || [])
     } catch (error) {
       console.error('Error loading movies:', error)
@@ -128,37 +169,95 @@ export default function AdminDashboard() {
 
   const addMovie = async (movie: Movie) => {
     try {
-      await movieAPI.addMovie({
-        tmdbId: movie.id,
-        title: movie.title,
-        overview: movie.overview,
-        poster_path: movie.poster_path,
-        backdrop_path: movie.backdrop_path,
-        release_date: movie.release_date,
-        vote_average: movie.vote_average,
-        vote_count: movie.vote_count,
-        genre_ids: movie.genre_ids,
-        original_language: movie.original_language,
-        popularity: movie.popularity,
-        adult: movie.adult
-      })
-      loadSelectedMovies()
-      loadDashboardStats()
+      console.log('Adding movie:', movie); // Debug log
+      const token = localStorage.getItem('token');
+      console.log('Token:', token ? 'Present' : 'Missing'); // Debug log
+      
+      await movieAPI.addMovie(movie);
+      loadSelectedMovies();
+      loadDashboardStats();
+      alert('Movie added successfully!');
     } catch (error) {
-      console.error('Error adding movie:', error)
-      alert('Error adding movie. Please try again.')
+      console.error('Error adding movie:', error);
+      if (error.response?.status === 401) {
+        alert('Authentication failed. Please login again.');
+        auth.logout();
+      } else {
+        alert('Error adding movie. Please try again.');
+      }
     }
   }
 
-  const removeMovie = async (tmdbId: number) => {
+  const removeMovie = async (movie: any) => {
     try {
-      await movieAPI.deleteMovie(tmdbId)
+      if (movie.source === 'manual') {
+        await movieAPI.deleteManualMovie(movie._id)
+      } else {
+        await movieAPI.deleteMovie(movie.tmdbId)
+      }
       loadSelectedMovies()
       loadDashboardStats()
+      alert('Movie deleted successfully!')
     } catch (error) {
       console.error('Error removing movie:', error)
       alert('Error removing movie. Please try again.')
     }
+  }
+
+  const addManualMovie = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const formData = new FormData()
+    Object.keys(manualMovie).forEach(key => {
+      if (key === 'genres' || key === 'spoken_languages' || key === 'cast') {
+        formData.append(key, JSON.stringify(manualMovie[key]))
+      } else {
+        formData.append(key, manualMovie[key])
+      }
+    })
+
+    if (files.poster) formData.append('poster', files.poster)
+    if (files.backdrop) formData.append('backdrop', files.backdrop)
+    if (files.trailer) formData.append('trailer', files.trailer)
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:5000/api/admin/movies/manual', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+      
+      if (response.ok) {
+        alert('Manual movie added successfully!')
+        resetManualForm()
+        loadSelectedMovies()
+        loadDashboardStats()
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Error adding manual movie')
+      }
+    } catch (error) {
+      console.error('Error adding manual movie:', error)
+      alert('Error adding manual movie')
+    }
+  }
+
+  const resetManualForm = () => {
+    setManualMovie({
+      title: '',
+      overview: '',
+      release_date: '',
+      vote_average: 0,
+      runtime: 0,
+      status: 'Released',
+      genres: [],
+      spoken_languages: [],
+      cast: []
+    })
+    setFiles({ poster: null, backdrop: null, trailer: null })
   }
 
   const stats = [
@@ -227,7 +326,17 @@ export default function AdminDashboard() {
                     activeTab === 'add-movie' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
                   }`}
                 >
-                  Add Movies
+                  Add Movies (TMDB)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('manual-add')}
+                  className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'manual-add' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  }`}
+                >
+                  Manual Add Movie
                 </button>
               </li>
               <li>
@@ -293,14 +402,24 @@ export default function AdminDashboard() {
               <div className="bg-gray-900 p-6 rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {selectedMovies.map((movie) => (
-                    <div key={movie.tmdbId} className="bg-gray-800 p-4 rounded-lg">
+                    <div key={movie._id || movie.tmdbId} className="bg-gray-800 p-4 rounded-lg">
                       <img
-                        src={getImageUrl(movie.poster_path)}
+                        src={movie.poster_path?.startsWith('http') ? movie.poster_path : `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                         alt={movie.title}
                         className="w-full aspect-[2/3] object-cover rounded-lg mb-3"
+                        onError={(e) => {
+                          e.currentTarget.src = '/img/placeholder-movie.jpg'
+                        }}
                       />
                       <h3 className="font-semibold mb-2 truncate">{movie.title}</h3>
-                      <p className="text-sm text-gray-400 mb-3">Rating: {movie.vote_average}/10</p>
+                      <p className="text-sm text-gray-400 mb-2">Rating: {movie.vote_average}/10</p>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Source: <span className={`px-2 py-1 rounded ${
+                          movie.source === 'manual' ? 'bg-green-600' : 'bg-blue-600'
+                        }`}>
+                          {movie.source === 'manual' ? 'Manual' : 'TMDB'}
+                        </span>
+                      </p>
                       <div className="flex gap-2">
                         <button className="flex-1 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm transition-colors">
                           <Eye className="w-4 h-4 mx-auto" />
@@ -309,7 +428,7 @@ export default function AdminDashboard() {
                           <Edit className="w-4 h-4 mx-auto" />
                         </button>
                         <button 
-                          onClick={() => removeMovie(movie.tmdbId)}
+                          onClick={() => removeMovie(movie)}
                           className="flex-1 bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm transition-colors"
                         >
                           <Trash2 className="w-4 h-4 mx-auto" />
@@ -324,7 +443,7 @@ export default function AdminDashboard() {
 
           {activeTab === 'add-movie' && (
             <div>
-              <h2 className="text-3xl font-bold mb-8">Add New Movies</h2>
+              <h2 className="text-3xl font-bold mb-8">Add Movies from TMDB</h2>
               
               {/* Search Section */}
               <div className="bg-gray-900 p-6 rounded-lg mb-6">
@@ -399,6 +518,164 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'manual-add' && (
+            <div>
+              <h2 className="text-3xl font-bold mb-8">Manual Add Movie</h2>
+              
+              <div className="bg-gray-900 p-6 rounded-lg">
+                <form onSubmit={addManualMovie} className="space-y-6">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Title *</label>
+                      <input
+                        type="text"
+                        required
+                        value={manualMovie.title}
+                        onChange={(e) => setManualMovie({...manualMovie, title: e.target.value})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Release Date</label>
+                      <input
+                        type="date"
+                        value={manualMovie.release_date}
+                        onChange={(e) => setManualMovie({...manualMovie, release_date: e.target.value})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Overview *</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={manualMovie.overview}
+                      onChange={(e) => setManualMovie({...manualMovie, overview: e.target.value})}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Rating (0-10)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={manualMovie.vote_average}
+                        onChange={(e) => setManualMovie({...manualMovie, vote_average: parseFloat(e.target.value)})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Runtime (minutes)</label>
+                      <input
+                        type="number"
+                        value={manualMovie.runtime}
+                        onChange={(e) => setManualMovie({...manualMovie, runtime: parseInt(e.target.value)})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Status</label>
+                      <select
+                        value={manualMovie.status}
+                        onChange={(e) => setManualMovie({...manualMovie, status: e.target.value})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      >
+                        <option value="Released">Released</option>
+                        <option value="In Production">In Production</option>
+                        <option value="Post Production">Post Production</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Genres Selection */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Genres</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto bg-gray-800 border border-gray-700 rounded-lg p-4">
+                      {genreOptions.map((genre) => (
+                        <label key={genre.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={manualMovie.genres.some(g => g.id === genre.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setManualMovie({
+                                  ...manualMovie,
+                                  genres: [...manualMovie.genres, genre]
+                                })
+                              } else {
+                                setManualMovie({
+                                  ...manualMovie,
+                                  genres: manualMovie.genres.filter(g => g.id !== genre.id)
+                                })
+                              }
+                            }}
+                            className="rounded border-gray-600 text-red-600 focus:ring-red-600"
+                          />
+                          <span className="text-sm text-white">{genre.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* File Uploads */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Poster Image</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setFiles({...files, poster: e.target.files?.[0] || null})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Backdrop Image</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setFiles({...files, backdrop: e.target.files?.[0] || null})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Trailer Video</label>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => setFiles({...files, trailer: e.target.files?.[0] || null})}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={resetManualForm}
+                      className="px-6 py-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Add Movie
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

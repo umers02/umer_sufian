@@ -3,33 +3,68 @@ const Movie = require('../../models/Movie.model');
 // Add movie to database
 const addMovie = async (req, res) => {
   try {
-    const { tmdbId, title, overview, poster_path, backdrop_path, release_date, vote_average, vote_count, genre_ids, original_language, popularity, adult } = req.body;
+    console.log('Received movie data:', req.body); // Debug log
+    console.log('User:', req.user?.email, 'Role:', req.user?.role); // Debug log
+    
+    const movieData = req.body;
+    const tmdbId = movieData.id || movieData.tmdbId; // Handle both id and tmdbId
+
+    if (!tmdbId) {
+      console.log('Missing movie ID');
+      return res.status(400).json({ message: 'Movie ID is required' });
+    }
 
     // Check if movie already exists
     const existingMovie = await Movie.findOne({ tmdbId });
     if (existingMovie) {
+      console.log('Movie already exists:', tmdbId);
       return res.status(400).json({ message: 'Movie already exists in database' });
+    }
+
+    // Validate required fields
+    if (!movieData.title) {
+      console.log('Missing movie title');
+      return res.status(400).json({ message: 'Movie title is required' });
     }
 
     const movie = new Movie({
       tmdbId,
-      title,
-      overview,
-      poster_path,
-      backdrop_path,
-      release_date,
-      vote_average,
-      vote_count,
-      genre_ids,
-      original_language,
-      popularity,
-      adult,
+      title: movieData.title,
+      overview: movieData.overview || '',
+      poster_path: movieData.poster_path || '',
+      backdrop_path: movieData.backdrop_path || '',
+      release_date: movieData.release_date || '',
+      vote_average: movieData.vote_average || 0,
+      vote_count: movieData.vote_count || 0,
+      genre_ids: movieData.genre_ids || [],
+      original_language: movieData.original_language || 'en',
+      popularity: movieData.popularity || 0,
+      adult: movieData.adult || false,
       addedBy: req.user.id
     });
 
     await movie.save();
+    console.log('Movie saved successfully:', movie.title); // Debug log
     res.status(201).json({ message: 'Movie added successfully', movie });
   } catch (error) {
+    console.error('Error adding movie:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        errors: validationErrors 
+      });
+    }
+    
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: 'Movie already exists in database' 
+      });
+    }
+    
     res.status(500).json({ message: 'Error adding movie', error: error.message });
   }
 };
@@ -124,11 +159,7 @@ const deleteMovie = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const movie = await Movie.findOneAndUpdate(
-      { tmdbId: id },
-      { isActive: false },
-      { new: true }
-    );
+    const movie = await Movie.findOneAndDelete({ tmdbId: id });
 
     if (!movie) {
       return res.status(404).json({ message: 'Movie not found' });

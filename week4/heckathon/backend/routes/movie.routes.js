@@ -8,12 +8,13 @@ const {
   deleteMovie,
   getDashboardStats
 } = require('../controllers/admin/adminMovie.controller');
+const { getAllMoviesCombined, getMovieCombined } = require('../controllers/admin/adminManualMovie.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const { authorize } = require('../middleware/role.middleware');
 
-// Public routes
-router.get('/', getAllMovies);
-router.get('/:id', getMovie);
+// Public routes (Combined TMDB + Manual movies)
+router.get('/', getAllMoviesCombined);
+router.get('/:id', getMovieCombined);
 
 // Admin routes
 router.post('/', authenticate, authorize(['admin', 'superadmin']), addMovie);

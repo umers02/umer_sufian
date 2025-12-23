@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Play, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { getImageUrl } from '@/lib/tmdb'
 import { movieAPI } from '@/lib/api'
 import { auth } from '@/lib/auth'
@@ -15,6 +15,8 @@ export default function MoviesPage() {
   const [movies, setMovies] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const genreFilter = searchParams.get('genre')
 
   // Check if user should be redirected based on role
   useEffect(() => {
@@ -27,12 +29,25 @@ export default function MoviesPage() {
 
   useEffect(() => {
     loadMovies()
-  }, [])
+  }, [genreFilter])
 
   const loadMovies = async () => {
     try {
-      const data = await movieAPI.getAllMovies()
-      console.log('Loaded movies from DB:', data.movies) // Debug log
+      const params: any = {}
+      if (genreFilter) {
+        // Map genre names to IDs
+        const genreMap: { [key: string]: number } = {
+          'action': 28,
+          'adventure': 12,
+          'comedy': 35,
+          'drama': 18,
+          'horror': 27
+        }
+        params.genre = genreMap[genreFilter.toLowerCase()] || genreFilter
+      }
+      
+      const data = await movieAPI.getAllMovies(params)
+      console.log('Loaded movies from DB:', data.movies)
       setMovies(data.movies || [])
     } catch (error) {
       console.error('Error loading movies:', error)
@@ -87,29 +102,6 @@ export default function MoviesPage() {
         { id: 20, title: 'Halloween', image: '/img/batman.jpg', year: '2022' }
       ]
     }
-  ]
-
-  const trendingMovies = [
-    { id: 1, title: 'Avatar 2', image: '/img/john-wick.jpg', year: '2023', rating: '7.6' },
-    { id: 2, title: 'Top Gun', image: '/img/fast-x.jpg', year: '2022', rating: '8.3' },
-    { id: 3, title: 'Jurassic World', image: '/img/mission-impossible.jpeg', year: '2022', rating: '5.6' },
-    { id: 4, title: 'Minions', image: '/img/batman.jpg', year: '2022', rating: '6.5' },
-    { id: 5, title: 'Netflix', image: '/img/john-wick.jpg', year: '2023', rating: '7.2' }
-  ]
-
-  const newReleases = [
-    { id: 1, title: 'The Flash', image: '/img/john-wick.jpg', year: '2023', rating: '5.7' },
-    { id: 2, title: 'Indiana Jones', image: '/img/fast-x.jpg', year: '2023', rating: '6.5' },
-    { id: 3, title: 'Fast X', image: '/img/mission-impossible.jpeg', year: '2023', rating: '5.8' },
-    { id: 4, title: 'Transformers', image: '/img/batman.jpg', year: '2023', rating: '6.0' },
-    { id: 5, title: 'Guardians', image: '/img/john-wick.jpg', year: '2023', rating: '8.0' }
-  ]
-
-  const mustWatchMovies = [
-    { id: 1, title: 'Dune', image: '/img/john-wick.jpg', year: '2021', rating: '8.0' },
-    { id: 2, title: 'Blade Runner', image: '/img/fast-x.jpg', year: '2017', rating: '8.0' },
-    { id: 3, title: 'Mad Max', image: '/img/mission-impossible.jpeg', year: '2015', rating: '8.1' },
-    { id: 4, title: 'Interstellar', image: '/img/batman.jpg', year: '2014', rating: '8.6' }
   ]
 
   return (
@@ -180,21 +172,22 @@ export default function MoviesPage() {
 
       {/* Movies Section with Border */}
       <ContentSection 
-        title="Movies"
+        title={genreFilter ? `${genreFilter.charAt(0).toUpperCase() + genreFilter.slice(1)} Movies` : "Movies"}
         categories={categories}
-        trendingMovies={trendingMovies}
-        newReleases={newReleases}
-        mustWatchMovies={mustWatchMovies}
+        trendingMovies={[]}
+        newReleases={[]}
+        mustWatchMovies={[]}
         dbMovies={movies}
+        loading={loading}
       />
 
       {/* Shows Section with Border */}
       <ContentSection 
         title="Shows"
         categories={categories}
-        trendingMovies={trendingMovies}
-        newReleases={newReleases}
-        mustWatchMovies={mustWatchMovies}
+        trendingMovies={[]}
+        newReleases={[]}
+        mustWatchMovies={[]}
         dbMovies={movies}
       />
 

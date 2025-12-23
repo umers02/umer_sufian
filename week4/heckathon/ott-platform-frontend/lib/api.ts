@@ -17,39 +17,57 @@ api.interceptors.request.use((config) => {
 
 // Movie API functions
 export const movieAPI = {
-  // Add movie to database
+  // Add TMDB movie to database (Admin only)
   addMovie: async (movieData: any) => {
-    const response = await api.post('/movies', movieData)
+    const response = await api.post('/admin/movies/tmdb', movieData)
     return response.data
   },
 
-  // Get all movies from database
+  // Get all movies from database (Public - combined TMDB + Manual)
   getAllMovies: async (params?: { page?: number; limit?: number; genre?: string; search?: string }) => {
-    const response = await api.get('/movies', { params })
+    const response = await api.get('/user/movies', { params })
     return response.data
   },
 
-  // Get single movie
-  getMovie: async (tmdbId: number) => {
-    const response = await api.get(`/movies/${tmdbId}`)
+  // Get all movies for admin (Admin only)
+  getAllMoviesAdmin: async (params?: { page?: number; limit?: number; genre?: string; search?: string }) => {
+    const response = await api.get('/admin/movies', { params })
     return response.data
   },
 
-  // Update movie
+  // Get single movie (Public)
+  getMovie: async (id: number | string) => {
+    const response = await api.get(`/user/movies/${id}`)
+    return response.data
+  },
+
+  // Update TMDB movie (Admin only)
   updateMovie: async (tmdbId: number, updates: any) => {
-    const response = await api.put(`/movies/${tmdbId}`, updates)
+    const response = await api.put(`/admin/movies/tmdb/${tmdbId}`, updates)
     return response.data
   },
 
-  // Delete movie
+  // Delete TMDB movie (Admin only)
   deleteMovie: async (tmdbId: number) => {
-    const response = await api.delete(`/movies/${tmdbId}`)
+    const response = await api.delete(`/admin/movies/tmdb/${tmdbId}`)
     return response.data
   },
 
-  // Get dashboard stats
+  // Delete Manual movie (Admin only)
+  deleteManualMovie: async (movieId: string) => {
+    const response = await api.delete(`/admin/movies/manual/${movieId}`)
+    return response.data
+  },
+
+  // Get dashboard stats (Admin only)
   getDashboardStats: async () => {
-    const response = await api.get('/movies/admin/dashboard-stats')
+    const response = await api.get('/admin/dashboard/stats')
+    return response.data
+  },
+
+  // Get movies by genre for home page categories
+  getMoviesByGenre: async () => {
+    const response = await api.get('/user/movies/genres/categories')
     return response.data
   }
 }

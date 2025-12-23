@@ -2,6 +2,7 @@ const express = require('express');
 const { getProfile, updateProfile } = require('../controllers/user/userProfile.controller');
 const { getUserSubscription, startFreeTrial, subscribeToPlan, cancelSubscription } = require('../controllers/user/userSubscription.controller');
 const { getVideos, getVideoById, streamVideo } = require('../controllers/user/userStreaming.controller');
+const { getAllMovies, getMovieDetails, getMoviesByGenre } = require('../controllers/user/userMovie.controller');
 const Plan = require('../models/Plan.model');
 const { authenticate } = require('../middleware/auth.middleware');
 const { authorize } = require('../middleware/role.middleware');
@@ -30,6 +31,11 @@ router.get('/subscription', getUserSubscription);
 router.post('/subscription/trial', startFreeTrial);
 router.post('/subscription', subscribeToPlan);
 router.delete('/subscription', cancelSubscription);
+
+// Movies
+router.get('/movies', getAllMovies);
+router.get('/movies/:id', getMovieDetails);
+router.get('/movies/genres/categories', getMoviesByGenre);
 
 // Streaming
 router.get('/videos', getVideos);

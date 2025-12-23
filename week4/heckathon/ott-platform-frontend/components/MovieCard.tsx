@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { getImageUrl } from '@/lib/tmdb'
 
 interface Movie {
   id: number
@@ -16,18 +17,24 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie, variant = 'trending', dbMovies = [] }: MovieCardProps) {
-  // Random DB movie ID generate karna
-  const getRandomDbMovieId = () => {
+  // Get random DB movie for linking
+  const getRandomDbMovie = () => {
     if (dbMovies && dbMovies.length > 0) {
       const randomIndex = Math.floor(Math.random() * dbMovies.length)
       const selectedMovie = dbMovies[randomIndex]
       console.log('Selected DB Movie:', selectedMovie) // Debug log
-      // Use tmdbId instead of _id for URL
-      return selectedMovie?.tmdbId || 155 // Default to Dark Knight tmdbId
+      
+      // Return the appropriate ID based on movie source
+      if (selectedMovie.source === 'manual') {
+        return selectedMovie._id // Use MongoDB ObjectId for manual movies
+      } else {
+        return selectedMovie.tmdbId || selectedMovie.id // Use tmdbId for TMDB movies
+      }
     }
     console.log('No DB movies available, using fallback tmdbId: 155') // Debug log
     return 155 // Default to Dark Knight tmdbId
   }
+  
   const renderContent = () => {
     switch (variant) {
       case 'trending':
@@ -81,14 +88,15 @@ export default function MovieCard({ movie, variant = 'trending', dbMovies = [] }
   }
 
   return (
-    <Link href={`/movies/${getRandomDbMovieId()}`}>
-      <div className="group cursor-pointer bg-[#1A1A1A] rounded-lg p-2">
+    <Link href={`/movies/${getRandomDbMovie()}`}>
+      <div className="group cursor-pointer bg-[#1A1A1A] rounded-lg p-2 hover:bg-[#2A2A2A] transition-colors">
         <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-2">
           <img
             src={movie.image}
             alt={movie.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
         </div>
         {renderContent()}
       </div>

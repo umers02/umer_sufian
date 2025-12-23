@@ -5,6 +5,7 @@ import { Play, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { movieAPI } from '@/lib/api'
 import Navbar from '@/components/Navbar'
 import CategoryCard from '@/components/CategoryCard'
 import SectionHeader from '@/components/SectionHeader'
@@ -14,6 +15,8 @@ import Footer from '@/components/Footer'
 export default function HomePage() {
   const [openFaq, setOpenFaq] = useState(null)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   const toggleFaq = (index) => {
@@ -29,6 +32,23 @@ export default function HomePage() {
     }
   }, [router])
 
+  // Load categories from database
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  const loadCategories = async () => {
+    try {
+      const data = await movieAPI.getMoviesByGenre()
+      setCategories(data.categories || [])
+    } catch (error) {
+      console.error('Error loading categories:', error)
+      // Fallback to mock data if API fails
+      setCategories(mockCategories)
+    }
+    setLoading(false)
+  }
+
   // Mock data for movies/shows
   const heroMovies = [
     { id: 1, title: 'The Witcher', image: '/api/placeholder/1200/600', rating: 8.7 },
@@ -36,9 +56,10 @@ export default function HomePage() {
     { id: 3, title: 'The Crown', image: '/api/placeholder/1200/600', rating: 8.9 }
   ]
 
-  const categories = [
+  const mockCategories = [
     {
       name: 'Action',
+      genreId: 28,
       movies: [
         { id: 1, title: 'John Wick', image: '/img/john-wick.jpg', year: '2023' },
         { id: 2, title: 'Fast X', image: '/img/fast-x.jpg', year: '2023' },
@@ -48,6 +69,7 @@ export default function HomePage() {
     },
     {
       name: 'Adventure',
+      genreId: 12,
       movies: [
         { id: 5, title: 'Avatar', image: '/img/john-wick.jpg', year: '2022' },
         { id: 6, title: 'Jurassic World', image: '/img/fast-x.jpg', year: '2022' },
@@ -57,6 +79,7 @@ export default function HomePage() {
     },
     {
       name: 'Comedy',
+      genreId: 35,
       movies: [
         { id: 9, title: 'The Hangover', image: '/img/john-wick.jpg', year: '2023' },
         { id: 10, title: 'Deadpool', image: '/img/fast-x.jpg', year: '2024' },
@@ -66,6 +89,7 @@ export default function HomePage() {
     },
     {
       name: 'Drama',
+      genreId: 18,
       movies: [
         { id: 13, title: 'The Godfather', image: '/img/john-wick.jpg', year: '2023' },
         { id: 14, title: 'Shawshank', image: '/img/fast-x.jpg', year: '2022' },
@@ -75,6 +99,7 @@ export default function HomePage() {
     },
     {
       name: 'Horror',
+      genreId: 27,
       movies: [
         { id: 17, title: 'The Conjuring', image: '/img/john-wick.jpg', year: '2023' },
         { id: 18, title: 'IT', image: '/img/fast-x.jpg', year: '2022' },
@@ -216,9 +241,19 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {categories.map((category, index) => (
-              <CategoryCard key={index} category={category} />
-            ))}
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-700 rounded-lg h-48 mb-3"></div>
+                  <div className="bg-gray-700 rounded h-4 w-20"></div>
+                </div>
+              ))
+            ) : (
+              categories.map((category, index) => (
+                <CategoryCard key={index} category={category} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -396,12 +431,16 @@ export default function HomePage() {
                   {plan.price}<span className="text-lg text-gray-400 font-normal">/month</span>
                 </div>
                 <div className="flex gap-3 mt-auto">
-                  <button className="flex-1 py-3 text-white rounded-md transition-colors" style={{backgroundColor: '#0F0F0F'}}>
-                    Start Free Trial
-                  </button>
-                  <button className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
-                    Choose Plan
-                  </button>
+                  <Link href="/subscription">
+                    <button className="flex-1 py-3 text-white rounded-md transition-colors" style={{backgroundColor: '#0F0F0F'}}>
+                      Start Free Trial
+                    </button>
+                  </Link>
+                  <Link href="/subscription">
+                    <button className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
+                      Choose Plan
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}

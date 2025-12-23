@@ -38,34 +38,43 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
 
   const loadMovieData = async () => {
     try {
-      console.log('Loading movie with ID:', resolvedParams.id) // Debug log
+      console.log('Loading movie with ID:', resolvedParams.id)
       
-      // Validate ID
-      const movieId = parseInt(resolvedParams.id)
-      if (isNaN(movieId)) {
-        console.error('Invalid movie ID:', resolvedParams.id)
-        setLoading(false)
-        return
-      }
+      // Use combined API endpoint
+      const response = await fetch(`http://localhost:5000/api/movies/${resolvedParams.id}`)
+      const movieData = await response.json()
       
-      // Check if movie exists in database
-      const dbMovie = await movieAPI.getMovie(movieId)
-      console.log('DB Movie found:', dbMovie) // Debug log
+      console.log('Movie data received:', movieData)
       
-      if (dbMovie) {
-        const [movieDetails, movieCast, movieReviews, movieVideos] = await Promise.all([
-          getMovieDetails(dbMovie.tmdbId),
-          getMovieCast(dbMovie.tmdbId),
-          getMovieReviews(dbMovie.tmdbId),
-          getMovieVideos(dbMovie.tmdbId)
-        ])
-        
-        setMovie(movieDetails)
-        setCast(movieCast.cast.slice(0, 6))
-        setReviews(movieReviews.results.slice(0, 2))
-        setVideos(movieVideos.results || [])
+      if (movieData && movieData.source) {
+        if (movieData.source === 'manual') {
+          // Handle manual movie
+          setMovie({
+            ...movieData,
+            description: movieData.overview,
+            backdrop_path: movieData.backdrop_path?.startsWith('http') 
+              ? movieData.backdrop_path 
+              : movieData.backdrop_path
+          })
+          setCast(movieData.cast || [])
+          setReviews([]) // Manual movies don't have TMDB reviews
+          setVideos(movieData.trailer_url ? [{ key: movieData.trailer_url }] : [])
+        } else {
+          // Handle TMDB movie - fetch additional data from TMDB API
+          const [movieDetails, movieCast, movieReviews, movieVideos] = await Promise.all([
+            getMovieDetails(movieData.tmdbId),
+            getMovieCast(movieData.tmdbId),
+            getMovieReviews(movieData.tmdbId),
+            getMovieVideos(movieData.tmdbId)
+          ])
+          
+          setMovie(movieDetails)
+          setCast(movieCast.cast.slice(0, 6))
+          setReviews(movieReviews.results.slice(0, 2))
+          setVideos(movieVideos.results || [])
+        }
       } else {
-        console.log('No movie found in DB with ID:', movieId)
+        console.log('No movie found with ID:', resolvedParams.id)
       }
     } catch (error) {
       console.error('Error loading movie data:', error)
@@ -112,7 +121,9 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src={getBackdropUrl(movie.backdrop_path)}
+            src={movie.backdrop_path?.startsWith('http') 
+              ? movie.backdrop_path 
+              : getBackdropUrl(movie.backdrop_path)}
             alt={movie.title}
             className="w-full h-full object-cover"
           />
@@ -180,7 +191,9 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
                       <div className="w-20 h-20 bg-gray-800 rounded-full mb-2 overflow-hidden">
                         {actor.profile_path ? (
                           <img
-                            src={getImageUrl(actor.profile_path, 'w185')}
+                            src={actor.profile_path.startsWith('http') 
+                              ? actor.profile_path 
+                              : getImageUrl(actor.profile_path, 'w185')}
                             alt={actor.name}
                             className="w-full h-full object-cover"
                           />
@@ -308,13 +321,22 @@ export default function MovieDetailPage({ params }: { params: Promise<{ id: stri
             >
               ✕
             </button>
-            <iframe
-              src={`https://www.youtube.com/embed/${videos[0].key}?autoplay=1`}
-              title={movie.title + ' Trailer'}
-              className="w-full h-full rounded-lg"
-              allowFullScreen
-              allow="autoplay; encrypted-media"
-            />
+            {videos[0].key.startsWith('http') ? (
+              <video
+                src={videos[0].key}
+                controls
+                autoPlay
+                className="w-full h-full rounded-lg"
+              />
+            ) : (
+              <iframe
+                src={`https://www.youtube.com/embed/${videos[0].key}?autoplay=1`}
+                title={movie.title + ' Trailer'}
+                className="w-full h-full rounded-lg"
+                allowFullScreen
+                allow="autoplay; encrypted-media"
+              />
+            )}
           </div>
         </div>
       )}
