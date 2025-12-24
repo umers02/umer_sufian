@@ -35,14 +35,14 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-card rounded-lg border border-border p-8 shadow-lg">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-            <p className="text-muted-foreground">Join our community today</p>
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-card rounded-lg border border-border p-6 sm:p-8 shadow-lg">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Create Account</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Join our community today</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2">Username</label>
               <div className="relative">
@@ -51,7 +51,7 @@ export default function RegisterPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary text-sm sm:text-base"
                   placeholder="Choose a username"
                   required
                 />
@@ -66,7 +66,7 @@ export default function RegisterPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary text-sm sm:text-base"
                   placeholder="Enter your email"
                   required
                 />
@@ -81,14 +81,14 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary"
+                  className="w-full pl-10 pr-12 py-2.5 sm:py-3 bg-muted rounded-lg border-0 focus:ring-2 focus:ring-primary text-sm sm:text-base"
                   placeholder="Create a password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
