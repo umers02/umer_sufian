@@ -2,12 +2,35 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Star } from 'lucide-react';
+import MentionInput from '../ui/MentionInput';
 
 const SimpleReviewForm = ({ productId, onReviewSubmitted }) => {
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const extractMentions = async (text) => {
+    const mentionRegex = /@(\w+)/g;
+    const mentions = [];
+    let match;
+    
+    while ((match = mentionRegex.exec(text)) !== null) {
+      const mentionedName = match[1];
+      try {
+        const response = await fetch(`http://localhost:8000/users/search?q=${encodeURIComponent(mentionedName)}`);
+        const users = await response.json();
+        const user = users.find(u => u.name.replace(/\s+/g, '') === mentionedName);
+        if (user) {
+          mentions.push(user._id);
+        }
+      } catch (error) {
+        console.error('Failed to resolve mention:', error);
+      }
+    }
+    
+    return mentions;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +55,8 @@ const SimpleReviewForm = ({ productId, onReviewSubmitted }) => {
     setError('');
 
     try {
+      const mentions = await extractMentions(content);
+      
       const response = await fetch('http://localhost:8000/reviews', {
         method: 'POST',
         headers: {
@@ -42,6 +67,7 @@ const SimpleReviewForm = ({ productId, onReviewSubmitted }) => {
           productId,
           rating,
           content,
+          mentions,
         }),
       });
 
@@ -89,13 +115,14 @@ const SimpleReviewForm = ({ productId, onReviewSubmitted }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Review</label>
-            <textarea
+            <label className="block text-sm font-medium mb-2">
+              Review <span className="text-gray-500 text-xs">(Type @username to mention someone)</span>
+            </label>
+            <MentionInput
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Share your experience with this product..."
-              className="w-full p-3 border rounded-md min-h-[100px]"
-              rows={4}
+              onChange={setContent}
+              placeholder="Share your experience with this product... (Type @username to mention someone)"
+              className="w-full p-3 border rounded-md min-h-[100px] resize-none"
             />
           </div>
 

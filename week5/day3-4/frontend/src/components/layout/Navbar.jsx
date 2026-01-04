@@ -13,7 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
-import NotificationDropdown from "../notifications/SimpleNotificationDropdown";
+import NotificationCenter from "../notifications/NotificationCenter";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -170,7 +170,7 @@ export default function Navbar() {
             )}
 
             {/* Notifications */}
-            <NotificationDropdown />
+            <NotificationCenter />
 
             {/* User Menu */}
             {user ? (

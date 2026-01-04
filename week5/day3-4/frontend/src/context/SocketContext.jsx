@@ -13,40 +13,37 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }) => {
-  let user = null;
-  try {
-    const auth = useAuth();
-    user = auth?.user;
-  } catch (e) {
-    console.log('Auth not available in SocketProvider');
-  }
+  const [user, setUser] = useState(null);
   const [socket, setSocket] = useState(null);
   const [notifications, setNotifications] = useState([]);
+
+  // Get user from localStorage directly
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return;
+      }
+      
       const newSocket = io('http://localhost:8000', {
         auth: { token }
       });
 
-      newSocket.on('connect', () => {
-        console.log('Connected to notifications server');
-      });
-
       newSocket.on('notification', (notification) => {
         setNotifications(prev => [notification, ...prev]);
-        // Show toast notification
         showToast(notification);
       });
 
       newSocket.on('new_notification', (notification) => {
-        // Broadcast notifications (like new reviews)
         showToast(notification);
-      });
-
-      newSocket.on('disconnect', () => {
-        console.log('Disconnected from notifications server');
       });
 
       setSocket(newSocket);

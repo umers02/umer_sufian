@@ -2,25 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Notification, NotificationType } from '../schemas/notification.schema';
+import { Product } from '../schemas/product.schema';
+import { User } from '../schemas/user.schema';
+import { Review } from '../schemas/review.schema';
 import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Review.name) private reviewModel: Model<Review>,
     private notificationsGateway: NotificationsGateway,
   ) {}
 
   async notifyNewReview(review: any) {
-    // Broadcast to all users
-    const notification = {
-      type: NotificationType.NEW_REVIEW,
-      title: 'New Review Added',
-      message: `${review.userId.name} added a review for ${review.productId.name}`,
-      data: { productId: review.productId._id, reviewId: review._id },
-    };
+    try {
+      // Get product details
+      const product = await this.productModel.findById(review.productId);
+      const user = await this.userModel.findById(review.userId);
+      
+      // Broadcast to all users
+      const notification = {
+        type: NotificationType.NEW_REVIEW,
+        title: 'New Review Added',
+        message: `${user?.name || 'Someone'} added a review for ${product?.name || 'a product'}`,
+        data: { 
+          productId: review.productId, 
+          reviewId: review._id,
+          productName: product?.name,
+          reviewerName: user?.name
+        },
+      };
 
-    this.notificationsGateway.broadcastNotification(notification);
+      this.notificationsGateway.broadcastNotification(notification);
+    } catch (error) {
+      console.error('Error in notifyNewReview:', error);
+    }
   }
 
   async notifyNewReply(review: any, reply: any) {
@@ -111,5 +130,41 @@ export class NotificationsService {
       { userId, isRead: false },
       { isRead: true }
     );
+  }
+
+  async notifyAdminAction(userId: string, action: string, message: string) {
+    const notification = new this.notificationModel({
+      userId,
+      type: NotificationType.ADMIN_ACTION,
+      title: 'Admin Action',
+      message,
+      data: { action },
+    });
+
+    await notification.save();
+    this.notificationsGateway.sendToUser(userId, notification);
+  }
+
+  async notifyProductUpdate(productId: string, updateType: string, message: string) {
+    try {
+      // Find users who have reviewed this product
+      const reviews = await this.reviewModel.find({ productId }).populate('userId');
+      const userIds = [...new Set(reviews.map(review => review.userId._id.toString()))];
+      
+      for (const userId of userIds) {
+        const notification = new this.notificationModel({
+          userId,
+          type: NotificationType.PRODUCT_UPDATE,
+          title: 'Product Update',
+          message,
+          data: { productId, updateType },
+        });
+
+        await notification.save();
+        this.notificationsGateway.sendToUser(userId, notification);
+      }
+    } catch (error) {
+      console.error('Error in notifyProductUpdate:', error);
+    }
   }
 }

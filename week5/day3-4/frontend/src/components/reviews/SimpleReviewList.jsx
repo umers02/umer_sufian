@@ -9,22 +9,30 @@ const SimpleReviewList = ({ productId, refreshTrigger }) => {
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState(null);
 
-  // Reset replying state when reviews change
+  // Reset replying state only when reviews change AND user is not actively replying
   useEffect(() => {
-    setReplyingTo(null);
+    // Don't auto-close if user just opened reply form
+    const timer = setTimeout(() => {
+      if (replyingTo && reviews.length > 0) {
+        // Keep reply form open
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [reviews]);
 
   useEffect(() => {
     fetchReviews();
   }, [productId, refreshTrigger]);
 
-  // Auto-refresh every 10 seconds (reduced frequency)
+  // Auto-refresh every 30 seconds, but not when replying
   useEffect(() => {
+    if (replyingTo) return; // Don't refresh when user is replying
+    
     const interval = setInterval(() => {
       fetchReviews();
-    }, 10000);
+    }, 30000); // Increased to 30 seconds
     return () => clearInterval(interval);
-  }, [productId]);
+  }, [productId, replyingTo]);
 
   const fetchReviews = async () => {
     try {
@@ -40,6 +48,44 @@ const SimpleReviewList = ({ productId, refreshTrigger }) => {
       setReviews([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLikeReview = async (reviewId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/reviews/${reviewId}/like`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        fetchReviews(); // Refresh to show updated likes
+      }
+    } catch (error) {
+      console.error('Failed to like review:', error);
+    }
+  };
+
+  const handleLikeReply = async (replyId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/reviews/reply/${replyId}/like`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        fetchReviews(); // Refresh to show updated likes
+      }
+    } catch (error) {
+      console.error('Failed to like reply:', error);
     }
   };
 
@@ -103,10 +149,13 @@ const SimpleReviewList = ({ productId, refreshTrigger }) => {
             </div>
 
             <div className="flex items-center gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleLikeReview(review._id)}
+                className="flex items-center gap-1 hover:text-red-500 transition-colors"
+              >
                 <Heart className="h-4 w-4" />
                 {review.likes || 0}
-              </div>
+              </button>
               <button
                 onClick={() => setReplyingTo(replyingTo === review._id ? null : review._id)}
                 className="flex items-center gap-1 hover:text-blue-500"
@@ -133,7 +182,14 @@ const SimpleReviewList = ({ productId, refreshTrigger }) => {
                         {formatDate(reply.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700">{reply.content}</p>
+                    <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
+                    <button
+                      onClick={() => handleLikeReply(reply._id)}
+                      className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors"
+                    >
+                      <Heart className="h-3 w-3" />
+                      {reply.likes || 0}
+                    </button>
                   </div>
                 ))}
               </div>

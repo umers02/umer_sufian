@@ -25,9 +25,13 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
       const token = client.handshake.auth.token;
       if (token) {
         const payload = jwt.verify(token, process.env.JWT_SECRET) as any;
-        this.connectedUsers.set(payload.id, client.id);
-        client.join(`user_${payload.id}`);
-        console.log(`User ${payload.id} connected`);
+        const userId = payload.id;
+        
+        this.connectedUsers.set(userId, client.id);
+        client.join(`user_${userId}`);
+        client.data.userId = userId;
+      } else {
+        client.disconnect();
       }
     } catch (error) {
       client.disconnect();
@@ -35,13 +39,10 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   handleDisconnect(client: Socket) {
-    // Remove user from connected users
-    for (const [userId, socketId] of this.connectedUsers.entries()) {
-      if (socketId === client.id) {
-        this.connectedUsers.delete(userId);
-        console.log(`User ${userId} disconnected`);
-        break;
-      }
+    const userId = client.data.userId;
+    if (userId) {
+      this.connectedUsers.delete(userId);
+      console.log(`User ${userId} disconnected`);
     }
   }
 

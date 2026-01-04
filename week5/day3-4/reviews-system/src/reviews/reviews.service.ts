@@ -84,12 +84,27 @@ export class ReviewsService {
 
       // Notify review owner
       try {
-        const review = await this.reviewModel.findById(createReplyDto.reviewId);
-        if (review && review.userId.toString() !== userId) {
+        const review = await this.reviewModel.findById(createReplyDto.reviewId).populate('userId', 'name email');
+        if (review && review.userId._id.toString() !== userId && this.notificationsService) {
+          await this.notificationsService.notifyNewReply(review, savedReply);
           console.log('Reply notification sent');
         }
       } catch (notifError) {
         console.error('Reply notification error:', notifError);
+      }
+
+      // Handle mentions in reply
+      if (createReplyDto.mentions?.length && this.notificationsService) {
+        try {
+          await this.notificationsService.notifyMentions(
+            createReplyDto.mentions,
+            'reply',
+            savedReply._id.toString(),
+            userId
+          );
+        } catch (mentionError) {
+          console.error('Reply mention notification error:', mentionError);
+        }
       }
 
       return savedReply;
@@ -183,7 +198,7 @@ export class ReviewsService {
       review.likes += 1;
       
       // Notify review author
-      if (review.userId.toString() !== userId) {
+      if (review.userId.toString() !== userId && this.notificationsService) {
         await this.notificationsService.notifyReviewLiked(review, userId);
       }
     }
@@ -202,7 +217,7 @@ export class ReviewsService {
       reply.likes += 1;
       
       // Notify reply author
-      if (reply.userId.toString() !== userId) {
+      if (reply.userId.toString() !== userId && this.notificationsService) {
         await this.notificationsService.notifyReplyLiked(reply, userId);
       }
     }
@@ -219,5 +234,66 @@ export class ReviewsService {
       'rating.average': averageRating,
       'rating.count': reviews.length,
     });
+  }
+
+  // Admin methods
+  async deleteReview(reviewId: string, adminUserId: string) {
+    try {
+      const review = await this.reviewModel.findById(reviewId).populate('userId', 'name email');
+      if (!review) {
+        throw new Error('Review not found');
+      }
+
+      // Delete the review
+      await this.reviewModel.findByIdAndDelete(reviewId);
+      
+      // Delete associated replies
+      await this.replyModel.deleteMany({ reviewId });
+      
+      // Update product rating
+      await this.updateProductRating(review.productId.toString());
+      
+      // Notify the review author
+      if (this.notificationsService) {
+        await this.notificationsService.notifyAdminAction(
+          review.userId._id.toString(),
+          'review_deleted',
+          'Your review has been removed by an administrator'
+        );
+      }
+      
+      return { message: 'Review deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      throw error;
+    }
+  }
+
+  async flagReview(reviewId: string, adminUserId: string) {
+    try {
+      const review = await this.reviewModel.findByIdAndUpdate(
+        reviewId,
+        { isFlagged: true },
+        { new: true }
+      ).populate('userId', 'name email');
+      
+      if (!review) {
+        throw new Error('Review not found');
+      }
+      
+      // Notify the review author
+      if (this.notificationsService) {
+        await this.notificationsService.notifyAdminAction(
+          review.userId._id.toString(),
+          'review_flagged',
+          'Your review has been flagged for review by an administrator'
+        );
+      }
+      
+      return review;
+    } catch (error) {
+      console.error('Error flagging review:', error);
+      throw error;
+    }
   }
 }

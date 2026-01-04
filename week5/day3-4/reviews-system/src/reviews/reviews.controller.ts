@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Body, Param, Query, UseGuards, Request, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param, Query, UseGuards, Request, ValidationPipe, UsePipes } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto, CreateReplyDto } from './dto/review.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -76,5 +76,18 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   async likeReply(@Param('replyId') replyId: string, @Request() req) {
     return this.reviewsService.likeReply(replyId, req.user.id);
+  }
+
+  // Admin routes
+  @Delete('admin/:reviewId')
+  @UseGuards(JwtAuthGuard)
+  async deleteReview(@Param('reviewId') reviewId: string, @Request() req) {
+    return this.reviewsService.deleteReview(reviewId, req.user.id);
+  }
+
+  @Put('admin/:reviewId/flag')
+  @UseGuards(JwtAuthGuard)
+  async flagReview(@Param('reviewId') reviewId: string, @Request() req) {
+    return this.reviewsService.flagReview(reviewId, req.user.id);
   }
 }

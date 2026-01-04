@@ -1,10 +1,33 @@
 import { useState } from 'react';
 import { Button } from '../ui/button';
+import MentionInput from '../ui/MentionInput';
 
 const SimpleReplyForm = ({ reviewId, onReplySubmitted, onCancel }) => {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const extractMentions = async (text) => {
+    const mentionRegex = /@(\w+)/g;
+    const mentions = [];
+    let match;
+    
+    while ((match = mentionRegex.exec(text)) !== null) {
+      const mentionedName = match[1];
+      try {
+        const response = await fetch(`http://localhost:8000/users/search?q=${encodeURIComponent(mentionedName)}`);
+        const users = await response.json();
+        const user = users.find(u => u.name.replace(/\s+/g, '') === mentionedName);
+        if (user) {
+          mentions.push(user._id);
+        }
+      } catch (error) {
+        console.error('Failed to resolve mention:', error);
+      }
+    }
+    
+    return mentions;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +47,8 @@ const SimpleReplyForm = ({ reviewId, onReplySubmitted, onCancel }) => {
     setError('');
 
     try {
+      const mentions = await extractMentions(content);
+      
       const response = await fetch('http://localhost:8000/reviews/reply', {
         method: 'POST',
         headers: {
@@ -33,6 +58,7 @@ const SimpleReplyForm = ({ reviewId, onReplySubmitted, onCancel }) => {
         body: JSON.stringify({
           reviewId,
           content,
+          mentions,
         }),
       });
 
@@ -60,13 +86,17 @@ const SimpleReplyForm = ({ reviewId, onReplySubmitted, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Write your reply..."
-        className="w-full p-3 border rounded-md min-h-[80px] text-sm"
-        rows={3}
-      />
+      <div>
+        <label className="block text-sm font-medium mb-1 text-gray-600">
+          Reply <span className="text-xs">(Type @username to mention)</span>
+        </label>
+        <MentionInput
+          value={content}
+          onChange={setContent}
+          placeholder="Write your reply... (Type @username to mention someone)"
+          className="w-full p-3 border rounded-md min-h-[80px] text-sm resize-none"
+        />
+      </div>
       
       {error && (
         <p className="text-red-500 text-sm">{error}</p>
