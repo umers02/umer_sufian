@@ -154,6 +154,7 @@ export class BidsService {
       amount: bid.amount,
       bidderId: bid.bidderId,
       auctionId: auctionIdStr,
+      carTitle: car.title,
       totalBids: totalBids,
       timestamp: new Date(),
       minimumNextBid: bid.amount + Math.max(100, bid.amount * 0.05)
@@ -195,7 +196,15 @@ export class BidsService {
   findByUserId(userId: string) {
     return this.bidModel
       .find({ bidderId: userId })
-      .populate('auctionId')
+      .populate({
+        path: 'auctionId',
+        model: 'Auction',
+        populate: {
+          path: 'car',
+          model: 'Car',
+          select: 'title photos startingPrice'
+        }
+      })
       .sort({ placedAt: -1 })
       .exec();
   }

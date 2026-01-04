@@ -14,6 +14,7 @@ api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
+      console.log('🔑 Token check:', token ? 'Token found' : 'No token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

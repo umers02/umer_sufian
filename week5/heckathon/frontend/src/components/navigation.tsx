@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/hooks/useAuth";
-import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -111,7 +111,7 @@ export function Navigation() {
                 fill="#2E3D83"
               />
             </svg>
-            <NotificationDropdown />
+            <NotificationCenter />
             <svg
               width="30"
               height="30"
@@ -223,7 +223,7 @@ export function Navigation() {
                     fill="#2E3D83"
                   />
                 </svg>
-                <NotificationDropdown />
+                <NotificationCenter />
                 <svg
                   width="35"
                   height="35"

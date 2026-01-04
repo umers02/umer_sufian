@@ -459,8 +459,6 @@ export default function AuctionDetailPage() {
                       </div>
                     </div>
                   </Card>
-
-                  <PaymentSteps steps={paymentSteps} />
                 </>
               )}
 

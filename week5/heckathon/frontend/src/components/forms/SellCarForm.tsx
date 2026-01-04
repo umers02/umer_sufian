@@ -95,12 +95,15 @@ export function SellCarForm() {
         endTime: data.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       };
 
-      await createCarMutation.mutateAsync({
+      const result = await createCarMutation.mutateAsync({
         data: payload,
         files: data.photos || undefined,
       });
+      
+      // Success handled by mutation - no toast here
     } catch (error: any) {
       // Error is already handled by the mutation with toast
+      console.error('Form submission error:', error);
     }
   };
 

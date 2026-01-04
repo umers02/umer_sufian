@@ -6,6 +6,7 @@ import { Navigation } from "@/components/navigation";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { SocketProvider } from "@/providers/SocketProvider";
 import { Toaster } from "sonner";
+import ToasterClient from "@/components/ToasterClient";
 
 export const metadata: Metadata = {
   title: "Auction App",
@@ -17,7 +18,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+ return (
     <html lang="en">
       <body className="w-full">
         <QueryProvider>
@@ -27,7 +28,7 @@ export default function RootLayout({
               <Navigation />
               <main className="flex-1 w-full">{children}</main>
               <Footer />
-              <Toaster position="top-right" richColors />
+              <ToasterClient />
             </div>
           </SocketProvider>
         </QueryProvider>

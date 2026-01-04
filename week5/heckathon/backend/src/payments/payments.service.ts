@@ -20,8 +20,22 @@ export class PaymentsService {
       throw new NotFoundException('Auction not found');
     }
 
-    if (auction.status !== 'ended') {
-      throw new BadRequestException('Auction is still active');
+    console.log('🔍 Auction status check:', {
+      auctionId,
+      status: auction.status,
+      endTime: auction.endTime,
+      now: new Date(),
+      isEnded: auction.endTime < new Date()
+    });
+
+    // Allow payment if auction is ended, completed, or past end time
+    const now = new Date();
+    const isAuctionEnded = auction.status === 'ended' || 
+                          auction.status === 'completed' || 
+                          auction.endTime < now;
+    
+    if (!isAuctionEnded) {
+      throw new BadRequestException(`Auction is still active. Status: ${auction.status}, End time: ${auction.endTime}`);
     }
 
     // Find winning bid
@@ -51,7 +65,7 @@ export class PaymentsService {
       lotNumber: `LOT-${auctionId.slice(-6)}`,
       deliveryUpdates: [
         {
-          status: 'Payment Received',
+          status: 'pending',
           updatedAt: new Date(),
         }
       ]
@@ -110,16 +124,16 @@ export class PaymentsService {
 
   private async simulateDeliveryProgress(paymentId: string) {
     const statuses = [
-      { status: 'Ready for Shipping', delay: 60000 }, // 1 minute
-      { status: 'In Transit', delay: 120000 }, // 2 minutes
-      { status: 'Delivered', delay: 180000 }, // 3 minutes
+      { status: 'ready_for_shipping', delay: 60000 }, // 1 minute
+      { status: 'in_transit', delay: 120000 }, // 2 minutes
+      { status: 'delivered', delay: 180000 }, // 3 minutes
     ];
 
     for (const { status, delay } of statuses) {
       setTimeout(async () => {
         await this.updateStatus(paymentId, status);
         
-        if (status === 'Delivered') {
+        if (status === 'delivered') {
           // Mark auction as completed
           const payment = await this.paymentModel.findById(paymentId);
           if (payment) {

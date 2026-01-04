@@ -6,8 +6,10 @@ import { formatPrice } from '@/lib/auctionUtils';
 import { toast } from 'sonner';
 
 interface SocketContextType {
+  socket: any;
   joinAuction: (auctionId: string) => void;
   leaveAuction: (auctionId: string) => void;
+  registerUser: (userId: string) => void;
   currentBids: Record<string, { amount: number; count: number; bidderId?: string }>;
   timeUpdates: Record<string, string>;
   isConnected: boolean;
@@ -20,6 +22,28 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { socket, joinAuction, leaveAuction, onNewBid, off, isConnected } = useSocket();
   const [currentBids, setCurrentBids] = useState<Record<string, { amount: number; count: number; bidderId?: string }>>({});
   const [timeUpdates, setTimeUpdates] = useState<Record<string, string>>({});
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get user ID and register with socket
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const userData = JSON.parse(user);
+      const id = userData.id || userData._id;
+      setUserId(id);
+      
+      if (socket && isConnected && id) {
+        socket.emit('registerUser', { userId: id });
+      }
+    }
+  }, [socket, isConnected]);
+
+  const registerUser = useCallback((userId: string) => {
+    if (socket && isConnected) {
+      socket.emit('registerUser', { userId });
+      setUserId(userId);
+    }
+  }, [socket, isConnected]);
 
   useEffect(() => {
     if (isConnected && socket) {
@@ -82,8 +106,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SocketContext.Provider value={{
+      socket,
       joinAuction,
       leaveAuction,
+      registerUser,
       currentBids,
       timeUpdates,
       isConnected,

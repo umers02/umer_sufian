@@ -14,17 +14,19 @@ export class Payment {
   @Prop({ required: true })
   amountPaid: number;
 
-  @Prop({
-    enum: ['pending', 'inTransit', 'delivered', 'completed'],
-    default: 'pending',
-  })
-  status: string;
+@Prop({
+  enum: ['pending', 'ready_for_shipping', 'in_transit', 'delivered', 'completed'],
+  default: 'pending',
+})
+status: string;
+
 
   @Prop({ default: Date.now })
   paymentDate: Date;
 
-  @Prop([{ status: String, updatedAt: { type: Date, default: Date.now } }])
-  deliveryUpdates: { status: string; updatedAt: Date }[];
+@Prop([{ status: { type: String, enum: ['pending', 'ready_for_shipping', 'in_transit', 'delivered', 'completed'] }, updatedAt: { type: Date, default: Date.now } }])
+deliveryUpdates: { status: string; updatedAt: Date }[];
+
 
   @Prop()
   transactionID?: string;

@@ -1,8 +1,19 @@
-// cars.controller.ts
-import { Controller, Get, Post, Body, Param, UseGuards, Query, UseInterceptors, UploadedFiles, Request } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+  UseInterceptors,
+  UploadedFiles,
+  Request,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CarsService } from './cars.service';
-import { CreateCarDto } from './dto/create-car.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Public } from '../auth/decorators/public.decorator';
 import { CloudinaryService } from '../common/cloudinary.service';
@@ -22,29 +33,43 @@ export class CarsController {
     @UploadedFiles() files: Express.Multer.File[],
     @Request() req: any,
   ) {
-    console.log('Request user:', req.user);
-    console.log('Create car DTO:', createCarDto);
-    
-    let photoUrls: string[] = [];
-    
-    if (files && files.length > 0) {
-      photoUrls = await this.cloudinaryService.uploadMultipleImages(files);
+    // 🔒 Safety check
+    if (!req.user) {
+      throw new UnauthorizedException('User not authenticated');
     }
-    
-    // Transform FormData strings to proper types
+
+    // ✅ Upload images & extract ONLY URLs
+    let photoUrls: string[] = [];
+    if (files && files.length > 0) {
+      const uploadedImages =
+        await this.cloudinaryService.uploadMultipleImages(files);
+
+      photoUrls = uploadedImages.map((img) => img.secure_url);
+    }
+
+    // ✅ Transform FormData strings → correct types
     const transformedDto = {
-      ...createCarDto,
-      sellerId: req.user?.userId || req.user?.sub || req.user?._id,
-      year: createCarDto.year ? parseInt(createCarDto.year) : undefined,
-      startingPrice: createCarDto.startingPrice ? parseFloat(createCarDto.startingPrice) : undefined,
-      currentPrice: createCarDto.currentPrice ? parseFloat(createCarDto.currentPrice) : undefined,
-      photos: photoUrls,
+      title: createCarDto.title,
+      description: createCarDto.description,
+      make: createCarDto.make,
+      model: createCarDto.model,
+      bodyType: createCarDto.bodyType,
+      category: createCarDto.category,
+      year: parseInt(createCarDto.year),
+      startingPrice: parseFloat(createCarDto.startingPrice),
+      currentPrice: createCarDto.currentPrice
+        ? parseFloat(createCarDto.currentPrice)
+        : 0,
+      startTime: new Date(createCarDto.startTime),
+      endTime: new Date(createCarDto.endTime),
+      sellerId: req.user.userId, // 👈 schema expects ObjectId
+      photos: photoUrls,         // 👈 string[]
     };
-    
-    console.log('Transformed DTO:', transformedDto);
-    
+
     return this.carsService.create(transformedDto);
   }
+
+  // ================= PUBLIC ROUTES =================
 
   @Public()
   @Get()

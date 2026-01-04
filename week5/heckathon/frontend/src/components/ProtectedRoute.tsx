@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -10,22 +10,36 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isAuthenticated, isHydrated } = useAuthStore();
+  console.log("🟡 ProtectedRoute render");
+  const [mounted, setMounted] = useState(false);
+  console.log("mounted:", mounted);
+console.log("isHydrated:", isHydrated);
+console.log("isAuthenticated:", isAuthenticated);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, router]);
+    setMounted(true);
+  }, []);
 
-  if (!isAuthenticated) {
+  useEffect(() => {
+    // redirect ONLY when hydration + mount complete
+    if (mounted && isHydrated && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [mounted, isHydrated, isAuthenticated, router]);
+
+  // ⛔ wait until auth state is fully ready
+  if (!mounted || !isHydrated) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <p className="text-gray-600">Redirecting to login...</p>
-        </div>
+        <p className="text-gray-600">Loading...</p>
       </div>
     );
+  }
+
+  // ⛔ DO NOT render null before redirect completes
+  if (!isAuthenticated) {
+    return null;
   }
 
   return <>{children}</>;

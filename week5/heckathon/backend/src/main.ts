@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   try {
@@ -28,9 +29,13 @@ async function bootstrap() {
     const reflector = app.get(Reflector);
     app.useGlobalGuards(new JwtAuthGuard(reflector));
 
+    // 🔥 WebSocket Adapter for Socket.IO
+    app.useWebSocketAdapter(new IoAdapter(app));
+
+    // Start server
     const port = process.env.PORT ?? 4000;
     await app.listen(port);
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`🚀 Server is running on http://localhost:${port}`);
   } catch (error) {
     console.error('Application startup error:', error);
     process.exit(1);

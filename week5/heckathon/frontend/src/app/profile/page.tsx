@@ -356,7 +356,10 @@ export default function ProfilePage() {
                         <div key={bid._id} className="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                           <div>
                             <h3 className="font-medium">
-                              Auction: {typeof bid.auctionId === 'string' ? bid.auctionId : (bid.auctionId as any)?.title || 'Unknown Auction'}
+                              {typeof bid.auctionId === 'object' && bid.auctionId?.car ? 
+                                (typeof bid.auctionId.car === 'object' ? bid.auctionId.car.title : 'Car Auction') : 
+                                'Unknown Auction'
+                              }
                             </h3>
                             <p className="text-sm text-gray-500">
                               Placed on: {new Date(bid.placedAt).toLocaleDateString()}
@@ -394,7 +397,7 @@ export default function ProfilePage() {
                           <div className="p-4">
                             <h3 className="font-medium mb-2">{auction.car?.title}</h3>
                             <p className="text-[#4A5FBF] font-bold">
-                              {formatPrice(auction.currentPrice || 0)}
+                              {formatPrice(auction.currentPrice || auction.car?.startingPrice || 0)}
                             </p>
                             <p className="text-sm text-gray-500">
                               Status: {auction.status}

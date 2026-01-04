@@ -83,26 +83,86 @@ export default function PaymentPage() {
             </div>
           </Card>
 
-          <Card>
-            <div className="bg-[#4A5FBF] text-white p-4">
-              <h2 className="text-xl font-semibold">Make Payment</h2>
-            </div>
-            <div className="p-6 text-center">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-[#4A5FBF] mb-2">
-                  {formatPrice(auction.currentPrice || 0)}
-                </h3>
-                <p className="text-gray-600">Total Amount Due</p>
+          {!payment && (
+            <Card>
+              <div className="bg-[#4A5FBF] text-white p-4">
+                <h2 className="text-xl font-semibold">Make Payment</h2>
               </div>
-              <Button
-                onClick={handleMakePayment}
-                disabled={createPayment.isPending}
-                className="bg-[#4A5FBF] hover:bg-[#3A4FAF] text-white px-8 py-3 text-lg"
-              >
-                {createPayment.isPending ? 'Processing...' : 'Make Payment'}
-              </Button>
-            </div>
-          </Card>
+              <div className="p-6 text-center">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-[#4A5FBF] mb-2">
+                    {formatPrice(auction.currentPrice || 0)}
+                  </h3>
+                  <p className="text-gray-600">Total Amount Due</p>
+                </div>
+                <Button
+                  onClick={handleMakePayment}
+                  disabled={createPayment.isPending}
+                  className="bg-[#4A5FBF] hover:bg-[#3A4FAF] text-white px-8 py-3 text-lg"
+                >
+                  {createPayment.isPending ? 'Processing...' : 'Make Payment'}
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {payment && (
+            <Card className="mt-8">
+              <div className="bg-green-500 text-white p-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
+                  <CheckCircle className="w-6 h-6" />
+                  Payment Successful
+                </h2>
+              </div>
+              <div className="p-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4">Delivery Status</h3>
+                  <div className="space-y-4">
+                    {payment.deliveryUpdates?.map((update, index) => {
+                      const getIcon = (status: string) => {
+                        switch (status) {
+                          case 'pending': return <Clock className="w-5 h-5 text-yellow-500" />;
+                          case 'ready_for_shipping': return <Package className="w-5 h-5 text-blue-500" />;
+                          case 'in_transit': return <Truck className="w-5 h-5 text-orange-500" />;
+                          case 'delivered': return <CheckCircle className="w-5 h-5 text-green-500" />;
+                          default: return <Clock className="w-5 h-5 text-gray-500" />;
+                        }
+                      };
+                      
+                      const getStatusText = (status: string) => {
+                        switch (status) {
+                          case 'pending': return 'Payment Received';
+                          case 'ready_for_shipping': return 'Ready for Shipping';
+                          case 'in_transit': return 'In Transit';
+                          case 'delivered': return 'Delivered';
+                          default: return status;
+                        }
+                      };
+                      
+                      return (
+                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded">
+                          {getIcon(update.status)}
+                          <div className="flex-1">
+                            <p className="font-medium">{getStatusText(update.status)}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(update.updatedAt).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 p-4 rounded">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note:</strong> Your delivery status will update automatically. 
+                    Refresh this page to see the latest updates.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
         </div>
       </div>
     </>

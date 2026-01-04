@@ -16,7 +16,57 @@ export default function HomePage() {
   const { data: auctions, isLoading, error } = useLiveAuctions();
   const { currentBids, joinAuction, initializeBidData, timeUpdates } = useSocketContext();
 
-  const displayAuctions = Array.isArray(auctions) ? auctions.slice(0, 4).map((auction: Auction) => {
+  // Add filtered auctions based on search
+  const [filteredAuctions, setFilteredAuctions] = useState<Auction[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const handleSearch = (filters: any) => {
+    setSearchFilters(filters);
+    if (Object.keys(filters).length > 0) {
+      // Filter auctions based on search criteria
+      const filtered = auctions?.filter((auction: Auction) => {
+        const car = auction.car;
+        if (!car) return false;
+        
+        if (filters.make && car.make.toLowerCase() !== filters.make.toLowerCase()) return false;
+        if (filters.model && car.model.toLowerCase() !== filters.model.toLowerCase()) return false;
+        if (filters.year && car.year.toString() !== filters.year) return false;
+        if (filters.minPrice && (auction.currentPrice || car.startingPrice) < parseInt(filters.minPrice)) return false;
+        if (filters.maxPrice && (auction.currentPrice || car.startingPrice) > parseInt(filters.maxPrice)) return false;
+        
+        return true;
+      }) || [];
+      
+      setFilteredAuctions(filtered);
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+
+  const displayAuctions = showSearchResults ? 
+    filteredAuctions.map((auction: Auction) => {
+      const auctionId = auction._id;
+      const realTimeBid = currentBids[auctionId];
+      const realTimeRemaining = timeUpdates[auctionId];
+      const currentPrice = realTimeBid?.amount || auction.currentPrice || 0;
+      const timeRemaining = realTimeRemaining || (auction.endTime ? formatTimeRemaining(auction.endTime) : "Auction Ended");
+      
+      return {
+        id: auction._id,
+        name: auction.car?.title || 'Car Auction',
+        image: auction.car?.photos?.[0] || "/placeholder.jpg",
+        price: formatPrice(currentPrice),
+        currentBid: formatPrice(currentPrice),
+        timeRemaining: timeRemaining,
+        endTime: auction.endTime,
+        status: auction.status === 'live' ? ("trending" as const) : null,
+        rating: 5,
+        endType: auction.status === 'ended' ? "Auction Ended" : "Time Remaining",
+        description: auction.car?.description || "No description available",
+      };
+    }) :
+    Array.isArray(auctions) ? auctions.slice(0, 4).map((auction: Auction) => {
     const auctionId = auction._id;
     const realTimeBid = currentBids[auctionId];
     const realTimeRemaining = timeUpdates[auctionId];
@@ -73,7 +123,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-8 sm:mt-12">
-            <SearchFilters onSearch={setSearchFilters} />
+            <SearchFilters onSearch={handleSearch} />
           </div>
         </div>
 
@@ -105,7 +155,7 @@ export default function HomePage() {
               <div className="text-center">
                 {/* Title */}
                 <h2 className="text-white text-2xl sm:text-3xl lg:text-4xl font-semibold mb-4 lg:mb-6">
-                  Live Auction
+                  {showSearchResults ? 'Search Results' : 'Live Auction'}
                 </h2>
 
                 {/* Line + Diamond */}
@@ -138,7 +188,7 @@ export default function HomePage() {
                 </div>
               ) : displayAuctions.length === 0 ? (
                 <div className="col-span-full text-center text-white py-8">
-                  No live auctions available.
+                  {showSearchResults ? 'No cars found matching your search criteria.' : 'No live auctions available.'}
                 </div>
               ) : (
                 displayAuctions.map((auction) => (
