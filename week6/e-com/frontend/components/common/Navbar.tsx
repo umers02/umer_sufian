@@ -74,6 +74,9 @@ export default function Navbar() {
                       <div className="px-4 py-2 border-b border-gray-100">
                         <p className="font-medium text-sm">{user.name}</p>
                         <p className="text-xs text-gray-500">{user.email}</p>
+                        <p className="text-xs text-purple-600 font-medium mt-1">
+                          {user.loyaltyPoints || 0} Points
+                        </p>
                       </div>
                     )}
                     <Link 

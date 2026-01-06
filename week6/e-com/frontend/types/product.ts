@@ -8,7 +8,9 @@ export interface ProductFormData {
   regularPrice: string;
   salePrice: string;
   tags: string[];
-  isOnSale: boolean; // ✅ Added to match backend
+  isOnSale: boolean;
+  type: 'regular' | 'loyalty_only' | 'hybrid';
+  pointsPrice: string;
 }
 
 export interface Product {

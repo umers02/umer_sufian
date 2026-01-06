@@ -54,6 +54,8 @@ export default function TopSelling() {
                   price={product.salePrice || product.price}
                   originalPrice={product.salePrice ? product.price : undefined}
                   discount={product.salePrice ? Math.round(((product.price - product.salePrice) / product.price) * 100) : undefined}
+                  pointsPrice={product.pointsPrice}
+                  type={product.type || 'regular'}
                 />
               ))}
             </div>

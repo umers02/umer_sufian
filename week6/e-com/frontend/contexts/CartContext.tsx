@@ -10,6 +10,8 @@ interface CartItem {
   size: string;
   color: string;
   quantity: number;
+  type?: 'regular' | 'loyalty_only' | 'hybrid';
+  pointsPrice?: number;
 }
 
 interface CartContextType {

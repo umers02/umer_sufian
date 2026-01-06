@@ -29,18 +29,46 @@ export class OrdersService {
       throw new BadRequestException('No items in order');
     }
 
+    // Check if points are being used and validate
+    if (createOrderDto.pointsUsed && createOrderDto.pointsUsed > 0) {
+      if (user.loyaltyPoints < createOrderDto.pointsUsed) {
+        throw new BadRequestException('Insufficient loyalty points');
+      }
+    }
+
+    // Check if order contains loyalty-only products
+    let hasLoyaltyOnlyProducts = false;
+    let totalPointsRequired = 0;
+    
+    for (const item of createOrderDto.items) {
+      const product = await this.productsService.findOne(item.product);
+      if (product.type === 'loyalty_only') {
+        hasLoyaltyOnlyProducts = true;
+        totalPointsRequired += (product.pointsPrice || 0) * item.quantity;
+      }
+    }
+
+    // For loyalty-only orders, validate points and set correct values
+    if (hasLoyaltyOnlyProducts) {
+      if (user.loyaltyPoints < totalPointsRequired) {
+        throw new BadRequestException(`Insufficient points. Required: ${totalPointsRequired}, Available: ${user.loyaltyPoints}`);
+      }
+      createOrderDto.pointsUsed = totalPointsRequired;
+    }
+
     // Update product stock
     for (const item of createOrderDto.items) {
       await this.productsService.updateStock(item.product, item.quantity);
     }
 
-    const pointsEarned = PointsUtil.calculatePointsEarned(createOrderDto.total);
+    // Calculate points earned (only for non-loyalty-only products)
+    const pointsEarned = hasLoyaltyOnlyProducts ? 0 : PointsUtil.calculatePointsEarned(createOrderDto.total);
 
     const order = new this.orderModel({
       user: userId,
       items: createOrderDto.items,
       totalAmount: createOrderDto.total,
-      pointsUsed: 0,
+      pointsUsed: createOrderDto.pointsUsed || 0,
       pointsEarned,
       shippingAddress: createOrderDto.shippingAddress,
       paymentMethod: createOrderDto.paymentMethod,
@@ -49,7 +77,13 @@ export class OrdersService {
 
     const savedOrder = await order.save();
 
-    // Update user loyalty points
+    // Deduct points if used
+    if (createOrderDto.pointsUsed && createOrderDto.pointsUsed > 0) {
+      await this.usersService.updateLoyaltyPoints(userId, -createOrderDto.pointsUsed);
+      await this.loyaltyService.recordPointsSpent(userId, createOrderDto.pointsUsed, savedOrder._id.toString());
+    }
+
+    // Add points earned (only for non-loyalty-only products)
     if (pointsEarned > 0) {
       await this.usersService.updateLoyaltyPoints(userId, pointsEarned);
       await this.loyaltyService.recordPointsEarned(userId, pointsEarned, savedOrder._id.toString());

@@ -24,6 +24,7 @@ export interface CreateOrderData {
   shipping: number;
   tax: number;
   total: number;
+  pointsUsed?: number;
 }
 
 export interface Order {

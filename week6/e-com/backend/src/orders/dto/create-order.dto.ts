@@ -72,4 +72,8 @@ export class CreateOrderDto {
 
   @IsNumber()
   total: number;
+
+  @IsOptional()
+  @IsNumber()
+  pointsUsed?: number;
 }

@@ -99,7 +99,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         price: product.salePrice || product.price,
         image: product.images?.[0] || '/placeholder.png',
         size: selectedSize,
-        color: selectedColor
+        color: selectedColor,
+        type: product.type || 'regular',
+        pointsPrice: product.pointsPrice || 0
       }, quantity);
     }
   };

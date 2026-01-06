@@ -9,6 +9,8 @@ interface Product {
   name: string;
   price: number;
   salePrice?: number;
+  pointsPrice?: number;
+  type?: 'regular' | 'loyalty_only' | 'hybrid';
   images: string[];
   isOnSale?: boolean;
   createdAt: string;
@@ -93,6 +95,8 @@ export default function NewArrivals() {
                   discount={product.isOnSale && product.salePrice ? 
                     Math.round(((product.price - product.salePrice) / product.price) * 100) : undefined
                   }
+                  pointsPrice={product.pointsPrice}
+                  type={product.type || 'regular'}
                 />
               ))}
             </div>

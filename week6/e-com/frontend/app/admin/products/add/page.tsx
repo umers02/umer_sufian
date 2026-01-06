@@ -19,6 +19,8 @@ export default function AddProductPage() {
     salePrice: '',
     tags: [],
     isOnSale: false,
+    type: 'regular',
+    pointsPrice: '',
   });
 
   const [images, setImages] = useState<File[]>([]);
@@ -91,6 +93,12 @@ export default function AddProductPage() {
       fd.append('description', formData.description);
       fd.append('price', Number(formData.regularPrice).toString());
       fd.append('stock', Number(formData.stock).toString());
+      fd.append('type', formData.type);
+
+      // Points price for loyalty_only or hybrid products
+      if ((formData.type === 'loyalty_only' || formData.type === 'hybrid') && formData.pointsPrice) {
+        fd.append('pointsPrice', Number(formData.pointsPrice).toString());
+      }
 
       // Sale Price & isOnSale
       if (formData.salePrice && formData.salePrice.trim() !== '') {
@@ -291,6 +299,47 @@ export default function AddProductPage() {
                     />
                   </div>
                 </div>
+
+                {/* Product Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Type
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={(e) => setFormData({...formData, type: e.target.value as 'regular' | 'loyalty_only' | 'hybrid'})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="regular">Regular (Cash Only)</option>
+                    <option value="loyalty_only">Loyalty Points Only</option>
+                    <option value="hybrid">Hybrid (Cash or Points)</option>
+                  </select>
+                </div>
+
+                {/* Points Price - Show only for loyalty_only or hybrid */}
+                {(formData.type === 'loyalty_only' || formData.type === 'hybrid') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Points Price
+                    </label>
+                    <input
+                      type="number"
+                      name="pointsPrice"
+                      value={formData.pointsPrice}
+                      onChange={handleInputChange}
+                      placeholder="500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required={formData.type === 'loyalty_only'}
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      {formData.type === 'loyalty_only' 
+                        ? 'This product can only be purchased with points'
+                        : 'Users can buy this product with either cash or points'
+                      }
+                    </p>
+                  </div>
+                )}
 
                 {/* Tags */}
                 <div>

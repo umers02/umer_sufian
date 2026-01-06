@@ -15,6 +15,13 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   
+  // Check if cart contains only loyalty-only products
+  const hasLoyaltyOnlyProducts = items.some(item => item.type === 'loyalty_only');
+  const isLoyaltyOnlyCart = items.every(item => item.type === 'loyalty_only');
+  const totalPointsRequired = items
+    .filter(item => item.type === 'loyalty_only')
+    .reduce((sum, item) => sum + (item.pointsPrice || 0) * item.quantity, 0);
+  
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
     lastName: '',
@@ -34,7 +41,9 @@ export default function CheckoutPage() {
     cardName: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState(isLoyaltyOnlyCart ? 'points' : 'card');
+  const [usePoints, setUsePoints] = useState(false);
+  const [pointsToUse, setPointsToUse] = useState(0);
   const [sameAsBilling, setSameAsBilling] = useState(true);
 
   const countries = [
@@ -52,9 +61,10 @@ export default function CheckoutPage() {
   ];
 
   const subtotal = getTotalPrice();
-  const shipping = 15;
-  const tax = subtotal * 0.08; // 8% tax
-  const total = subtotal + shipping + tax;
+  const shipping = isLoyaltyOnlyCart ? 0 : 15; // No shipping for points-only orders
+  const tax = isLoyaltyOnlyCart ? 0 : subtotal * 0.08; // No tax for points-only orders
+  const pointsDiscount = usePoints ? Math.min(pointsToUse * 0.01, subtotal) : 0;
+  const total = isLoyaltyOnlyCart ? 0 : subtotal + shipping + tax - pointsDiscount; // Total is 0 for points-only
 
   const handleInputChange = (section: 'shipping' | 'payment', field: string, value: string) => {
     if (section === 'shipping') {
@@ -72,6 +82,12 @@ export default function CheckoutPage() {
       return;
     }
     
+    // Check points for loyalty-only cart
+    if (isLoyaltyOnlyCart && user.loyaltyPoints < totalPointsRequired) {
+      alert(`Insufficient points! You need ${totalPointsRequired} points but only have ${user.loyaltyPoints} points.`);
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -84,11 +100,12 @@ export default function CheckoutPage() {
           color: item.color
         })),
         shippingAddress: shippingInfo,
-        paymentMethod,
+        paymentMethod: isLoyaltyOnlyCart ? 'points' : paymentMethod,
         subtotal,
         shipping,
         tax,
-        total
+        total,
+        pointsUsed: isLoyaltyOnlyCart ? totalPointsRequired : (usePoints ? pointsToUse : 0)
       };
       
       await orderService.createOrder(orderData);
@@ -257,41 +274,116 @@ export default function CheckoutPage() {
               <div className="bg-white p-6 rounded-2xl">
                 <h2 className="text-xl font-bold mb-6">Payment Method</h2>
                 
-                <div className="space-y-4 mb-6">
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="card"
-                      checked={paymentMethod === 'card'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-4 h-4"
-                    />
-                    <span>Credit/Debit Card</span>
-                  </label>
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="paypal"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-4 h-4"
-                    />
-                    <span>PayPal</span>
-                  </label>
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="cod"
-                      checked={paymentMethod === 'cod'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-4 h-4"
-                    />
-                    <span>Cash on Delivery</span>
-                  </label>
-                </div>
+                {isLoyaltyOnlyCart ? (
+                  // Loyalty-only products: Only show points payment
+                  <div className="p-4 bg-purple-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="payment"
+                          value="points"
+                          checked={true}
+                          readOnly
+                          className="w-4 h-4"
+                        />
+                        <span className="font-medium">Loyalty Points Payment</span>
+                      </div>
+                      <span className="text-sm text-purple-600">
+                        Available: {user?.loyaltyPoints || 0} points
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>Required: <strong>{totalPointsRequired} points</strong></p>
+                      <p className={user && user.loyaltyPoints >= totalPointsRequired ? 'text-green-600' : 'text-red-600'}>
+                        {user && user.loyaltyPoints >= totalPointsRequired 
+                          ? '✓ Sufficient points available' 
+                          : '✗ Insufficient points'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  // Regular products: Show all payment options
+                  <>
+                    <div className="space-y-4 mb-6">
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="payment"
+                          value="card"
+                          checked={paymentMethod === 'card'}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <span>Credit/Debit Card</span>
+                      </label>
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="payment"
+                          value="paypal"
+                          checked={paymentMethod === 'paypal'}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <span>PayPal</span>
+                      </label>
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="payment"
+                          value="cod"
+                          checked={paymentMethod === 'cod'}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <span>Cash on Delivery</span>
+                      </label>
+                    </div>
+
+                    {/* Points Payment Option for regular products */}
+                    {user && user.loyaltyPoints > 0 && (
+                      <div className="mb-6 p-4 bg-purple-50 rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="flex items-center space-x-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={usePoints}
+                              onChange={(e) => {
+                                setUsePoints(e.target.checked);
+                                if (!e.target.checked) setPointsToUse(0);
+                              }}
+                              className="w-4 h-4"
+                            />
+                            <span className="font-medium">Use Loyalty Points</span>
+                          </label>
+                          <span className="text-sm text-purple-600">
+                            Available: {user.loyaltyPoints} points
+                          </span>
+                        </div>
+                        
+                        {usePoints && (
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Points to use (1 point = $0.01)
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max={Math.min(user.loyaltyPoints, subtotal * 100)}
+                              value={pointsToUse}
+                              onChange={(e) => setPointsToUse(Number(e.target.value))}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <p className="text-sm text-gray-600 mt-1">
+                              Discount: ${pointsDiscount.toFixed(2)}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
 
                 {paymentMethod === 'card' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -372,32 +464,65 @@ export default function CheckoutPage() {
 
                 {/* Price Breakdown */}
                 <div className="space-y-3 mb-6 border-t pt-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-semibold">${shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Tax</span>
-                    <span className="font-semibold">${tax.toFixed(2)}</span>
-                  </div>
-                  <hr />
-                  <div className="flex justify-between text-lg">
-                    <span className="font-bold">Total</span>
-                    <span className="font-bold">${total.toFixed(2)}</span>
-                  </div>
+                  {isLoyaltyOnlyCart ? (
+                    // Loyalty-only cart: Show points breakdown
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Total Points Required</span>
+                        <span className="font-semibold text-purple-600">{totalPointsRequired} points</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Your Available Points</span>
+                        <span className="font-semibold">{user?.loyaltyPoints || 0} points</span>
+                      </div>
+                      <hr />
+                      <div className="flex justify-between text-lg">
+                        <span className="font-bold">Payment Method</span>
+                        <span className="font-bold text-purple-600">Loyalty Points</span>
+                      </div>
+                    </>
+                  ) : (
+                    // Regular cart: Show cash breakdown
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Shipping</span>
+                        <span className="font-semibold">${shipping.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Tax</span>
+                        <span className="font-semibold">${tax.toFixed(2)}</span>
+                      </div>
+                      {usePoints && pointsDiscount > 0 && (
+                        <div className="flex justify-between text-purple-600">
+                          <span>Points Discount ({pointsToUse} points)</span>
+                          <span className="font-semibold">-${pointsDiscount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <hr />
+                      <div className="flex justify-between text-lg">
+                        <span className="font-bold">Total</span>
+                        <span className="font-bold">${total.toFixed(2)}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Place Order Button */}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (isLoyaltyOnlyCart && user && user.loyaltyPoints < totalPointsRequired)}
                   className="w-full bg-black text-white py-4 rounded-full font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
                 >
-                  {loading ? 'Processing...' : `Place Order - $${total.toFixed(2)}`}
+                  {loading ? 'Processing...' : 
+                   isLoyaltyOnlyCart ? 
+                     (user && user.loyaltyPoints >= totalPointsRequired ? 
+                       `Place Order - ${totalPointsRequired} Points` : 
+                       'Insufficient Points') :
+                     `Place Order - $${total.toFixed(2)}`}
                 </button>
 
                 <p className="text-xs text-gray-500 mt-4 text-center">
