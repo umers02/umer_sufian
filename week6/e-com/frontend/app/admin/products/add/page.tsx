@@ -18,6 +18,7 @@ export default function AddProductPage() {
     regularPrice: '',
     salePrice: '',
     tags: [],
+    sizes: [],
     isOnSale: false,
     type: 'regular',
     pointsPrice: '',
@@ -25,7 +26,9 @@ export default function AddProductPage() {
 
   const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tagInput, setTagInput] = useState('');
+  
+  const availableTags = ['T-shirts', 'Shorts', 'Shirts', 'Hoodie', 'Jeans'];
+  const availableSizes = ['XX-Small', 'X-Small', 'Small', 'Medium', 'Large', 'X-Large', 'XX-Large', '3X-Large', '4X-Large'];
 
   // Handle text input changes
   const handleInputChange = (
@@ -37,16 +40,7 @@ export default function AddProductPage() {
     });
   };
 
-  // Add tag when pressing Enter
-  const handleTagInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
-      e.preventDefault();
-      addTag(tagInput.trim());
-      setTagInput('');
-    }
-  };
-
-  // Add tag to array
+  // Add tag from dropdown
   const addTag = (tag: string) => {
     if (!formData.tags.includes(tag)) {
       setFormData((prev) => ({
@@ -54,6 +48,24 @@ export default function AddProductPage() {
         tags: [...prev.tags, tag],
       }));
     }
+  };
+
+  // Add size from dropdown
+  const addSize = (size: string) => {
+    if (!formData.sizes.includes(size)) {
+      setFormData((prev) => ({
+        ...prev,
+        sizes: [...prev.sizes, size],
+      }));
+    }
+  };
+
+  // Remove size
+  const removeSize = (size: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.filter((s) => s !== size),
+    }));
   };
 
   // Remove tag from array
@@ -116,6 +128,11 @@ export default function AddProductPage() {
       // Tags array - only append if tags exist
       if (formData.tags && formData.tags.length > 0) {
         formData.tags.forEach((tag) => fd.append('tags', tag));
+      }
+
+      // Sizes array - only append if sizes exist
+      if (formData.sizes && formData.sizes.length > 0) {
+        formData.sizes.forEach((size) => fd.append('sizes', size));
       }
 
       // Images
@@ -346,8 +363,23 @@ export default function AddProductPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tags
                   </label>
-                  <div className="border border-gray-300 rounded-lg p-4 min-h-[100px]">
-                    <div className="flex flex-wrap gap-2 mb-3">
+                  <div className="space-y-3">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addTag(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select a tag</option>
+                      {availableTags.filter(tag => !formData.tags.includes(tag)).map((tag) => (
+                        <option key={tag} value={tag}>{tag}</option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex flex-wrap gap-2">
                       {formData.tags.map((tag, index) => (
                         <span
                           key={index}
@@ -364,14 +396,47 @@ export default function AddProductPage() {
                         </span>
                       ))}
                     </div>
-                    <input
-                      type="text"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyPress={handleTagInputKeyPress}
-                      placeholder="Type tag and press Enter"
-                      className="w-full px-3 py-2 border-0 focus:outline-none text-sm"
-                    />
+                  </div>
+                </div>
+
+                {/* Sizes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sizes
+                  </label>
+                  <div className="space-y-3">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addSize(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select a size</option>
+                      {availableSizes.filter(size => !formData.sizes.includes(size)).map((size) => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {formData.sizes.map((size, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-2"
+                        >
+                          {size}
+                          <button
+                            type="button"
+                            onClick={() => removeSize(size)}
+                            className="text-white hover:text-red-300"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

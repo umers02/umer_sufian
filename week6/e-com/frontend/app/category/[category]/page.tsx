@@ -11,9 +11,12 @@ import { productService } from '../../../services/productService';
 
 export default function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>(['Large']);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [sortBy, setSortBy] = useState('Most Popular');
   const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
@@ -24,6 +27,10 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
     fetchCategoryProducts();
   }, [category]);
 
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedTags, selectedSizes, priceRange, sortBy]);
+
   const fetchCategoryProducts = async () => {
     try {
       setLoading(true);
@@ -33,11 +40,57 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
         product.category?.toLowerCase() === category.toLowerCase()
       );
       setProducts(filteredProducts);
+      
+      // Set initial price range based on products
+      if (filteredProducts.length > 0) {
+        const prices = filteredProducts.map((p: any) => p.salePrice || p.price);
+        setPriceRange({ min: Math.min(...prices), max: Math.max(...prices) });
+      }
     } catch (error) {
       console.error('Error fetching category products:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Filter by tags
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter((product: any) => 
+        product.tags?.some((tag: string) => selectedTags.includes(tag))
+      );
+    }
+
+    // Filter by sizes
+    if (selectedSizes.length > 0) {
+      filtered = filtered.filter((product: any) => 
+        product.sizes?.some((size: string) => selectedSizes.includes(size))
+      );
+    }
+
+    // Filter by price range
+    filtered = filtered.filter((product: any) => {
+      const price = product.salePrice || product.price;
+      return price >= priceRange.min && price <= priceRange.max;
+    });
+
+    // Sort products
+    switch (sortBy) {
+      case 'Price: Low to High':
+        filtered.sort((a: any, b: any) => (a.salePrice || a.price) - (b.salePrice || b.price));
+        break;
+      case 'Price: High to Low':
+        filtered.sort((a: any, b: any) => (b.salePrice || b.price) - (a.salePrice || a.price));
+        break;
+      default:
+        // Most Popular - keep original order
+        break;
+    }
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1);
   };
 
   const colors = [
@@ -53,7 +106,27 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
     { name: 'black', class: 'bg-black' }
   ];
 
-  const sizes = ['XX-Small', 'X-Small', 'Small', 'Medium', 'Large', 'X-Large', 'XX-Large', '3X-Large', '4X-Large'];
+  const availableTags = ['T-shirts', 'Shorts', 'Shirts', 'Hoodie', 'Jeans'];
+  const availableSizes = ['XX-Small', 'X-Small', 'Small', 'Medium', 'Large', 'X-Large', 'XX-Large', '3X-Large', '4X-Large'];
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSelectedTags([]);
+    setSelectedSizes([]);
+    if (products.length > 0) {
+      const prices = products.map((p: any) => p.salePrice || p.price);
+      setPriceRange({ min: Math.min(...prices), max: Math.max(...prices) });
+    }
+  };
+
+  const hasActiveFilters = selectedTags.length > 0 || selectedSizes.length > 0;
 
   const toggleSize = (size: string) => {
     setSelectedSizes(prev => 
@@ -64,10 +137,10 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const currentProducts = products.slice(startIndex, endIndex);
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
@@ -142,44 +215,90 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
             <div className="border rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold">Filters</h3>
-                <button className="text-gray-400">☰</button>
+                {hasActiveFilters && (
+                  <button 
+                    onClick={clearAllFilters}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Clear All
+                  </button>
+                )}
               </div>
 
+              {/* Active Filters Display */}
+              {hasActiveFilters && (
+                <div className="mb-6 p-3 bg-gray-50 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2">Active Filters:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-black text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+                      >
+                        {tag}
+                        <button
+                          onClick={() => toggleTag(tag)}
+                          className="text-white hover:text-red-300"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {selectedSizes.map((size) => (
+                      <span
+                        key={size}
+                        className="bg-blue-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1"
+                      >
+                        {size}
+                        <button
+                          onClick={() => toggleSize(size)}
+                          className="text-white hover:text-red-300"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mb-6">
+                <h4 className="font-medium mb-4">Categories</h4>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between py-2 border-b">
-                    <span className="text-gray-600">T-shirts</span>
-                    <span className="text-gray-400">›</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b">
-                    <span className="text-gray-600">Shorts</span>
-                    <span className="text-gray-400">›</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b">
-                    <span className="text-gray-600">Shirts</span>
-                    <span className="text-gray-400">›</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b">
-                    <span className="text-gray-600">Hoodie</span>
-                    <span className="text-gray-400">›</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-600">Jeans</span>
-                    <span className="text-gray-400">›</span>
-                  </div>
+                  {availableTags.map((tag) => (
+                    <div key={tag} className="flex items-center justify-between py-2 border-b">
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedTags.includes(tag)}
+                          onChange={() => toggleTag(tag)}
+                          className="mr-2"
+                        />
+                        <span className={selectedTags.includes(tag) ? 'text-black font-medium' : 'text-gray-600'}>
+                          {tag}
+                        </span>
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-medium">Price</h4>
-                  <span className="text-gray-400">▲</span>
                 </div>
                 <div className="space-y-4">
-                  <input type="range" min="50" max="200" className="w-full" />
+                  <input 
+                    type="range" 
+                    min={Math.min(...products.map(p => p.salePrice || p.price))} 
+                    max={Math.max(...products.map(p => p.salePrice || p.price))} 
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: parseInt(e.target.value) }))}
+                    className="w-full" 
+                  />
                   <div className="flex justify-between text-sm">
-                    <span>$50</span>
-                    <span>$200</span>
+                    <span>${priceRange.min}</span>
+                    <span>${priceRange.max}</span>
                   </div>
                 </div>
               </div>
@@ -199,10 +318,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-medium">Size</h4>
-                  <span className="text-gray-400">▲</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {sizes.map((size) => (
+                  {availableSizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => toggleSize(size)}
@@ -225,14 +343,24 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 </div>
                 <div className="space-y-2">
                   {['Casual', 'Formal', 'Party', 'Gym'].map((style) => (
-                    <div key={style} className="flex items-center justify-between py-2 border-b">
-                      <span className="text-gray-600">{style}</span>
+                    <Link 
+                      key={style} 
+                      href={`/category/${style.toLowerCase()}`}
+                      className="flex items-center justify-between py-2 border-b hover:bg-gray-50 cursor-pointer"
+                    >
+                      <span className="text-gray-600 hover:text-black">{style}</span>
                       <span className="text-gray-400">›</span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
 
+              <button 
+                onClick={clearAllFilters}
+                className="w-full bg-gray-200 text-gray-700 py-3 rounded-full mb-3 hover:bg-gray-300"
+              >
+                Clear Filters
+              </button>
               <button className="w-full bg-black text-white py-3 rounded-full">
                 Apply Filter
               </button>
@@ -244,7 +372,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               <div>
                 <h1 className="text-3xl font-bold mb-2">{categoryName}</h1>
                 <p className="text-gray-600">
-                  Showing {startIndex + 1}-{Math.min(endIndex, products.length)} of {products.length} Products
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} Products
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -265,7 +393,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               <div className="flex justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
               </div>
-            ) : products.length > 0 ? (
+            ) : filteredProducts.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   {currentProducts.map((product) => (

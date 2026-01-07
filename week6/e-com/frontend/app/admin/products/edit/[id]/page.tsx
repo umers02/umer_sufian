@@ -16,7 +16,10 @@ interface Product {
   price: number;
   salePrice: number;
   isOnSale?: boolean;
+  type: string;
+  pointsPrice?: number;
   tags: string[];
+  sizes: string[];
   images: string[];
 }
 
@@ -30,6 +33,9 @@ export default function ProductDetailPage() {
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [newImages, setNewImages] = useState<File[]>([]);
+  
+  const availableTags = ['T-shirts', 'Shorts', 'Shirts', 'Hoodie', 'Jeans'];
+  const availableSizes = ['XX-Small', 'X-Small', 'Small', 'Medium', 'Large', 'X-Large', 'XX-Large', '3X-Large', '4X-Large'];
 
   useEffect(() => {
     fetchProduct();
@@ -70,6 +76,12 @@ export default function ProductDetailPage() {
       formData.append('sku', product.sku);
       formData.append('stock', product.stock.toString());
       formData.append('price', product.price.toString());
+      formData.append('type', product.type);
+      
+      // Points price for loyalty_only or hybrid products
+      if ((product.type === 'loyalty_only' || product.type === 'hybrid') && product.pointsPrice) {
+        formData.append('pointsPrice', product.pointsPrice.toString());
+      }
       
       // Handle salePrice and isOnSale
       if (product.salePrice && product.salePrice > 0) {
@@ -87,6 +99,13 @@ export default function ProductDetailPage() {
       if (product.tags && product.tags.length > 0) {
         product.tags.forEach(tag => {
           formData.append('tags', tag);
+        });
+      }
+
+      // Handle sizes - only append if sizes exist
+      if (product.sizes && product.sizes.length > 0) {
+        product.sizes.forEach(size => {
+          formData.append('sizes', size);
         });
       }
 
@@ -156,9 +175,25 @@ export default function ProductDetailPage() {
     setProduct({ ...product, [field]: value });
   };
 
-  const handleTagsChange = (value: string) => {
-    const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
-    handleInputChange('tags', tags);
+  const addTag = (tag: string) => {
+    if (!product || product.tags.includes(tag)) return;
+    setProduct({ ...product, tags: [...product.tags, tag] });
+  };
+
+  const removeTag = (tag: string) => {
+    if (!product) return;
+    setProduct({ ...product, tags: product.tags.filter(t => t !== tag) });
+  };
+
+  const addSize = (size: string) => {
+    if (!product || (product.sizes && product.sizes.includes(size))) return;
+    const currentSizes = product.sizes || [];
+    setProduct({ ...product, sizes: [...currentSizes, size] });
+  };
+
+  const removeSize = (size: string) => {
+    if (!product || !product.sizes) return;
+    setProduct({ ...product, sizes: product.sizes.filter(s => s !== size) });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -275,6 +310,36 @@ export default function ProductDetailPage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Type
+                  </label>
+                  <select
+                    value={product.type}
+                    onChange={(e) => handleInputChange('type', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="regular">Regular Product</option>
+                    <option value="loyalty_only">Loyalty Only</option>
+                    <option value="hybrid">Hybrid (Cash + Points)</option>
+                  </select>
+                </div>
+
+                {(product.type === 'loyalty_only' || product.type === 'hybrid') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Points Price
+                    </label>
+                    <input
+                      type="number"
+                      value={product.pointsPrice || 0}
+                      onChange={(e) => handleInputChange('pointsPrice', parseInt(e.target.value) || 0)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter points required"
+                    />
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -327,23 +392,79 @@ export default function ProductDetailPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tag
+                    Tags
                   </label>
-                  <div className="border border-gray-300 rounded-lg p-4 min-h-[100px]">
-                    <input
-                      type="text"
-                      value={product.tags.join(', ')}
-                      onChange={(e) => handleTagsChange(e.target.value)}
-                      placeholder="Enter tags separated by commas"
-                      className="w-full border-none outline-none"
-                    />
-                    <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="space-y-3">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addTag(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select a tag</option>
+                      {availableTags.filter(tag => !product.tags.includes(tag)).map((tag) => (
+                        <option key={tag} value={tag}>{tag}</option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex flex-wrap gap-2">
                       {product.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
+                          className="bg-gray-800 text-white px-3 py-1 rounded text-sm flex items-center gap-2"
                         >
                           {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="text-white hover:text-red-300"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sizes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sizes
+                  </label>
+                  <div className="space-y-3">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addSize(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select a size</option>
+                      {availableSizes.filter(size => !(product.sizes || []).includes(size)).map((size) => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {(product.sizes || []).map((size, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-2"
+                        >
+                          {size}
+                          <button
+                            type="button"
+                            onClick={() => removeSize(size)}
+                            className="text-white hover:text-red-300"
+                          >
+                            ✕
+                          </button>
                         </span>
                       ))}
                     </div>

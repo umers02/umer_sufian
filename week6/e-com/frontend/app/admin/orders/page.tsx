@@ -62,7 +62,11 @@ export default function AdminOrdersPage() {
           : [];
         setOrders(sortedOrders);
       } else {
-        console.error('Failed to fetch orders');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to fetch orders:', response.status, errorData);
+        if (response.status === 403) {
+          alert('Access denied. Admin privileges required.');
+        }
         setOrders([]);
       }
     } catch (error) {

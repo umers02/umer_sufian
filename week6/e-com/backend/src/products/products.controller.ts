@@ -67,9 +67,27 @@ export class ProductsController {
       tags = createProductDto.tags;
     }
 
+    // Handle sizes array from FormData
+    let sizes: string[] | undefined = undefined;
+    
+    if (req.body && 'sizes' in req.body) {
+      const sizesValue = req.body.sizes;
+      
+      if (Array.isArray(sizesValue)) {
+        sizes = sizesValue.filter((size: any) => size && typeof size === 'string' && size.trim() !== '');
+      } else if (typeof sizesValue === 'string' && sizesValue.trim() !== '') {
+        sizes = [sizesValue.trim()];
+      }
+    }
+    
+    if (!sizes && createProductDto.sizes && Array.isArray(createProductDto.sizes) && createProductDto.sizes.length > 0) {
+      sizes = createProductDto.sizes;
+    }
+
     return this.productsService.create({
       ...createProductDto,
       tags: tags,
+      sizes: sizes,
       images: imageUrls,
     });
   }
@@ -140,6 +158,21 @@ export class ProductsController {
       tags = updateProductDto.tags;
     }
 
+    // Handle sizes array from FormData
+    let sizes: string[] | undefined = undefined;
+    if (req.body && 'sizes' in req.body) {
+      const sizesValue = req.body.sizes;
+      if (Array.isArray(sizesValue)) {
+        sizes = sizesValue.filter((size: any) => size && typeof size === 'string' && size.trim() !== '');
+      } else if (typeof sizesValue === 'string' && sizesValue.trim() !== '') {
+        sizes = [sizesValue.trim()];
+      }
+    }
+    
+    if (!sizes && updateProductDto.sizes && Array.isArray(updateProductDto.sizes) && updateProductDto.sizes.length > 0) {
+      sizes = updateProductDto.sizes;
+    }
+
     // Handle isOnSale - set based on salePrice
     let isOnSale: boolean | undefined = undefined;
     if (req.body.isOnSale !== undefined) {
@@ -155,6 +188,7 @@ export class ProductsController {
     return this.productsService.update(id, {
       ...updateData,
       tags: tags,
+      sizes: sizes,
       images: allImages.length > 0 ? allImages : undefined,
       isOnSale: isOnSale !== undefined ? isOnSale : updateProductDto.isOnSale,
     });

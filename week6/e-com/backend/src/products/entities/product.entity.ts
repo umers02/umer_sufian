@@ -48,6 +48,9 @@ export class Product {
   @Prop([String])
   tags?: string[];
 
+  @Prop([String])
+  sizes?: string[];
+
   @Prop({ default: 0 })
   averageRating?: number;
 

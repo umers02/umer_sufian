@@ -8,6 +8,7 @@ export interface ProductFormData {
   regularPrice: string;
   salePrice: string;
   tags: string[];
+  sizes: string[];
   isOnSale: boolean;
   type: 'regular' | 'loyalty_only' | 'hybrid';
   pointsPrice: string;
