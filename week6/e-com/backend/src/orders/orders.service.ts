@@ -36,15 +36,23 @@ export class OrdersService {
       }
     }
 
-    // Check if order contains loyalty-only products
+    // Check if order contains loyalty-only products and hybrid products
     let hasLoyaltyOnlyProducts = false;
+    let hasHybridProducts = false;
     let totalPointsRequired = 0;
+    let hybridProductsTotal = 0;
+    let regularProductsTotal = 0;
     
     for (const item of createOrderDto.items) {
       const product = await this.productsService.findOne(item.product);
       if (product.type === 'loyalty_only') {
         hasLoyaltyOnlyProducts = true;
         totalPointsRequired += (product.pointsPrice || 0) * item.quantity;
+      } else if (product.type === 'hybrid') {
+        hasHybridProducts = true;
+        hybridProductsTotal += item.price * item.quantity;
+      } else if (product.type === 'regular') {
+        regularProductsTotal += item.price * item.quantity;
       }
     }
 
@@ -61,8 +69,22 @@ export class OrdersService {
       await this.productsService.updateStock(item.product, item.quantity);
     }
 
-    // Calculate points earned (only for non-loyalty-only products)
-    const pointsEarned = hasLoyaltyOnlyProducts ? 0 : PointsUtil.calculatePointsEarned(createOrderDto.total);
+    // Calculate points earned based on payment method and product types
+    let pointsEarned = 0;
+    
+    if (hasLoyaltyOnlyProducts && createOrderDto.paymentMethod === 'points') {
+      // Loyalty-only products paid with points: no points earned
+      pointsEarned = 0;
+    } else if (hasHybridProducts && createOrderDto.paymentMethod === 'hybrid_points') {
+      // Hybrid products paid with points: no points earned
+      pointsEarned = 0;
+    } else {
+      // Regular products or hybrid products paid with cash: earn points
+      const cashAmount = hasHybridProducts && createOrderDto.paymentMethod !== 'hybrid_points' 
+        ? hybridProductsTotal + regularProductsTotal 
+        : regularProductsTotal;
+      pointsEarned = PointsUtil.calculatePointsEarned(cashAmount);
+    }
 
     const order = new this.orderModel({
       user: userId,
