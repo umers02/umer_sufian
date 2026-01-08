@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
 export default function AdminSidebar() {
   const { user } = useAuth();
+  const [, forceUpdate] = useState({});
   
-  // Debug: Check user role
-  console.log('AdminSidebar - User role:', user?.role, 'Type:', typeof user?.role);
+  // Force re-render when user changes
+  useEffect(() => {
+    forceUpdate({});
+  }, [user]);
   
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col">

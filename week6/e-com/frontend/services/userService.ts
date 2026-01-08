@@ -1,5 +1,3 @@
-
-
 import api from './api';
 
 export interface User {
@@ -9,6 +7,7 @@ export interface User {
   role: 'user' | 'admin' | 'superadmin';
   isBlocked: boolean;
   createdAt: string;
+  loyaltyPoints?: number;
 }
 
 export interface GetUsersResponse {
@@ -24,6 +23,10 @@ export const userService = {
     search = ''
   ): Promise<GetUsersResponse> => {
     return api.get(`/users?page=${page}&search=${search}`);
+  },
+
+  getCurrentUser: async () => {
+    return api.get('/users/profile');
   },
 
   blockUser: async (userId: string) => {

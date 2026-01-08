@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 
 interface User {
   id: string;
@@ -15,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -26,27 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const token = authService.getToken();
-  //   const savedUser = authService.getUser();
-    
-  //   console.log('AuthContext - Token:', token);
-  //   console.log('AuthContext - Saved user:', savedUser);
-    
-  //   if (token && savedUser) {
-  //     setUser(savedUser);
-  //     setIsAuthenticated(true);
-  //   } else {
-  //     setUser(null);
-  //     setIsAuthenticated(false);
-  //   }
-  //   setLoading(false);
-  // }, []);
-
-  useEffect(() => {
+  // Check auth on mount and create a refresh function
+  const refreshAuth = () => {
     const token = authService.getToken();
     const savedUser = authService.getUser();
-  
+    
     if (token && savedUser) {
       setUser(savedUser);
       setIsAuthenticated(true);
@@ -54,30 +40,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setIsAuthenticated(false);
     }
-  
     setLoading(false);
+  };
+
+  useEffect(() => {
+    refreshAuth();
   }, []);
   
 
   const login = async (email: string, password: string) => {
-    const response = await authService.login({ email, password });
+    setLoading(true);
     
-    // Handle wrapped response from backend
+    const response = await authService.login({ email, password });
     const authData = response.data || response;
     
-    console.log('Login response:', response);
-    console.log('Auth data:', authData);
-    
+    // Set auth data in localStorage
     authService.setAuth(authData.access_token, authData.user);
+    
+    // Immediately update state
     setUser(authData.user);
     setIsAuthenticated(true);
+    setLoading(false);
   };
 
   const logout = () => {
+    // Clear localStorage
     authService.logout();
+    
+    // Immediately clear state
     setUser(null);
     setIsAuthenticated(false);
-    window.location.href = '/auth/login';
+  };
+
+  const refreshUser = async () => {
+    try {
+      const token = authService.getToken();
+      if (!token) return;
+      
+      const freshUserData = await userService.getCurrentUser();
+      const userData = freshUserData.data || freshUserData;
+      
+      // Update both localStorage and state
+      authService.setAuth(token, userData);
+      setUser(userData);
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    }
   };
   
 
@@ -86,9 +94,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       login,
       logout,
+      refreshUser,
       isAuthenticated,
       loading
-    }}>
+    }} key={user?.id || 'no-user'}>
       {children}
     </AuthContext.Provider>
   );

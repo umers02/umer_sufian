@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { authService } from '../../../services/authService';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,23 +22,16 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await authService.login({ email, password });
-      console.log('Login response:', response); // Debug log
+      await login(email, password);
       
-      // Handle wrapped response from backend
-      const authData = response.data || response;
+      // Get user from localStorage to check role
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       
-      if (authData && authData.user) {
-        authService.setAuth(authData.access_token, authData.user);
-        
-        // Redirect based on user role
-        if (authData.user.role === 'admin' || authData.user.role === 'super_admin') {
-          router.push('/admin');
-        } else {
-          router.push('/products');
-        }
+      // Redirect based on user role
+      if (user.role === 'admin' || user.role === 'super_admin') {
+        router.push('/admin');
       } else {
-        setError('Invalid response from server');
+        router.push('/products');
       }
     } catch (err: any) {
       setError(err.message || 'Login failed');

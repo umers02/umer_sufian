@@ -10,10 +10,17 @@ import { useAuth } from '../../contexts/AuthContext';
 import { orderService, Order } from '../../services/orderService';
 
 export default function ProfilePage() {
-  const { user, logout, isAuthenticated, loading } = useAuth();
+  const { user, logout, isAuthenticated, loading, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+
+  useEffect(() => {
+    // Refresh user data when component mounts (after order completion)
+    if (isAuthenticated && user) {
+      refreshUser();
+    }
+  }, [isAuthenticated, refreshUser]);
 
   useEffect(() => {
     if (activeTab === 'orders') {
@@ -158,15 +165,7 @@ export default function ProfilePage() {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Role</label>
-                      <input
-                        type="text"
-                        value={user.role}
-                        readOnly
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
-                      />
-                    </div>
+
                     <div>
                       <label className="block text-sm font-medium mb-2">Loyalty Points</label>
                       <input
@@ -178,11 +177,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="mt-8">
-                    <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800">
-                      Edit Profile
-                    </button>
-                  </div>
+
                 </div>
               )}
 
@@ -249,9 +244,9 @@ export default function ProfilePage() {
                               </p>
                             </div>
                             <div className="space-x-2">
-                              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                              {/* <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                                 View Details
-                              </button>
+                              </button> */}
                               {order.status === 'delivered' && (
                                 <button className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800">
                                   Reorder
@@ -282,3 +277,7 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+
+
+

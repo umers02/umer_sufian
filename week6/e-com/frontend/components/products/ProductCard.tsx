@@ -96,7 +96,7 @@ export default function ProductCard({
         alt={title} 
         width={250} 
         height={250} 
-        className="w-full mb-4 hover:scale-105 transition-transform" 
+        className="w-full h-64 object-cover mb-4 hover:scale-105 transition-transform" 
       />
       <h4 className="font-semibold mb-2">{title}</h4>
       <div className="flex justify-center mb-2">
