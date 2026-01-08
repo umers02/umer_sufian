@@ -84,25 +84,29 @@ export default function CustomerReviews() {
   }
 
   return (
-    <section className="px-4 py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-16">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center mb-12">
-          <h3 className="text-4xl font-bold">OUR HAPPY CUSTOMERS</h3>
+          <h3 className="text-4xl md:text-5xl font-black">OUR HAPPY CUSTOMERS</h3>
           {reviews.length > 3 && (
             <div className="flex space-x-2">
               <button
                 onClick={prevSlide}
-                className="p-2 rounded-full border hover:bg-gray-100"
+                className="p-3 rounded-full hover:bg-gray-100 transition-colors"
                 disabled={currentIndex === 0}
               >
-                ←
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
               <button
                 onClick={nextSlide}
-                className="p-2 rounded-full border hover:bg-gray-100"
+                className="p-3 rounded-full hover:bg-gray-100 transition-colors"
                 disabled={currentIndex + 3 >= reviews.length}
               >
-                →
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
             </div>
           )}
@@ -111,16 +115,23 @@ export default function CustomerReviews() {
         {reviews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {visibleReviews.map((review) => (
-              <div key={review._id} className="bg-white p-6 rounded-2xl">
+              <div key={review._id} className="bg-white border border-gray-200 p-6 rounded-2xl">
                 <div className="flex mb-4">
                   {Array.from({ length: 5 }, (_, i) => (
-                    <span key={i} className={i < review.rating ? 'text-yellow-400' : 'text-gray-300'}>
+                    <span key={i} className={i < review.rating ? 'text-yellow-400 text-xl' : 'text-gray-300 text-xl'}>
                       ★
                     </span>
                   ))}
                 </div>
-                <h4 className="font-bold mb-2">{review.userId.name} ✓</h4>
-                <p className="text-gray-600">"{review.comment}"</p>
+                <div className="flex items-center mb-3">
+                  <h4 className="font-bold text-lg">{review.userId.name}</h4>
+                  <div className="ml-2 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-gray-600 leading-relaxed">"{review.comment}"</p>
               </div>
             ))}
           </div>

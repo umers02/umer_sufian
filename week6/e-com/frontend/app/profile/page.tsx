@@ -209,7 +209,7 @@ export default function ProfilePage() {
                               <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                               </span>
-                              <p className="text-lg font-bold mt-2">${(order.totalAmount || 0).toFixed(2)}</p>
+                              <p className="text-lg font-bold mt-2">PKR {(order.totalAmount || 0).toFixed(2)}</p>
                             </div>
                           </div>
                           
@@ -230,7 +230,7 @@ export default function ProfilePage() {
                                   <p className="text-sm text-gray-600">
                                     Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
                                   </p>
-                                  <p className="text-sm font-semibold">${item.price}</p>
+                                  <p className="text-sm font-semibold">PKR {item.price}</p>
                                 </div>
                               </div>
                             ))}

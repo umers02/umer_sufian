@@ -65,7 +65,7 @@ export default function CartPage() {
                       <h3 className="font-semibold text-lg">{item.title}</h3>
                       <p className="text-sm text-gray-600">Size: {item.size}</p>
                       <p className="text-sm text-gray-600">Color: {item.color}</p>
-                      <p className="text-xl font-bold mt-2">${item.price}</p>
+                      <p className="text-xl font-bold mt-2">PKR {item.price}</p>
                     </div>
                     
                     <div className="flex items-center space-x-3">
@@ -105,24 +105,24 @@ export default function CartPage() {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">PKR {subtotal.toFixed(2)}</span>
                   </div>
                   
                   <div className="flex justify-between">
                     <span className="text-gray-600">Discount (-20%)</span>
-                    <span className="font-semibold text-red-500">-${discount.toFixed(2)}</span>
+                    <span className="font-semibold text-red-500">-PKR {discount.toFixed(2)}</span>
                   </div>
                   
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-semibold">${deliveryFee}</span>
+                    <span className="font-semibold">PKR {deliveryFee}</span>
                   </div>
                   
                   <hr />
                   
                   <div className="flex justify-between text-xl">
                     <span className="font-bold">Total</span>
-                    <span className="font-bold">${total.toFixed(2)}</span>
+                    <span className="font-bold">PKR {total.toFixed(2)}</span>
                   </div>
                 </div>
 

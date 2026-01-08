@@ -55,10 +55,10 @@ export default function ProductCard({
       return (
         <div className="text-center">
           <div className="flex justify-center items-center space-x-2 mb-1">
-            <span className="text-xl font-bold">${price}</span>
+            <span className="text-xl font-bold">PKR {price}</span>
             {originalPrice && (
               <>
-                <span className="text-gray-500 line-through">${originalPrice}</span>
+                <span className="text-gray-500 line-through">PKR {originalPrice}</span>
                 <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-sm">
                   -{discount}%
                 </span>
@@ -76,10 +76,10 @@ export default function ProductCard({
     // Regular product
     return (
       <div className="flex justify-center items-center space-x-2">
-        <span className="text-xl font-bold">${price}</span>
+        <span className="text-xl font-bold">PKR {price}</span>
         {originalPrice && (
           <>
-            <span className="text-gray-500 line-through">${originalPrice}</span>
+            <span className="text-gray-500 line-through">PKR {originalPrice}</span>
             <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-sm">
               -{discount}%
             </span>
@@ -96,7 +96,7 @@ export default function ProductCard({
         alt={title} 
         width={250} 
         height={250} 
-        className="w-full h-64 object-cover mb-4 hover:scale-105 transition-transform" 
+        className="w-full h-64 object-cover mb-4 hover:scale-105 transition-transform rounded-lg" 
       />
       <h4 className="font-semibold mb-2">{title}</h4>
       <div className="flex justify-center mb-2">

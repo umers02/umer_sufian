@@ -21,10 +21,10 @@ export default function BestSellers({ products }: BestSellersProps) {
             <div className="w-12 h-12 bg-gray-200 rounded"></div>
             <div className="flex-1">
               <h4 className="font-medium">{product.name}</h4>
-              <p className="text-sm text-gray-500">₹{product.originalPrice}</p>
+              <p className="text-sm text-gray-500">PKR {product.originalPrice}</p>
             </div>
             <div className="text-right">
-              <p className="font-semibold">₹{product.price}</p>
+              <p className="font-semibold">PKR {product.price}</p>
               <p className="text-sm text-gray-500">{product.sales} sales</p>
             </div>
           </div>

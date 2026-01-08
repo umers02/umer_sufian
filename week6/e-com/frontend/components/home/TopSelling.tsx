@@ -33,7 +33,7 @@ export default function TopSelling() {
   const displayProducts = showAll ? products : products.slice(0, 4);
 
   return (
-    <section className="px-4 py-16 bg-gray-50">
+    <section className="px-4 py-16 ">
       <div className="max-w-7xl mx-auto">
         <h3 className="text-4xl font-bold text-center mb-12">TOP SELLING</h3>
 

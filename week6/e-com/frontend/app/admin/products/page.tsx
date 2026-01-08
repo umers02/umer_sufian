@@ -190,11 +190,11 @@ export default function AdminProductsPage() {
                   <div className="flex items-center gap-2 mb-4">
                     {product.isOnSale && product.salePrice ? (
                       <>
-                        <p className="text-lg font-bold text-red-600">₹{product.salePrice}</p>
-                        <p className="text-sm text-gray-400 line-through">₹{product.price}</p>
+                        <p className="text-lg font-bold text-red-600">PKR {product.salePrice}</p>
+                        <p className="text-sm text-gray-400 line-through">PKR {product.price}</p>
                       </>
                     ) : (
-                      <p className="text-lg font-bold">₹{product.price}</p>
+                      <p className="text-lg font-bold">PKR {product.price}</p>
                     )}
                   </div>
                   

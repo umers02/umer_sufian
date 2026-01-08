@@ -170,7 +170,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 </div>
               ))}
             </div>
-            <div className="flex-1 bg-gray-100 rounded-2xl overflow-hidden">
+            <div className="flex-1 bg-gray-100 rounded-2xl overflow-hidden h-[500px]">
               <Image 
                 src={product.images?.[0] || '/placeholder.png'} 
                 alt={product.name} 
@@ -200,10 +200,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Price */}
             <div className="flex items-center space-x-3 mb-6">
-              <span className="text-3xl font-bold">${product.salePrice || product.price}</span>
+              <span className="text-3xl font-bold">PKR {product.salePrice || product.price}</span>
               {product.salePrice && (
                 <>
-                  <span className="text-2xl text-gray-500 line-through">${product.price}</span>
+                  <span className="text-2xl text-gray-500 line-through">PKR {product.price}</span>
                   <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
                     -{Math.round(((product.price - product.salePrice) / product.price) * 100)}%
                   </span>

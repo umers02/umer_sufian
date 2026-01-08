@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminSidebar from '../../../components/admin/AdminSidebar';
 import AdminHeader from '../../../components/admin/AdminHeader';
 
@@ -29,6 +30,7 @@ interface Order {
 }
 
 export default function AdminOrdersPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -276,7 +278,11 @@ export default function AdminOrdersPage() {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {paginatedOrders.map((order) => (
-                        <tr key={order._id} className="hover:bg-gray-50">
+                        <tr 
+                          key={order._id} 
+                          className="hover:bg-gray-50 cursor-pointer"
+                          onClick={() => router.push(`/admin/orders/${order._id}`)}
+                        >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <input type="checkbox" className="rounded border-gray-300" />
                           </td>
@@ -330,7 +336,7 @@ export default function AdminOrdersPage() {
                             </select>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm font-medium text-gray-900">₹{order.totalAmount.toFixed(2)}</span>
+                            <span className="text-sm font-medium text-gray-900">PKR {order.totalAmount.toFixed(2)}</span>
                           </td>
                         </tr>
                       ))}

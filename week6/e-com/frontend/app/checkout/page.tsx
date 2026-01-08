@@ -302,7 +302,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex justify-between">
                         <span>Regular Products:</span>
-                        <span className="font-semibold">${regularProductsTotal.toFixed(2)} + fees</span>
+                        <span className="font-semibold">PKR {regularProductsTotal.toFixed(2)} + fees</span>
                       </div>
                       <p className="text-yellow-700 mt-2">
                         ✓ Loyalty products will be paid with points automatically
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
                               : '✗ Insufficient points'}
                           </p>
                           <p className="text-blue-600 mt-1">
-                            Discount: ${hybridPointsDiscount.toFixed(2)}
+                            Discount: PKR {hybridPointsDiscount.toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -443,7 +443,7 @@ export default function CheckoutPage() {
                         {usePoints && (
                           <div>
                             <label className="block text-sm font-medium mb-2">
-                              Points to use (1 point = $0.01)
+                              Points to use (1 point = PKR 0.01)
                             </label>
                             <input
                               type="number"
@@ -454,7 +454,7 @@ export default function CheckoutPage() {
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                             <p className="text-sm text-gray-600 mt-1">
-                              Discount: ${pointsDiscount.toFixed(2)}
+                              Discount: PKR {pointsDiscount.toFixed(2)}
                             </p>
                           </div>
                         )}
@@ -534,7 +534,7 @@ export default function CheckoutPage() {
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">{item.title}</h4>
                         <p className="text-xs text-gray-600">{item.size} • {item.color}</p>
-                        <p className="text-sm font-semibold">${item.price} × {item.quantity}</p>
+                        <p className="text-sm font-semibold">PKR {item.price} × {item.quantity}</p>
                       </div>
                     </div>
                   ))}
@@ -557,19 +557,19 @@ export default function CheckoutPage() {
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>Subtotal:</span>
-                            <span>${regularProductsTotal.toFixed(2)}</span>
+                            <span>PKR {regularProductsTotal.toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Shipping:</span>
-                            <span>$15.00</span>
+                            <span>PKR 15.00</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Tax:</span>
-                            <span>${(regularProductsTotal * 0.08).toFixed(2)}</span>
+                            <span>PKR {(regularProductsTotal * 0.08).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between font-semibold border-t pt-1">
                             <span>Cash Total:</span>
-                            <span>${(regularProductsTotal + 15 + regularProductsTotal * 0.08).toFixed(2)}</span>
+                            <span>PKR {(regularProductsTotal + 15 + regularProductsTotal * 0.08).toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -602,26 +602,26 @@ export default function CheckoutPage() {
                     <>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Subtotal</span>
-                        <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                        <span className="font-semibold">PKR {subtotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Shipping</span>
-                        <span className="font-semibold">${shipping.toFixed(2)}</span>
+                        <span className="font-semibold">PKR {shipping.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Tax</span>
-                        <span className="font-semibold">${tax.toFixed(2)}</span>
+                        <span className="font-semibold">PKR {tax.toFixed(2)}</span>
                       </div>
                       {usePoints && pointsDiscount > 0 && !hasOnlyRegularProducts && !hasHybridProducts && (
                         <div className="flex justify-between text-purple-600">
                           <span>Points Discount ({pointsToUse} points)</span>
-                          <span className="font-semibold">-${pointsDiscount.toFixed(2)}</span>
+                          <span className="font-semibold">-PKR {pointsDiscount.toFixed(2)}</span>
                         </div>
                       )}
                       <hr />
                       <div className="flex justify-between text-lg">
                         <span className="font-bold">Total</span>
-                        <span className="font-bold">${total.toFixed(2)}</span>
+                        <span className="font-bold">PKR {total.toFixed(2)}</span>
                       </div>
                     </>
                   )}
@@ -640,7 +640,7 @@ export default function CheckoutPage() {
                   {loading ? 'Processing...' : 
                    hasMixedCart ? 
                      (user && user.loyaltyPoints >= totalPointsRequired ? 
-                       `Place Order - ${totalPointsRequired} Points + $${(regularProductsTotal + 15 + regularProductsTotal * 0.08).toFixed(2)}` : 
+                       `Place Order - ${totalPointsRequired} Points + PKR ${(regularProductsTotal + 15 + regularProductsTotal * 0.08).toFixed(2)}` : 
                        'Insufficient Points for Loyalty Products') :
                    isLoyaltyOnlyCart ? 
                      (user && user.loyaltyPoints >= totalPointsRequired ? 
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
                      (user && user.loyaltyPoints >= hybridPointsRequired ? 
                        `Place Order - ${hybridPointsRequired} Points` : 
                        'Insufficient Points') :
-                     `Place Order - $${total.toFixed(2)}`}
+                     `Place Order - PKR ${total.toFixed(2)}`}
                 </button>
 
                 <p className="text-xs text-gray-500 mt-4 text-center">

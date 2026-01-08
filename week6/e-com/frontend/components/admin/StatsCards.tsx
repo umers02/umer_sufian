@@ -51,7 +51,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
           <div className="flex items-center space-x-2 mb-2">
             <span className="text-2xl">{card.icon}</span>
             <span className="text-2xl font-bold">
-              {card.showCurrency ? `₹${card.value.toLocaleString()}` : card.value.toLocaleString()}
+              {card.showCurrency ? `PKR ${card.value.toLocaleString()}` : card.value.toLocaleString()}
             </span>
           </div>
           

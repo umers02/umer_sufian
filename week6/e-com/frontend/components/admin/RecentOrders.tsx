@@ -98,7 +98,7 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
                     {order.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-medium">₹{order.amount.toFixed(2)}</td>
+                <td className="px-6 py-4 text-sm font-medium">PKR {order.amount.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
