@@ -5,6 +5,7 @@ import { User, UserDocument } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashUtil } from '../common/utils/hash.util';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,10 @@ export class UsersService {
       password: hashedPassword,
     });
     return user.save();
+  }
+
+  async findAll(): Promise<UserDocument[]> {
+    return this.userModel.find().select('-password').exec();
   }
 
   async findAllWithPagination(
@@ -69,7 +74,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (user.role === 'superadmin') {
+    if (user.role === Role.SUPER_ADMIN) {
       throw new BadRequestException('Cannot block superadmin');
     }
     return user;

@@ -80,6 +80,9 @@ export class Order {
 
   @Prop()
   paymentMethod: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

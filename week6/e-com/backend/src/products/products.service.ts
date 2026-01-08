@@ -2,12 +2,16 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from './entities/product.entity';
+import { Order, OrderDocument } from '../orders/entities/order.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+    @InjectModel(Order.name) private orderModel: Model<OrderDocument>
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = new this.productModel(createProductDto);
@@ -153,10 +157,9 @@ export class ProductsService {
         
         // Import Order model dynamically
         const { Order } = await import('../orders/entities/order.entity');
-        const orderModel = this.orderModel || (await import('@nestjs/mongoose')).getModelToken(Order.name);
         
         // Get all orders and manually count
-        const orders = await this.orderModel.db.collection('orders').find({}).toArray();
+        const orders = await this.orderModel.find({}).exec();
         console.log('Total orders found:', orders.length);
         
         if (orders.length > 0) {
