@@ -1,14 +1,14 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 px-4 pt-24 pb-16">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8">
-        <div>
-          <h4 className="text-2xl font-bold mb-4">SHOP.CO</h4>
-          <p className="text-gray-600 mb-4">
+    <footer className="bg-gray-100 px-4 pt-12 md:pt-24 pb-8 md:pb-16 mt-8 md:mt-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
+        <div className="sm:col-span-2 lg:col-span-1">
+          <h4 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">SHOP.CO</h4>
+          <p className="text-gray-600 mb-4 text-sm md:text-base">
             We have clothes that suits your style and which you're proud to
             wear. From women to men.
           </p>
-          <div className="flex space-x-4">
+          <div className="flex space-x-3 md:space-x-4">
             <div>
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="14" cy="14" r="14" fill="white"/>
@@ -22,8 +22,8 @@ export default function Footer() {
           </div>
         </div>
         <div>
-          <h5 className="font-bold mb-4">COMPANY</h5>
-          <ul className="space-y-2 text-gray-600">
+          <h5 className="font-bold mb-3 md:mb-4 text-sm md:text-base">COMPANY</h5>
+          <ul className="space-y-1 md:space-y-2 text-gray-600 text-sm md:text-base">
             <li>About</li>
             <li>Features</li>
             <li>Works</li>
@@ -31,8 +31,8 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-4">HELP</h5>
-          <ul className="space-y-2 text-gray-600">
+          <h5 className="font-bold mb-3 md:mb-4 text-sm md:text-base">HELP</h5>
+          <ul className="space-y-1 md:space-y-2 text-gray-600 text-sm md:text-base">
             <li>Customer Support</li>
             <li>Delivery Details</li>
             <li>Terms & Conditions</li>
@@ -40,8 +40,8 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-4">FAQ</h5>
-          <ul className="space-y-2 text-gray-600">
+          <h5 className="font-bold mb-3 md:mb-4 text-sm md:text-base">FAQ</h5>
+          <ul className="space-y-1 md:space-y-2 text-gray-600 text-sm md:text-base">
             <li>Account</li>
             <li>Manage Deliveries</li>
             <li>Orders</li>
@@ -49,8 +49,8 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h5 className="font-bold mb-4">RESOURCES</h5>
-          <ul className="space-y-2 text-gray-600">
+          <h5 className="font-bold mb-3 md:mb-4 text-sm md:text-base">RESOURCES</h5>
+          <ul className="space-y-1 md:space-y-2 text-gray-600 text-sm md:text-base">
             <li>Free eBooks</li>
             <li>Development Tutorial</li>
             <li>How to - Blog</li>
@@ -58,11 +58,11 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto border-t border-gray-300 mt-8 pt-8 flex justify-between items-center">
-        <p className="text-gray-600">
+      <div className="max-w-7xl mx-auto border-t border-gray-300 mt-6 md:mt-8 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+        <p className="text-gray-600 text-sm md:text-base text-center md:text-left">
           Shop.co © 2000-2023, All Rights Reserved
         </p>
-        <div className="flex space-x-4">
+        <div className="flex space-x-2 md:space-x-4 flex-wrap justify-center">
           <div>
             <svg
               width="65"

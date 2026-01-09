@@ -144,33 +144,33 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       <Navbar />
       
       {/* Breadcrumb */}
-      <div className="px-4 py-4 border-b">
+      <div className="px-4 py-2 md:py-4 border-b">
         <div className="max-w-7xl mx-auto">
-          <nav className="text-sm text-gray-500">
+          <nav className="text-xs md:text-sm text-gray-500">
             <Link href="/" className="hover:text-black">Home</Link>
-            <span className="mx-2">›</span>
+            <span className="mx-1 md:mx-2">›</span>
             <Link href="/products" className="hover:text-black">Shop</Link>
-            <span className="mx-2">›</span>
+            <span className="mx-1 md:mx-2">›</span>
             <Link href="#" className="hover:text-black">Men</Link>
-            <span className="mx-2">›</span>
+            <span className="mx-1 md:mx-2">›</span>
             <span className="text-black">T-shirts</span>
           </nav>
         </div>
       </div>
 
       {/* Product Detail */}
-      <div className="px-4 py-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="px-4 py-4 md:py-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12">
           {/* Product Images */}
-          <div className="flex gap-4">
-            <div className="flex flex-col space-y-4">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+            <div className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-4 order-2 md:order-1">
               {product.images?.slice(0, 3).map((image: string, index: number) => (
-                <div key={index} className="w-20 h-20 border rounded-lg overflow-hidden">
+                <div key={index} className="w-16 h-16 md:w-20 md:h-20 border rounded-lg overflow-hidden flex-shrink-0">
                   <Image src={image} alt={`Product ${index + 1}`} width={80} height={80} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
-            <div className="flex-1 bg-gray-100 rounded-2xl overflow-hidden h-[500px]">
+            <div className="flex-1 bg-gray-100 rounded-2xl overflow-hidden h-64 md:h-[500px] order-1 md:order-2">
               <Image 
                 src={product.images?.[0] || '/placeholder.png'} 
                 alt={product.name} 
@@ -182,29 +182,29 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Product Info */}
-          <div>
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+          <div className="mt-4 lg:mt-0">
+            <h1 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">{product.name}</h1>
             
             {/* Rating */}
-            <div className="flex items-center mb-4">
-              <div className="flex text-yellow-400 mr-2">
+            <div className="flex items-center mb-3 md:mb-4">
+              <div className="flex text-yellow-400 mr-2 text-sm md:text-base">
                 {Array.from({ length: 5 }, (_, i) => (
                   <span key={i}>{i < Math.floor(productRating.averageRating) ? '★' : '☆'}</span>
                 ))}
               </div>
-              <span className="text-sm text-gray-600">
+              <span className="text-xs md:text-sm text-gray-600">
                 {productRating.averageRating > 0 ? productRating.averageRating : 'No ratings'}/5
                 {productRating.totalReviews > 0 && ` (${productRating.totalReviews} reviews)`}
               </span>
             </div>
 
             {/* Price */}
-            <div className="flex items-center space-x-3 mb-6">
-              <span className="text-3xl font-bold">PKR {product.salePrice || product.price}</span>
+            <div className="flex items-center space-x-2 md:space-x-3 mb-4 md:mb-6">
+              <span className="text-2xl md:text-3xl font-bold">PKR {product.salePrice || product.price}</span>
               {product.salePrice && (
                 <>
-                  <span className="text-2xl text-gray-500 line-through">PKR {product.price}</span>
-                  <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="text-lg md:text-2xl text-gray-500 line-through">PKR {product.price}</span>
+                  <span className="bg-red-100 text-red-600 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium">
                     -{Math.round(((product.price - product.salePrice) / product.price) * 100)}%
                   </span>
                 </>
@@ -212,19 +212,19 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Description */}
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">
               {product.description || 'This product offers superior comfort and style.'}
             </p>
 
             {/* Color Selection */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium mb-3">Select Colors</h3>
-              <div className="flex space-x-3">
+            <div className="mb-4 md:mb-6">
+              <h3 className="text-sm font-medium mb-2 md:mb-3">Select Colors</h3>
+              <div className="flex space-x-2 md:space-x-3">
                 {colors.map((color) => (
                   <button
                     key={color.name}
                     onClick={() => setSelectedColor(color.name)}
-                    className={`w-10 h-10 rounded-full ${color.class} ${
+                    className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${color.class} ${
                       selectedColor === color.name ? 'ring-2 ring-black ring-offset-2' : ''
                     }`}
                   />
@@ -233,14 +233,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Size Selection */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium mb-3">Choose Size</h3>
-              <div className="flex space-x-3">
+            <div className="mb-4 md:mb-6">
+              <h3 className="text-sm font-medium mb-2 md:mb-3">Choose Size</h3>
+              <div className="flex flex-wrap gap-2 md:gap-3">
                 {sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-6 py-2 rounded-full border ${
+                    className={`px-4 md:px-6 py-2 rounded-full border text-sm md:text-base ${
                       selectedSize === size
                         ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -253,25 +253,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Quantity and Add to Cart */}
-            <div className="flex items-center space-x-4 mb-8">
-              <div className="flex items-center border rounded-full">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-6 md:mb-8">
+              <div className="flex items-center border rounded-full w-full sm:w-auto">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2 hover:bg-gray-100 rounded-l-full"
+                  className="px-3 md:px-4 py-2 hover:bg-gray-100 rounded-l-full flex-1 sm:flex-none"
                 >
                   −
                 </button>
-                <span className="px-4 py-2">{quantity}</span>
+                <span className="px-3 md:px-4 py-2 text-center flex-1 sm:flex-none">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-2 hover:bg-gray-100 rounded-r-full"
+                  className="px-3 md:px-4 py-2 hover:bg-gray-100 rounded-r-full flex-1 sm:flex-none"
                 >
                   +
                 </button>
               </div>
               <button 
                 onClick={handleAddToCart}
-                className="flex-1 bg-black text-white py-3 px-8 rounded-full hover:bg-gray-800 transition-colors"
+                className="w-full sm:flex-1 bg-black text-white py-3 px-6 md:px-8 rounded-full hover:bg-gray-800 transition-colors text-sm md:text-base"
               >
                 Add to Cart
               </button>
@@ -283,11 +283,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       {/* Tabs */}
       <div className="px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="border-b">
-            <nav className="flex space-x-8">
+          <div className="border-b overflow-x-auto">
+            <nav className="flex space-x-4 md:space-x-8 min-w-max">
               <button
                 onClick={() => setActiveTab('details')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                className={`py-3 md:py-4 px-2 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                   activeTab === 'details'
                     ? 'border-black text-black'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -297,7 +297,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </button>
               <button
                 onClick={() => setActiveTab('reviews')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                className={`py-3 md:py-4 px-2 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                   activeTab === 'reviews'
                     ? 'border-black text-black'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -307,7 +307,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </button>
               <button
                 onClick={() => setActiveTab('faqs')}
-                className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                className={`py-3 md:py-4 px-2 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                   activeTab === 'faqs'
                     ? 'border-black text-black'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -322,52 +322,52 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
       {/* Product Details Section */}
       {activeTab === 'details' && (
-        <div className="px-4 py-8">
+        <div className="px-4 py-6 md:py-8">
           <div className="max-w-7xl mx-auto">
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <div>
-                <h3 className="text-lg font-bold mb-3">Product Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3">Product Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div>
-                    <span className="font-medium text-gray-700">Name:</span>
-                    <p className="text-gray-600">{product.name}</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Name:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.name}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Category:</span>
-                    <p className="text-gray-600">{product.category || 'Not specified'}</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Category:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.category || 'Not specified'}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Brand:</span>
-                    <p className="text-gray-600">{product.brand || 'Not specified'}</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Brand:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.brand || 'Not specified'}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">SKU:</span>
-                    <p className="text-gray-600">{product.sku || 'Not specified'}</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">SKU:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.sku || 'Not specified'}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Stock:</span>
-                    <p className="text-gray-600">{product.stock} items available</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Stock:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.stock} items available</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Type:</span>
-                    <p className="text-gray-600">{product.type || 'Regular'}</p>
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Type:</span>
+                    <p className="text-gray-600 text-sm md:text-base">{product.type || 'Regular'}</p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-lg font-bold mb-3">Description</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3">Description</h3>
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                   {product.description || 'No description available for this product.'}
                 </p>
               </div>
               
               {product.tags && product.tags.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold mb-3">Tags</h3>
+                  <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3">Tags</h3>
                   <div className="flex flex-wrap gap-2">
                     {product.tags.map((tag: string, index: number) => (
-                      <span key={index} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                      <span key={index} className="bg-gray-100 text-gray-700 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
                         {tag}
                       </span>
                     ))}
@@ -381,12 +381,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
       {/* Reviews Section */}
       {activeTab === 'reviews' && (
-        <div className="px-4 py-8">
+        <div className="px-4 py-6 md:py-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-bold">All Reviews ({productRating.totalReviews})</h3>
-              <div className="flex items-center space-x-4">
-                <button className="flex items-center space-x-2 text-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 space-y-4 sm:space-y-0">
+              <h3 className="text-xl md:text-2xl font-bold">All Reviews ({productRating.totalReviews})</h3>
+              <div className="flex items-center space-x-3 md:space-x-4">
+                <button className="flex items-center space-x-2 text-xs md:text-sm">
                   <span>Latest</span>
                   <span>▼</span>
                 </button>
@@ -398,7 +398,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     }
                     setShowReviewForm(true);
                   }}
-                  className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800"
+                  className="bg-black text-white px-4 md:px-6 py-2 rounded-full text-xs md:text-sm hover:bg-gray-800"
                 >
                   Write a Review
                 </button>
@@ -410,22 +410,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
               </div>
             ) : reviews.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {reviews.map((review) => (
-                  <div key={review._id} className="border rounded-2xl p-6">
+                  <div key={review._id} className="border rounded-2xl p-4 md:p-6">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex text-yellow-400">
+                      <div className="flex text-yellow-400 text-sm md:text-base">
                         {Array.from({ length: 5 }, (_, i) => (
                           <span key={i}>{i < review.rating ? '★' : '☆'}</span>
                         ))}
                       </div>
                     </div>
                     <div className="flex items-center mb-3">
-                      <h4 className="font-bold">{review.userId.name}</h4>
+                      <h4 className="font-bold text-sm md:text-base">{review.userId.name}</h4>
                       <span className="ml-2 text-green-500">✓</span>
                     </div>
-                    <p className="text-gray-600 mb-3">{review.comment}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-gray-600 mb-3 text-sm md:text-base">{review.comment}</p>
+                    <p className="text-xs md:text-sm text-gray-500">
                       Posted on {new Date(review.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -437,8 +437,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No reviews yet</p>
-                <p className="text-gray-400 mt-2">Be the first to review this product!</p>
+                <p className="text-gray-500 text-base md:text-lg">No reviews yet</p>
+                <p className="text-gray-400 mt-2 text-sm md:text-base">Be the first to review this product!</p>
               </div>
             )}
           </div>
@@ -446,15 +446,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       )}
 
       {/* You Might Also Like */}
-      <div className="px-4 py-16">
+      <div className="px-4 py-8 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-4xl font-bold text-center mb-12">YOU MIGHT ALSO LIKE</h3>
+          <h3 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-12">YOU MIGHT ALSO LIKE</h3>
           {relatedLoading ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {relatedProducts.map((product) => (
                 <ProductCard 
                   key={product._id}

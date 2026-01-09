@@ -26,6 +26,7 @@ import { AdminModule } from './admin/admin.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     SuperAdminModule,
     CloudinaryModule,
     ReviewsModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [

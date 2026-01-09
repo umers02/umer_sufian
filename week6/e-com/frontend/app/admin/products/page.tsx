@@ -8,6 +8,7 @@ import AdminHeader from '../../../components/admin/AdminHeader';
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
@@ -119,22 +120,22 @@ export default function AdminProductsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="flex-1 flex flex-col">
-        <AdminHeader />
+      <div className="flex-1 flex flex-col lg:ml-0">
+        <AdminHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         
-        <main className="flex-1 p-6">
-          <div className="flex items-center justify-between mb-6">
+        <main className="flex-1 p-4 lg:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">All Products</h1>
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-900">All Products</h1>
               <nav className="text-sm text-gray-500">
                 Home &gt; All Products
               </nav>
             </div>
             <Link 
               href="/admin/products/add"
-              className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              className="bg-black text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm lg:text-base text-center"
             >
               ADD NEW PRODUCT
             </Link>
@@ -165,7 +166,7 @@ export default function AdminProductsPage() {
             <div className="mb-4 text-sm text-gray-600">
               Showing {startIndex + 1} to {Math.min(endIndex, totalProducts)} of {totalProducts} products
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
               {paginatedProducts.map((product: any) => (
                 <Link 
                   key={product._id || product.id} 

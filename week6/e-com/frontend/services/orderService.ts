@@ -1,53 +1,7 @@
 import api from './api';
+import { CreateOrderData, Order } from '../types/order';
 
-export interface CreateOrderData {
-  items: Array<{
-    product: string;
-    quantity: number;
-    price: number;
-    size: string;
-    color: string;
-  }>;
-  shippingAddress: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-  paymentMethod: string;
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-  pointsUsed?: number;
-}
-
-export interface Order {
-  _id: string;
-  userId: string;
-  items: Array<{
-    product: {
-      _id: string;
-      name: string;
-      images: string[];
-    };
-    quantity: number;
-    price: number;
-    size: string;
-    color: string;
-  }>;
-  shippingAddress: any;
-  paymentMethod: string;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { CreateOrderData, Order };
 
 export const orderService = {
   async createOrder(orderData: CreateOrderData): Promise<Order> {
@@ -62,6 +16,19 @@ export const orderService = {
 
   async getOrderById(orderId: string): Promise<Order> {
     const response = await api.get(`/orders/${orderId}`);
+    return response.data;
+  },
+
+  async createPaymentIntent(amount: number): Promise<{ clientSecret: string; paymentIntentId: string }> {
+    const response = await api.post('/orders/create-payment-intent', { amount });
+    return response.data;
+  },
+
+  async updatePaymentStatus(orderId: string, paymentStatus: string, stripePaymentIntentId?: string): Promise<Order> {
+    const response = await api.patch(`/orders/${orderId}/payment-status`, {
+      paymentStatus,
+      stripePaymentIntentId
+    });
     return response.data;
   },
 };

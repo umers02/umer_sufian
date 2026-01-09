@@ -33,6 +33,7 @@ export default function AdminOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -211,10 +212,10 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className="flex-1 flex flex-col">
-        <AdminHeader />
+        <AdminHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         
         <main className="flex-1 p-6">
           <div className="mb-6">
@@ -244,7 +245,69 @@ export default function AdminOrdersPage() {
                 Showing {startIndex + 1} to {Math.min(endIndex, totalOrders)} of {totalOrders} orders
               </div>
               
-              <div className="bg-white rounded-lg border overflow-hidden">
+              {/* Mobile view */}
+              <div className="lg:hidden space-y-4">
+                {paginatedOrders.map((order) => (
+                  <div 
+                    key={order._id}
+                    className="bg-white rounded-lg border p-4 cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => router.push(`/admin/orders/${order._id}`)}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-gray-900">{getOrderId(order._id)}</span>
+                      <select
+                        value={order.status}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          updateOrderStatus(order._id, e.target.value);
+                        }}
+                        className={`text-xs font-medium border-none bg-transparent cursor-pointer ${getStatusColor(order.status)}`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    
+                    <div className="flex items-center mb-3">
+                      {order.items && order.items.length > 0 && order.items[0].product?.images && order.items[0].product.images.length > 0 ? (
+                        <img
+                          src={order.items[0].product.images[0]}
+                          alt={order.items[0].product.name}
+                          className="w-12 h-12 object-cover rounded mr-3"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-200 rounded mr-3"></div>
+                      )}
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-gray-900 block">
+                          {order.items && order.items.length > 0 
+                            ? order.items[0].product?.name || 'Product'
+                            : 'N/A'}
+                          {order.items && order.items.length > 1 && (
+                            <span className="text-gray-500 ml-1">+{order.items.length - 1} more</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+                      <span>{order.user?.name || 'Unknown'}</span>
+                      <span>{formatDate(order.createdAt)}</span>
+                    </div>
+                    
+                    <div className="text-right">
+                      <span className="text-lg font-medium text-gray-900">PKR {order.totalAmount.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop view */}
+              <div className="hidden lg:block bg-white rounded-lg border overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Recent Purchases</h2>
                 </div>
@@ -346,11 +409,11 @@ export default function AdminOrdersPage() {
               </div>
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-center mt-8 space-x-2">
+                <div className="flex items-center justify-center mt-6 lg:mt-8 space-x-1 lg:space-x-2 overflow-x-auto">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-3 py-2 rounded ${
+                    className={`px-2 lg:px-3 py-2 rounded text-sm lg:text-base ${
                       currentPage === 1
                         ? 'text-gray-400 cursor-not-allowed'
                         : 'text-gray-600 hover:bg-gray-100'
@@ -362,7 +425,7 @@ export default function AdminOrdersPage() {
                   {getPageNumbers().map((page, index) => {
                     if (page === '...') {
                       return (
-                        <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-400">
+                        <span key={`ellipsis-${index}`} className="px-2 lg:px-3 py-2 text-gray-400 text-sm lg:text-base">
                           ...
                         </span>
                       );
@@ -372,7 +435,7 @@ export default function AdminOrdersPage() {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page as number)}
-                        className={`px-3 py-2 rounded ${
+                        className={`px-2 lg:px-3 py-2 rounded text-sm lg:text-base ${
                           currentPage === page
                             ? 'bg-black text-white'
                             : 'text-gray-600 hover:bg-gray-100'
@@ -386,7 +449,7 @@ export default function AdminOrdersPage() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-2 rounded ${
+                    className={`px-2 lg:px-3 py-2 rounded text-sm lg:text-base ${
                       currentPage === totalPages
                         ? 'text-gray-400 cursor-not-allowed'
                         : 'text-gray-600 hover:bg-gray-100'

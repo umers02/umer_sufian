@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { ProductsService } from '../products/products.service';
 import { LoyaltyService } from '../loyalty/loyalty.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { StripeService } from '../common/services/stripe.service';
 import { OrderStatus } from '../common/enums/order-status.enum';
 import { PointsUtil } from '../common/utils/points.util';
 
@@ -20,6 +21,7 @@ export class OrdersService {
     private productsService: ProductsService,
     private loyaltyService: LoyaltyService,
     private notificationsService: NotificationsService,
+    private stripeService: StripeService,
   ) {}
 
   async create(userId: string, createOrderDto: CreateOrderDto): Promise<Order> {
@@ -94,6 +96,8 @@ export class OrdersService {
       pointsEarned,
       shippingAddress: createOrderDto.shippingAddress,
       paymentMethod: createOrderDto.paymentMethod,
+      stripePaymentIntentId: createOrderDto.stripePaymentIntentId,
+      paymentStatus: createOrderDto.paymentMethod === 'points' || createOrderDto.paymentMethod === 'hybrid_points' ? 'succeeded' : 'pending',
       status: OrderStatus.CONFIRMED,
     });
 
@@ -105,8 +109,8 @@ export class OrdersService {
       await this.loyaltyService.recordPointsSpent(userId, createOrderDto.pointsUsed, savedOrder._id.toString());
     }
 
-    // Add points earned (only for non-loyalty-only products)
-    if (pointsEarned > 0) {
+    // Add points earned (only for successful payments)
+    if (pointsEarned > 0 && (createOrderDto.paymentMethod === 'points' || createOrderDto.paymentMethod === 'hybrid_points' || createOrderDto.stripePaymentIntentId)) {
       await this.usersService.updateLoyaltyPoints(userId, pointsEarned);
       await this.loyaltyService.recordPointsEarned(userId, pointsEarned, savedOrder._id.toString());
     }
@@ -142,6 +146,49 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
     return order;
+  }
+
+  async updatePaymentStatus(id: string, paymentStatus: string, stripePaymentIntentId?: string): Promise<Order> {
+    const updateData: any = { paymentStatus };
+    if (stripePaymentIntentId) {
+      updateData.stripePaymentIntentId = stripePaymentIntentId;
+    }
+    
+    const order = await this.orderModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .populate('user items.product')
+      .exec();
+    
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    
+    // Award points only when payment succeeds
+    if (paymentStatus === 'succeeded' && order.pointsEarned > 0) {
+      const userId = typeof order.user === 'string' ? order.user : order.user._id.toString();
+      const hasPointsAlready = await this.loyaltyService.checkIfPointsAwarded(userId, id);
+      if (!hasPointsAlready) {
+        await this.usersService.updateLoyaltyPoints(userId, order.pointsEarned);
+        await this.loyaltyService.recordPointsEarned(userId, order.pointsEarned, id);
+      }
+    }
+    
+    return order;
+  }
+
+  async createPaymentIntent(userId: string, amount: number): Promise<any> {
+    const paymentIntent = await this.stripeService.createPaymentIntent(amount);
+    return {
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    };
+  }
+
+  async findByStripePaymentIntent(paymentIntentId: string): Promise<Order[]> {
+    return this.orderModel
+      .find({ stripePaymentIntentId: paymentIntentId })
+      .populate('user items.product')
+      .exec();
   }
 
   async updateStatus(id: string, status: OrderStatus): Promise<Order> {

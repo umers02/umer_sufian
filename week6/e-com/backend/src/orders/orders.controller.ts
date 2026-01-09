@@ -54,4 +54,18 @@ export class OrdersController {
   updateStatus(@Param('id') id: string, @Body('status') status: OrderStatus) {
     return this.ordersService.updateStatus(id, status);
   }
+
+  @Post('create-payment-intent')
+  createPaymentIntent(@User() user: any, @Body('amount') amount: number) {
+    return this.ordersService.createPaymentIntent(user.sub, amount);
+  }
+
+  @Patch(':id/payment-status')
+  updatePaymentStatus(
+    @Param('id') id: string, 
+    @Body('paymentStatus') paymentStatus: string,
+    @Body('stripePaymentIntentId') stripePaymentIntentId?: string
+  ) {
+    return this.ordersService.updatePaymentStatus(id, paymentStatus, stripePaymentIntentId);
+  }
 }

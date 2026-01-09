@@ -76,4 +76,8 @@ export class CreateOrderDto {
   @IsOptional()
   @IsNumber()
   pointsUsed?: number;
+
+  @IsOptional()
+  @IsString()
+  stripePaymentIntentId?: string;
 }

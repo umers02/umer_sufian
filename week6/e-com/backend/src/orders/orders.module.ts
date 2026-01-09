@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { ProductsModule } from '../products/products.module';
 import { LoyaltyModule } from '../loyalty/loyalty.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { StripeService } from '../common/services/stripe.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     NotificationsModule,
   ],
   controllers: [OrdersController],
-  providers: [OrdersService],
+  providers: [OrdersService, StripeService],
   exports: [OrdersService],
 })
 export class OrdersModule {}

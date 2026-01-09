@@ -22,6 +22,7 @@ interface DashboardData {
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [stats, setStats] = useState({
     totalOrders: { value: 0, change: 0 },
     activeOrders: { value: 0, change: 0 },
@@ -162,10 +163,10 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
-        <AdminSidebar />
-        <div className="flex-1 flex flex-col">
-          <AdminHeader />
-          <main className="flex-1 p-6">
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex-1 flex flex-col lg:ml-0">
+          <AdminHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+          <main className="flex-1 p-4 lg:p-6">
             <div className="bg-white rounded-lg border p-12 text-center">
               <p className="text-gray-500">Loading dashboard...</p>
             </div>
@@ -177,32 +178,32 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="flex-1 flex flex-col">
-        <AdminHeader />
+      <div className="flex-1 flex flex-col lg:ml-0">
+        <AdminHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <main className="flex-1 p-4 lg:p-6">
+          <div className="mb-4 lg:mb-6">
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Dashboard</h1>
             <nav className="text-sm text-gray-500">
               Home &gt; Dashboard
             </nav>
           </div>
 
-          <div className="mb-6 flex justify-end">
-            <div className="bg-white px-4 py-2 rounded-lg border text-sm">
+          <div className="mb-4 lg:mb-6 flex justify-end">
+            <div className="bg-white px-3 lg:px-4 py-2 rounded-lg border text-xs lg:text-sm">
               📅 {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </div>
           </div>
 
           <StatsCards stats={stats} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6 mb-4 lg:mb-6">
+            <div className="xl:col-span-2">
               <SalesChart orders={allOrders} />
             </div>
-            <div className="lg:col-span-1">
+            <div className="xl:col-span-1">
               <BestSellers products={bestSellers} />
             </div>
           </div>

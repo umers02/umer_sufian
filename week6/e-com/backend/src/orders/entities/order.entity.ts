@@ -81,6 +81,12 @@ export class Order {
   @Prop()
   paymentMethod: string;
 
+  @Prop()
+  stripePaymentIntentId?: string;
+
+  @Prop({ default: 'pending' })
+  paymentStatus: string; // 'pending', 'succeeded', 'failed', 'cancelled'
+
   createdAt?: Date;
   updatedAt?: Date;
 }

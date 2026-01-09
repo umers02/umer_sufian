@@ -15,24 +15,24 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
   if (!orders || orders.length === 0) {
     return (
       <div className="bg-white rounded-lg border">
-        <div className="p-6 border-b">
+        <div className="p-4 lg:p-6 border-b">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Recent Orders</h3>
+            <h3 className="text-base lg:text-lg font-semibold">Recent Orders</h3>
             <button className="text-gray-400">⋯</button>
           </div>
         </div>
 
-        <div className="p-12 text-center">
+        <div className="p-8 lg:p-12 text-center">
           <div className="text-gray-400 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 lg:w-16 lg:h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Orders nahi hain</h3>
-          <p className="text-gray-500">Jab customers order place karenge, woh yahan show honge</p>
+          <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-2">Orders nahi hain</h3>
+          <p className="text-sm lg:text-base text-gray-500">Jab customers order place karenge, woh yahan show honge</p>
         </div>
 
-        <div className="p-4 border-t bg-gray-50 text-center text-sm text-gray-500">
+        <div className="p-3 lg:p-4 border-t bg-gray-50 text-center text-xs lg:text-sm text-gray-500">
           © 2023 - pulstron Dashboard
         </div>
       </div>
@@ -41,14 +41,50 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
 
   return (
     <div className="bg-white rounded-lg border">
-      <div className="p-6 border-b">
+      <div className="p-4 lg:p-6 border-b">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Recent Orders</h3>
+          <h3 className="text-base lg:text-lg font-semibold">Recent Orders</h3>
           <button className="text-gray-400">⋯</button>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile view */}
+      <div className="lg:hidden">
+        <div className="divide-y divide-gray-200">
+          {orders.map((order, index) => (
+            <div key={index} className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">{order.id}</span>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  order.status === 'Delivered' 
+                    ? 'bg-green-100 text-green-800' 
+                    : order.status === 'Cancelled'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full mr-1 ${
+                    order.status === 'Delivered' 
+                      ? 'bg-green-500' 
+                      : order.status === 'Cancelled'
+                      ? 'bg-red-500'
+                      : 'bg-yellow-500'
+                  }`}></span>
+                  {order.status}
+                </span>
+              </div>
+              <div className="text-sm text-gray-900 mb-1">{order.product}</div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{order.customer}</span>
+                <span>{order.date}</span>
+              </div>
+              <div className="text-sm font-medium text-right mt-2">PKR {order.amount.toFixed(2)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
@@ -105,7 +141,7 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
         </table>
       </div>
 
-      <div className="p-4 border-t bg-gray-50 text-center text-sm text-gray-500">
+      <div className="p-3 lg:p-4 border-t bg-gray-50 text-center text-xs lg:text-sm text-gray-500">
         © 2023 - pulstron Dashboard
       </div>
     </div>

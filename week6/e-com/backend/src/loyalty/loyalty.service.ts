@@ -38,4 +38,15 @@ export class LoyaltyService {
       .sort({ createdAt: -1 })
       .exec();
   }
+
+  async checkIfPointsAwarded(userId: string, orderId: string): Promise<boolean> {
+    const existingRecord = await this.loyaltyHistoryModel
+      .findOne({ 
+        user: userId, 
+        order: orderId, 
+        type: 'earned' 
+      })
+      .exec();
+    return !!existingRecord;
+  }
 }

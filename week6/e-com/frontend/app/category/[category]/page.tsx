@@ -19,6 +19,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
   const productsPerPage = 9;
 
   const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
@@ -199,26 +200,37 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       <Header />
       <Navbar />
       
-      <div className="px-4 py-4 border-b">
+      <div className="px-4 py-2 md:py-4 border-b">
         <div className="max-w-7xl mx-auto">
-          <nav className="text-sm text-gray-500">
+          <nav className="text-xs md:text-sm text-gray-500">
             <Link href="/" className="hover:text-black">Home</Link>
-            <span className="mx-2">›</span>
+            <span className="mx-1 md:mx-2">›</span>
             <span className="text-black">{categoryName}</span>
           </nav>
         </div>
       </div>
 
-      <div className="px-4 py-8">
-        <div className="max-w-7xl mx-auto flex gap-8">
-          <div className="w-80 flex-shrink-0">
-            <div className="border rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold">Filters</h3>
+      <div className="px-4 py-4 md:py-8">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 md:gap-8">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden mb-4">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg flex items-center justify-between"
+            >
+              <span>Filters</span>
+              <span>{showFilters ? '▲' : '▼'}</span>
+            </button>
+          </div>
+
+          <div className={`w-full lg:w-80 lg:flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <div className="border rounded-2xl p-4 md:p-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <h3 className="text-lg md:text-xl font-bold">Filters</h3>
                 {hasActiveFilters && (
                   <button 
                     onClick={clearAllFilters}
-                    className="text-sm text-red-600 hover:text-red-800"
+                    className="text-xs md:text-sm text-red-600 hover:text-red-800"
                   >
                     Clear All
                   </button>
@@ -227,9 +239,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
 
               {/* Active Filters Display */}
               {hasActiveFilters && (
-                <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2">Active Filters:</h4>
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-4 md:mb-6 p-3 bg-gray-50 rounded-lg">
+                  <h4 className="text-xs md:text-sm font-medium mb-2">Active Filters:</h4>
+                  <div className="flex flex-wrap gap-1 md:gap-2">
                     {selectedTags.map((tag) => (
                       <span
                         key={tag}
@@ -262,11 +274,11 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 </div>
               )}
 
-              <div className="mb-6">
-                <h4 className="font-medium mb-4">Categories</h4>
-                <div className="space-y-3">
+              <div className="mb-4 md:mb-6">
+                <h4 className="font-medium mb-3 md:mb-4 text-sm md:text-base">Categories</h4>
+                <div className="space-y-2 md:space-y-3">
                   {availableTags.map((tag) => (
-                    <div key={tag} className="flex items-center justify-between py-2 border-b">
+                    <div key={tag} className="flex items-center justify-between py-1 md:py-2 border-b">
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="checkbox"
@@ -274,7 +286,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                           onChange={() => toggleTag(tag)}
                           className="mr-2"
                         />
-                        <span className={selectedTags.includes(tag) ? 'text-black font-medium' : 'text-gray-600'}>
+                        <span className={`text-sm md:text-base ${selectedTags.includes(tag) ? 'text-black font-medium' : 'text-gray-600'}`}>
                           {tag}
                         </span>
                       </label>
@@ -283,11 +295,11 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-medium">Price</h4>
+              <div className="mb-4 md:mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-4">
+                  <h4 className="font-medium text-sm md:text-base">Price</h4>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   <input 
                     type="range" 
                     min={Math.min(...products.map(p => p.salePrice || p.price))} 
@@ -296,35 +308,35 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                     onChange={(e) => setPriceRange(prev => ({ ...prev, max: parseInt(e.target.value) }))}
                     className="w-full" 
                   />
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs md:text-sm">
                     <span>${priceRange.min}</span>
                     <span>${priceRange.max}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-medium">Colors</h4>
+              <div className="mb-4 md:mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-4">
+                  <h4 className="font-medium text-sm md:text-base">Colors</h4>
                   <span className="text-gray-400">▲</span>
                 </div>
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-5 gap-2 md:gap-3">
                   {colors.map((color) => (
-                    <button key={color.name} className={`w-8 h-8 rounded-full ${color.class}`} />
+                    <button key={color.name} className={`w-6 h-6 md:w-8 md:h-8 rounded-full ${color.class}`} />
                   ))}
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-medium">Size</h4>
+              <div className="mb-4 md:mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-4">
+                  <h4 className="font-medium text-sm md:text-base">Size</h4>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1 md:gap-2">
                   {availableSizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => toggleSize(size)}
-                      className={`px-3 py-2 text-sm rounded-full border ${
+                      className={`px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm rounded-full border ${
                         selectedSizes.includes(size)
                           ? 'bg-black text-white'
                           : 'bg-gray-100 text-gray-700'
@@ -336,51 +348,53 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-medium">Dress Style</h4>
+              <div className="mb-4 md:mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-4">
+                  <h4 className="font-medium text-sm md:text-base">Dress Style</h4>
                   <span className="text-gray-400">▲</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 md:space-y-2">
                   {['Casual', 'Formal', 'Party', 'Gym'].map((style) => (
                     <Link 
                       key={style} 
                       href={`/category/${style.toLowerCase()}`}
-                      className="flex items-center justify-between py-2 border-b hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center justify-between py-1 md:py-2 border-b hover:bg-gray-50 cursor-pointer"
                     >
-                      <span className="text-gray-600 hover:text-black">{style}</span>
+                      <span className="text-gray-600 hover:text-black text-sm md:text-base">{style}</span>
                       <span className="text-gray-400">›</span>
                     </Link>
                   ))}
                 </div>
               </div>
 
-              <button 
-                onClick={clearAllFilters}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-full mb-3 hover:bg-gray-300"
-              >
-                Clear Filters
-              </button>
-              <button className="w-full bg-black text-white py-3 rounded-full">
-                Apply Filter
-              </button>
+              <div className="space-y-2 md:space-y-3">
+                <button 
+                  onClick={clearAllFilters}
+                  className="w-full bg-gray-200 text-gray-700 py-2 md:py-3 rounded-full text-sm md:text-base hover:bg-gray-300"
+                >
+                  Clear Filters
+                </button>
+                <button className="w-full bg-black text-white py-2 md:py-3 rounded-full text-sm md:text-base">
+                  Apply Filter
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 space-y-4 md:space-y-0">
               <div>
-                <h1 className="text-3xl font-bold mb-2">{categoryName}</h1>
-                <p className="text-gray-600">
+                <h1 className="text-2xl md:text-3xl font-bold mb-1 md:mb-2">{categoryName}</h1>
+                <p className="text-gray-600 text-sm md:text-base">
                   Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} Products
                 </p>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Sort by:</span>
+                <span className="text-xs md:text-sm text-gray-600">Sort by:</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-2 text-sm"
+                  className="border border-gray-300 rounded px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm"
                 >
                   <option>Most Popular</option>
                   <option>Price: Low to High</option>
@@ -395,7 +409,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               </div>
             ) : filteredProducts.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
                   {currentProducts.map((product) => (
                     <ProductCard 
                       key={product._id}
@@ -412,11 +426,11 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     <button 
                       onClick={goToPrevious}
                       disabled={currentPage === 1}
-                      className={`flex items-center space-x-2 ${
+                      className={`flex items-center space-x-2 text-sm md:text-base ${
                         currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:text-black'
                       }`}
                     >
@@ -424,13 +438,13 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                       <span>Previous</span>
                     </button>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1 md:space-x-2 overflow-x-auto">
                       {getPageNumbers().map((page, index) => (
                         <button
                           key={index}
                           onClick={() => typeof page === 'number' && goToPage(page)}
                           disabled={page === '...'}
-                          className={`px-3 py-2 rounded ${
+                          className={`px-2 md:px-3 py-1 md:py-2 rounded text-sm md:text-base ${
                             page === currentPage 
                               ? 'bg-black text-white' 
                               : page === '...' 
@@ -446,7 +460,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                     <button 
                       onClick={goToNext}
                       disabled={currentPage === totalPages}
-                      className={`flex items-center space-x-2 ${
+                      className={`flex items-center space-x-2 text-sm md:text-base ${
                         currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:text-black'
                       }`}
                     >
@@ -458,8 +472,8 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No products found in {categoryName} category</p>
-                <p className="text-gray-400 mt-2">Try browsing other categories</p>
+                <p className="text-gray-500 text-base md:text-lg">No products found in {categoryName} category</p>
+                <p className="text-gray-400 mt-2 text-sm md:text-base">Try browsing other categories</p>
               </div>
             )}
           </div>

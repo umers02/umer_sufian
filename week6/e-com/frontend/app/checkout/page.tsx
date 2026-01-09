@@ -1,19 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect, CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Header from '../../components/common/Header';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
+import StripeCheckout from '../../components/checkout/StripeCheckout';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { orderService, CreateOrderData } from '../../services/orderService';
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, removeFromCart } = useCart();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
+  const [pendingOrderData, setPendingOrderData] = useState<CreateOrderData | null>(null);
   
   // Check if cart contains only loyalty-only products
   const hasLoyaltyOnlyProducts = items.some(item => item.type === 'loyalty_only');
@@ -55,6 +58,8 @@ export default function CheckoutPage() {
   const [pointsToUse, setPointsToUse] = useState(0);
   const [useHybridPoints, setUseHybridPoints] = useState(false);
   const [sameAsBilling, setSameAsBilling] = useState(true);
+  const placeOrderBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [popupStyle, setPopupStyle] = useState<CSSProperties | null>(null);
 
   const countries = [
     'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
@@ -105,32 +110,68 @@ export default function CheckoutPage() {
       return;
     }
     
+    const orderData: CreateOrderData = {
+      items: items.map(item => ({
+        product: item.id,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size,
+        color: item.color
+      })),
+      shippingAddress: shippingInfo,
+      paymentMethod: isLoyaltyOnlyCart ? 'points' : (paymentMethod === 'hybrid_points' ? 'hybrid_points' : paymentMethod),
+      subtotal,
+      shipping,
+      tax,
+      total,
+      pointsUsed: isLoyaltyOnlyCart ? totalPointsRequired : (usePoints ? pointsToUse : 0) + (paymentMethod === 'hybrid_points' ? hybridPointsRequired : 0)
+    };
+
+    // If payment method is card, show Stripe checkout
+    if (paymentMethod === 'card' && total > 0) {
+      setPendingOrderData(orderData);
+      setShowStripeCheckout(true);
+      return;
+    }
+    
+    // For points-only or other payment methods, create order directly
+    await createOrder(orderData);
+  };
+
+  useEffect(() => {
+    if (showStripeCheckout) {
+      const btn = placeOrderBtnRef.current;
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        setPopupStyle({
+          position: 'absolute',
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX,
+          minWidth: Math.max(320, rect.width),
+        });
+      } else {
+        setPopupStyle({ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
+      }
+    } else {
+      setPopupStyle(null);
+    }
+  }, [showStripeCheckout]);
+
+  const createOrder = async (orderData: CreateOrderData) => {
     setLoading(true);
     
     try {
-      const orderData: CreateOrderData = {
-        items: items.map(item => ({
-          product: item.id,
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size,
-          color: item.color
-        })),
-        shippingAddress: shippingInfo,
-        paymentMethod: isLoyaltyOnlyCart ? 'points' : (paymentMethod === 'hybrid_points' ? 'hybrid_points' : paymentMethod),
-        subtotal,
-        shipping,
-        tax,
-        total,
-        pointsUsed: isLoyaltyOnlyCart ? totalPointsRequired : (usePoints ? pointsToUse : 0) + (paymentMethod === 'hybrid_points' ? hybridPointsRequired : 0)
-      };
-      
       await orderService.createOrder(orderData);
       alert('Order placed successfully!');
+      
       // Clear cart after successful order
       items.forEach(item => {
         removeFromCart(item.id, item.size, item.color);
       });
+      
+      // Refresh user data to update points
+      await refreshUser();
+      
       // Redirect to profile/orders page
       window.location.href = '/profile';
     } catch (error: any) {
@@ -139,6 +180,56 @@ export default function CheckoutPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleStripeSuccess = async (paymentIntentId: string) => {
+    if (!pendingOrderData) return;
+    
+    setLoading(true);
+    
+    try {
+      // First create the order
+      const orderDataWithStripe = {
+        ...pendingOrderData,
+        stripePaymentIntentId: paymentIntentId
+      };
+      
+      const createdOrder = await orderService.createOrder(orderDataWithStripe);
+      
+      // Then update payment status to succeeded
+      await orderService.updatePaymentStatus(createdOrder._id, 'succeeded', paymentIntentId);
+      
+      alert('Order placed and payment confirmed successfully!');
+      
+      // Clear cart after successful order
+      items.forEach(item => {
+        removeFromCart(item.id, item.size, item.color);
+      });
+      
+      // Refresh user data to update points
+      await refreshUser();
+      
+      // Redirect to profile/orders page
+      window.location.href = '/profile';
+      
+    } catch (error: any) {
+      console.error('Order creation or payment update failed:', error);
+      alert('Failed to complete order. Please contact support.');
+    } finally {
+      setLoading(false);
+      setShowStripeCheckout(false);
+      setPendingOrderData(null);
+    }
+  };
+
+  const handleStripeError = (error: string) => {
+    alert(`Payment failed: ${error}`);
+    setShowStripeCheckout(false);
+  };
+
+  const handleStripeCancel = () => {
+    setShowStripeCheckout(false);
+    setPendingOrderData(null);
   };
 
   if (items.length === 0) {
@@ -464,50 +555,13 @@ export default function CheckoutPage() {
                 )}
 
                 {paymentMethod === 'card' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium mb-2">Card Number *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="1234 5678 9012 3456"
-                        value={paymentInfo.cardNumber}
-                        onChange={(e) => handleInputChange('payment', 'cardNumber', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Expiry Date *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="MM/YY"
-                        value={paymentInfo.expiryDate}
-                        onChange={(e) => handleInputChange('payment', 'expiryDate', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">CVV *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="123"
-                        value={paymentInfo.cvv}
-                        onChange={(e) => handleInputChange('payment', 'cvv', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium mb-2">Cardholder Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={paymentInfo.cardName}
-                        onChange={(e) => handleInputChange('payment', 'cardName', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                      />
-                    </div>
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800 mb-2">
+                      ✓ Secure payment processing with Stripe
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Your card details will be entered securely in the next step
+                    </p>
                   </div>
                 )}
               </div>
@@ -515,7 +569,7 @@ export default function CheckoutPage() {
 
             {/* Right Column - Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white p-6 rounded-2xl sticky top-4">
+              <div className="bg-white p-6 rounded-2xl sticky top-4 lg:static lg:top-auto lg:sticky lg:top-24 lg:right-8 lg:w-80 lg:fixed lg:z-40">
                 <h2 className="text-xl font-bold mb-6">Order Summary</h2>
                 
                 {/* Order Items */}
@@ -629,6 +683,7 @@ export default function CheckoutPage() {
 
                 {/* Place Order Button */}
                 <button
+                  ref={placeOrderBtnRef}
                   type="submit"
                   disabled={loading || 
                     (isLoyaltyOnlyCart && user && user.loyaltyPoints < totalPointsRequired) ||
@@ -663,6 +718,21 @@ export default function CheckoutPage() {
       </div>
 
       <Footer />
+      
+      {/* Stripe Checkout Popup (anchored under Place Order) */}
+      {showStripeCheckout && (
+        <div style={popupStyle as React.CSSProperties} className="z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+            <h2 className="text-lg font-bold mb-3">Secure Payment with Stripe</h2>
+            <StripeCheckout
+              amount={total}
+              onSuccess={handleStripeSuccess}
+              onError={handleStripeError}
+              onCancel={handleStripeCancel}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
